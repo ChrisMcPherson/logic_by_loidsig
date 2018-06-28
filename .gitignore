@@ -1,0 +1,18 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Domino
+.dominoignore
+.dominoresults
+dominostats.json
+domino.log
+.domino
+.dominokeep
+
+# Files
+test_train_features.csv
+.DS_Store

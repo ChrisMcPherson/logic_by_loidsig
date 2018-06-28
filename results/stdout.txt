@@ -1,0 +1,29 @@
+2018-06-27 05:01:05
+ETHUSDT: 1 unprocessed days between 1 Jan. 2018 UTC and the day before today
+2018-06-27 05:01:26: Beginning S3 load for 2018-06-26 with 60077 rows
+BNBUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-06-27 05:01:45: Beginning S3 load for 2018-06-26 with 32273 rows
+TRXETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-06-27 05:01:58: Beginning S3 load for 2018-06-26 with 15442 rows
+BTCUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-06-27 05:02:33: Beginning S3 load for 2018-06-26 with 105417 rows
+LTCUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-06-27 05:02:46: Beginning S3 load for 2018-06-26 with 18632 rows
+ETHBTC: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-06-27 05:03:20: Beginning S3 load for 2018-06-26 with 85226 rows
+XRPETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-06-27 05:03:32: Beginning S3 load for 2018-06-26 with 5504 rows
+NEOETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-06-27 05:03:38: Beginning S3 load for 2018-06-26 with 8256 rows
+ENJETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-06-27 05:03:42: Beginning S3 load for 2018-06-26 with 2119 rows
+**Time 23:57:51.590000 is not end of day for 2018-06-26 23:57:51.590000...
+2018-06-27 05:03:43
