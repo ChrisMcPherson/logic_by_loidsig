@@ -7,7 +7,7 @@ import os
 import time
 # local libraries
 sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
-import market_maker_functions
+import market_maker_scoring
 # modeling
 from sklearn import linear_model
 from sklearn import ensemble
@@ -17,18 +17,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
-# Config
-coin_pair_dict = {'ethusdt':'target',
-                  'btcusdt':'alt',
-                  'trxeth':'through'}
-                  
-#feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-#trade_window_list = [1,5,10,20]
-feature_minutes_list = [1,5,10]
-trade_window_list = [10]
-
-mm = market_maker_functions.MarketMaker(coin_pair_dict, feature_minutes_list, trade_window_list)
-
 def main():
     iter_ = 1
     while True:
@@ -37,27 +25,21 @@ def main():
         iter_ += 1
 
 def logic(iter_):
+    """Control scoring against a market maker model"""
     start = time.time()
-    # Get historic features and train model
-    try:
-        mm.set_training_data()
-    except Exception as e:
-        print(f"Failed setting training data: {e}")
-        return
-    X = mm.training_df[mm.mm.feature_column_list]
-    y = mm.training_df[mm.mm.target_column_list]
-    print(f"Training data dtypes: {mm.training_df.dtypes}")
-    mm.training_df.to_csv('test_train_features.csv')
-    #clf = ensemble.GradientBoostingRegressor(n_estimators=500, learning_rate=.01, max_depth=6, 
-    #                                                     max_features=.1, min_samples_leaf=1)
-    #clf.fit(X, y)
+    # Get trained model
+    mm_scoring = market_maker_scoring.MarketMakerScoring()
+    model = mm_scoring.get_model()
     
     # Set scoring data and retrieve the most recent minutes features
-    mm.set_scoring_data()
-    X_scoring = mm.scoring_features_df.sort_values('open_time').iloc[-1, mm.feature_column_list]
-    #X_scoring = mm.scoring_features[mm.feature_column_list]
+    mm_scoring.set_scoring_data()
+    print(f"Scoring data dtypes: {mm_scoring.scoring_features_df.dtypes}")
+    X_scoring = mm_scoring.scoring_features_df.sort_values('open_time')
+    print(mm_scoring.feature_column_list)
+    X_scoring = X_scoring.iloc[-1, mm_scoring.feature_column_list]
+    #X_scoring = mm_scoring.scoring_features[mm_scoring.feature_column_list]
     print(f"Scoring data dtypes: {X_scoring.dtypes}")
-    X_scoring.to_csv('test_recent_features.csv') ###
+    X_scoring.head().to_csv('test_recent_features.csv') ###
     
     # standardize and model
     #scaler = StandardScaler()
@@ -83,10 +65,10 @@ def logic(iter_):
     #     print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
     #     print(f'Buying with predicted 10 return of: {predicted_growth}')
     #     # trade for 10 min
-    #     order = mm.bnb_client.order_market_buy(symbol=target_coin.upper(), quantity=1)
+    #     order = mm_scoring.bnb_client.order_market_buy(symbol=target_coin.upper(), quantity=1)
     #     print(f"Buy info: {order}")
     #     time.sleep(600)
-    #     order = mm.bnb_client.order_market_sell(symbol=target_coin.upper(), quantity=1)
+    #     order = mm_scoring.bnb_client.order_market_sell(symbol=target_coin.upper(), quantity=1)
     #     print(f"Sell info: {order}")
 
 if __name__ == '__main__':

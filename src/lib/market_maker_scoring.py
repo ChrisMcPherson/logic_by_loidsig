@@ -6,6 +6,8 @@ import sys
 import os
 import io
 import ast
+import json
+import pickle
 from functools import reduce
 import time
 import datetime
@@ -17,16 +19,21 @@ from binance.client import Client
 sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
 import athena_connect
 
-class MarketMaker():
-    def __init__(self, coin_pair_dict, feature_minutes_list=None, trade_window_list=None, training_period=None):
-        """Market maker class to fascilitate data engineering for both training and scoring models
+class MarketMakerScoring():
+    def __init__(self):
+        """Market maker class to fascilitate data engineering for scoring models
         """
-        self.bnb_client = self.binance_client()
-        self.coin_pair_dict = coin_pair_dict
+        self.s3_bucket = 'loidsig-crypto'
+        self.boto_session = boto3.Session(profile_name='loidsig')
+        self.s3_client = self.boto_session.client('s3')
+        self.s3_resource = self.boto_session.resource('s3')
+        model_config_json = self.get_model_config()
+        self.coin_pair_dict = model_config_json['coin_pair_dict']
         self.target_coin = self.get_target_coin()
-        self.feature_minutes_list = feature_minutes_list
-        self.trade_window_list = trade_window_list
-        self.training_period = training_period
+        self.feature_minutes_list = model_config_json['feature_minutes_list']
+        self.trade_window_list = model_config_json['trade_window_list']
+        self.feature_column_list = model_config_json['feature_column_list']
+        self.bnb_client = self.binance_client()
 
 
     def pandas_get_trades(self, coin_pair, start_time_str='360 min ago UTC'):
@@ -165,124 +172,15 @@ class MarketMaker():
                                     features_df['current_1_interaction'] + features_df['current_1_interaction'] + features_df['current_1_interaction'] + 
                                     features_df['current_1_interaction']) / 10
                 features_df['avg_10_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
-        
         return features_df
 
-    def set_training_data(self):
-        """Pull training data from Athena and engineer features"""
-        # Optional training data period
-        if not self.training_period == None:
-            training_period_date = (datetime.datetime.utcnow() - timedelta(days=self.training_period)).strftime("%Y-%m-%d")
-        # Extract queried data from Athena
-        training_data_sql, self.feature_column_list, self.target_column_list = self.construct_training_data_query()
-        athena = athena_connect.Athena()
-        features_df = athena.pandas_read_athena(training_data_sql)
-        features_df.fillna(0, inplace=True)
-        print(features_df.shape)
-        features_df = features_df[:-10] # Remove ??
-        # Remove infinity string
-        features_df.replace({'Infinity': 0}, inplace=True)
-        # Convert all object fields to numeric
-        object_cols = features_df.columns[features_df.dtypes.eq('object')]
-        features_df[object_cols] = features_df[object_cols].apply(pd.to_numeric, errors='coerce')
-        self.training_df = features_df
-
-    def construct_training_data_query(self):
-        """Return training data Athena query from dynamic template"""
-        if self.feature_minutes_list == None or self.trade_window_list == None:
-            raise Exception("To construct training data query, the optional feature_minutes_list and trade_window_list attributes must be set!")
-        
-        feature_col_list = []
-        target_col_list = []
-        raw_features_list = []
-        base_features_list = []
-        interaction_features_list = []
-        lag_features_list = []
-        join_conditions_list = []
-        target_variables_list = []
-
-        for coin_pair, pair_type in self.coin_pair_dict.items():
-            # Raw base features
-            raw_features_list.append(f"""{pair_type}_{coin_pair} AS (
-                                    SELECT coin_partition AS {coin_pair}_coin_partition
-                                        , from_unixtime(cast(close_timestamp AS BIGINT) / 1000) AS {coin_pair}_trade_datetime
-                                        , DATE(from_unixtime(cast(close_timestamp AS BIGINT) / 1000)) AS {coin_pair}_trade_date
-                                        , (CAST(close_timestamp AS BIGINT) / 1000 / 60) AS {coin_pair}_trade_minute
-                                        , CAST(open AS DOUBLE) AS {coin_pair}_open, CAST(high AS DOUBLE) AS {coin_pair}_high, CAST(low AS DOUBLE) AS {coin_pair}_low
-                                        , CAST(close AS DOUBLE) AS {coin_pair}_close, CAST(volume AS DOUBLE) AS {coin_pair}_volume
-                                        , CAST(quote_asset_volume AS DOUBLE) AS {coin_pair}_quote_asset_volume, CAST(trade_count AS BIGINT) AS {coin_pair}_trade_count
-                                        , CAST(taker_buy_base_asset_volume AS DOUBLE) AS {coin_pair}_tbbav, CAST(taker_buy_quote_asset_volume AS DOUBLE) AS {coin_pair}_tbqav
-                                    FROM binance.historic_candlesticks 
-                                    WHERE coin_partition = '{coin_pair}'
-                                    )""")
-            # Base features
-            if pair_type == 'target':
-                base_features_list.append(f"""{coin_pair}_trade_datetime, CAST(day_of_week({coin_pair}_trade_datetime) AS SMALLINT) as trade_day_of_week
-                                        , CAST(hour({coin_pair}_trade_datetime) AS SMALLINT) as trade_hour""")
-                feature_col_list.extend(['trade_day_of_week', 'trade_hour'])
-            base_features_list.append(f"""{coin_pair}_open, {coin_pair}_high, {coin_pair}_low, {coin_pair}_close, {coin_pair}_volume
-                                        , {coin_pair}_quote_asset_volume, {coin_pair}_trade_count, {coin_pair}_tbbav, {coin_pair}_tbqav""")
-            feature_col_list.extend([f'{coin_pair}_open', f'{coin_pair}_high', f'{coin_pair}_low', f'{coin_pair}_close', f'{coin_pair}_volume'
-                                        , f'{coin_pair}_quote_asset_volume', f'{coin_pair}_trade_count', f'{coin_pair}_tbbav', f'{coin_pair}_tbqav'])
-            # Interaction features for alt coins (base usdt)
-            if pair_type == 'alt':
-                interaction_features_list.append(f"""AVG(({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute DESC ROWS 10 PRECEDING) 
-                                                    - (({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) AS avg_10_{coin_pair}_open_interaction""")
-                feature_col_list.append(f'avg_10_{coin_pair}_open_interaction')
-            # Lag features for every interval configured at runtime
-            for interval in self.feature_minutes_list:
-                interval_list = []
-                interval_list.append(f"""(({coin_pair}_open - LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_open_perc_chg
-                                        ,((({coin_pair}_open - LEAD({coin_pair}_open) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_open) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100) -
-                                            ((({coin_pair}_open - LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100) AS prev_{interval}_{coin_pair}_open_rate_chg
-                                        ,(({coin_pair}_high - LEAD({coin_pair}_high, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_high, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_high_perc_chg
-                                        ,(({coin_pair}_low - LEAD({coin_pair}_low, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_low, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_low_perc_chg
-                                        ,COALESCE(TRY((({coin_pair}_volume - LEAD({coin_pair}_volume, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_volume, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_volume_perc_chg
-                                        ,COALESCE(TRY((({coin_pair}_quote_asset_volume - LEAD({coin_pair}_quote_asset_volume, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_quote_asset_volume, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_qav_perc_chg
-                                        ,COALESCE(TRY((({coin_pair}_trade_count - LEAD({coin_pair}_trade_count, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_trade_count, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_trade_count_perc_chg
-                                        ,COALESCE(TRY((({coin_pair}_tbbav - LEAD({coin_pair}_tbbav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_tbbav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_tbbav_perc_chg
-                                        ,COALESCE(TRY((({coin_pair}_tbqav - LEAD({coin_pair}_tbqav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_tbqav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_tbqav_perc_chg""")  
-                lag_features_list.append(','.join(interval_list))  
-                feature_col_list.extend([f'prev_{interval}_{coin_pair}_open_perc_chg',f'prev_{interval}_{coin_pair}_open_rate_chg',f'prev_{interval}_{coin_pair}_high_perc_chg',
-                                        f'prev_{interval}_{coin_pair}_low_perc_chg',f'prev_{interval}_{coin_pair}_volume_perc_chg',f'prev_{interval}_{coin_pair}_qav_perc_chg',
-                                        f'prev_{interval}_{coin_pair}_trade_count_perc_chg',f'prev_{interval}_{coin_pair}_tbbav_perc_chg',f'prev_{interval}_{coin_pair}_tbqav_perc_chg'])
-            # Target variables for every interval configured at runtime
-            if pair_type == 'target':
-                for target in self.trade_window_list:
-                    target_variables_list.append(f"""((LAG({self.target_coin}_open, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {self.target_coin}_open) / {self.target_coin}_open) * 100 AS futr_{target}_open_perc_chg""")
-                    target_col_list.append(f'futr_{target}_open_perc_chg')
-                # Join conditions
-                join_conditions_list.append(f"""{pair_type}_{coin_pair}""")      
-            else:
-                join_conditions_list.append(f"""{pair_type}_{coin_pair} ON target_{self.target_coin}.{self.target_coin}_trade_minute = {pair_type}_{coin_pair}.{coin_pair}_trade_minute""")
-
-        raw_features = ','.join(raw_features_list)
-        base_features = ','.join(base_features_list)
-        interaction_features = ','.join(interaction_features_list)
-        lag_features = ','.join(lag_features_list)
-        target_variables = ','.join(target_variables_list)
-        join_conditions = ' LEFT JOIN '.join(join_conditions_list)
-
-        query_template = f"""WITH {raw_features}
-                            SELECT {base_features}
-                                ,{interaction_features}
-                                ,{target_variables}
-                                ,{lag_features}
-                                ,{target_variables}
-                            FROM {join_conditions}
-                            ORDER BY {self.target_coin}_trade_minute ASC"""
-
-        return query_template, feature_col_list, target_col_list
+    def get_model_config(self):
+        """Retrieve latest trained model configuration"""
+        object_path = 'model_objects/'
+        content_object = self.s3_resource.Object(self.s3_bucket, f"{object_path}model_config.json")
+        file_content = content_object.get()['Body'].read().decode('utf-8')
+        model_config_json = json.loads(file_content)
+        return model_config_json
 
     def get_target_coin(self):
         """Return target coin pair that will be traded"""
@@ -290,6 +188,56 @@ class MarketMaker():
         if len(target_coin_list) > 1:
             raise Exception(f"There must only be a single target coin initialized in the coin pair dictionary. Values: {target_coin_list}")
         return target_coin_list[0]
+
+    def get_model(self):
+        """Retrieve full S3 Key for model object and retrieve model object
+
+        Args:
+            model_name (str): a supported model name string
+
+        Returns:
+            obj: a model object
+        """
+        object_path = 'model_objects/'
+        model_path = self.get_s3_object_keys(self.s3_bucket,
+                                             f"{object_path}market_maker_model")
+        if not model_path:
+            raise AttributeError(f"No model was found at the S3 path [{object_path}]")
+        model_object = self.get_pickle_from_s3(model_path[0][0])
+        return model_object
+
+    def get_pickle_from_s3(self, s3_key):
+        """Retrieve pickle object from S3 and unload it into Python object
+
+        Args:
+            s3_bucket (str): an S3 bucket name
+            s3_key (str): a full S3 object key (file) name
+
+        Returns:
+            obj: an unloaded pickle object
+        """
+        obj = self.s3_client.get_object(Bucket=self.s3_bucket, Key=s3_key)
+        pickle_obj = pickle.load(io.BytesIO(obj['Body'].read()))
+        return pickle_obj
+
+    def get_s3_object_keys(self, s3_bucket, s3_prefix):
+        """Fetches S3 object keys
+
+        Given a bucket and key prefix, this method will return full keys
+        for every object that shares the prefix
+
+        Args:
+            s3_bucket (str): An s3 bucket name string
+            s3_prefix (str): An s3 key prefix string
+
+        Returns:
+            list: A list containing sublists containing object key and file name
+        """
+        bucket = self.s3_resource.Bucket(s3_bucket)
+        object_name_list = []
+        for obj in bucket.objects.filter(Prefix=s3_prefix):
+            object_name_list.append([obj.key, os.path.basename(obj.key)])
+        return object_name_list
 
     def binance_client(self):
         # Instantiate Binance resources
