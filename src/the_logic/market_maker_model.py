@@ -38,8 +38,7 @@ def main():
         return
     X = mm_training.training_df[mm_training.feature_column_list]
     y = mm_training.training_df[mm_training.target_column_list]
-    print(f"Training data dtypes: {mm_training.training_df.dtypes}")
-    mm_training.training_df.head().to_csv('test_train_features.csv')
+    #mm_training.training_df.head().to_csv('test_train_features.csv')
     model = ensemble.GradientBoostingRegressor(n_estimators=500, learning_rate=.01, max_depth=6, 
                                               max_features=.1, min_samples_leaf=1)
     model.fit(X, y)
