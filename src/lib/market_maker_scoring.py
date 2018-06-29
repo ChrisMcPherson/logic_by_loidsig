@@ -13,6 +13,7 @@ import time
 import datetime
 from datetime import timedelta
 import multiprocessing
+import dill
 from joblib import Parallel, delayed
 from binance.client import Client
 # local libraries

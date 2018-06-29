@@ -29,6 +29,10 @@ trade_window_list = [10]
 
 def main():
     """Control the training and persistance of a market maker model"""
+    print("------- Starting training of market maker model --------")
+    print(f"Coin pair config: {coin_pair_dict}")
+    print(f"Feature minutes list: {feature_minutes_list}")
+    print(f"Trade window list: {trade_window_list}")
     # Get historic features and train model
     mm_training = market_maker_training.MarketMakerTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
     try:
@@ -39,13 +43,12 @@ def main():
     X = mm_training.training_df[mm_training.feature_column_list]
     y = mm_training.training_df[mm_training.target_column_list]
     #mm_training.training_df.head().to_csv('test_train_features.csv')
-    model = ensemble.GradientBoostingRegressor(n_estimators=500, learning_rate=.01, max_depth=6, 
+    model = ensemble.GradientBoostingRegressor(n_estimators=10, learning_rate=.01, max_depth=6, 
                                               max_features=.1, min_samples_leaf=1)
     model.fit(X, y)
     # Persist model and configuration
     mm_training.persist_model(model)
     mm_training.persist_model_config()
-    
 
 if __name__ == '__main__':
     main()
