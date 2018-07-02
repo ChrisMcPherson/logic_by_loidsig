@@ -21,8 +21,11 @@ class MarketMakerTraining():
         """Market maker class to fascilitate data engineering for training models
         """
         self.s3_bucket = 'loidsig-crypto'
-        self.boto_session = boto3.Session(profile_name='loidsig')
-        self.s3_client = self.boto_session.client('s3')
+        try:
+            self.boto_session = boto3.Session(profile_name='loidsig')
+            self.s3_client = self.boto_session.client('s3')
+        except:
+            self.s3_client = boto3.client('s3')
         self.coin_pair_dict = coin_pair_dict
         self.target_coin = self.get_target_coin()
         self.feature_minutes_list = feature_minutes_list
@@ -45,9 +48,10 @@ class MarketMakerTraining():
         features_df = features_df[:-10] # Remove ??
         # Remove infinity string
         features_df.replace({'Infinity': 0}, inplace=True)
-        # Convert all object fields to numeric
-        object_cols = features_df.columns[features_df.dtypes.eq('object')]
-        features_df[object_cols] = features_df[object_cols].apply(pd.to_numeric, errors='coerce')
+        # Convert all object fields to numeric except date fields
+        object_col_list = features_df.columns[features_df.dtypes.eq('object')]
+        object_col_list = [col for col in object_col_list if 'trade_date' not in col]
+        features_df[object_col_list] = features_df[object_col_list].apply(pd.to_numeric, errors='coerce')
         self.training_df = features_df
 
     def construct_training_data_query(self):
@@ -80,7 +84,8 @@ class MarketMakerTraining():
                                     )""")
             # Base features
             if pair_type == 'target':
-                base_features_list.append(f"""{coin_pair}_trade_datetime, CAST(day_of_week({coin_pair}_trade_datetime) AS SMALLINT) as trade_day_of_week
+                base_features_list.append(f"""{coin_pair}_trade_datetime, {coin_pair}_trade_date, {coin_pair}_trade_minute
+                                        , CAST(day_of_week({coin_pair}_trade_datetime) AS SMALLINT) as trade_day_of_week
                                         , CAST(hour({coin_pair}_trade_datetime) AS SMALLINT) as trade_hour""")
                 feature_col_list.extend(['trade_day_of_week', 'trade_hour'])
             base_features_list.append(f"""{coin_pair}_open, {coin_pair}_high, {coin_pair}_low, {coin_pair}_close, {coin_pair}_volume

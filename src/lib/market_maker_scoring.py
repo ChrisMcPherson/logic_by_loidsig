@@ -25,9 +25,13 @@ class MarketMakerScoring():
         """Market maker class to fascilitate data engineering for scoring models
         """
         self.s3_bucket = 'loidsig-crypto'
-        self.boto_session = boto3.Session(profile_name='loidsig')
-        self.s3_client = self.boto_session.client('s3')
-        self.s3_resource = self.boto_session.resource('s3')
+        try:
+            self.boto_session = boto3.Session(profile_name='loidsig')
+            self.s3_client = self.boto_session.client('s3')
+            self.s3_resource = self.boto_session.resource('s3')
+        except:
+            self.s3_client = boto3.client('s3')
+            self.s3_resource = boto3.resource('s3')
         model_config_json = self.get_model_config()
         self.coin_pair_dict = model_config_json['coin_pair_dict']
         self.target_coin = self.get_target_coin()
@@ -79,7 +83,7 @@ class MarketMakerScoring():
         recent_df_list.append([pair_type, df])
         return recent_df_list
 
-    def set_scoring_data(self):
+    def set_scoring_data(self, in_parallel=True):
         """Set data for model scoring from latest candlestick metrics features"""
         if self.feature_minutes_list == None or self.trade_window_list == None:
             raise Exception("To construct scoring dataframe, the optional feature_minutes_list and trade_window_list attributes must be set!")
@@ -87,8 +91,12 @@ class MarketMakerScoring():
         recent_trades_interval = max(self.feature_minutes_list) + 10
         cores = multiprocessing.cpu_count()
         try:
-            scoring_df_list = Parallel(n_jobs=cores)(delayed(self.pandas_get_candlesticks)(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items())
-            scoring_df_dict = dict(scoring_df_list)
+            if in_parallel:
+                scoring_df_list = Parallel(n_jobs=cores)(delayed(self.pandas_get_candlesticks)(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items())
+                scoring_df_dict = dict(scoring_df_list)
+            else:
+                scoring_df_list = [self.pandas_get_candlesticks(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items()]
+                scoring_df_dict = dict(scoring_df_list)
         except Exception as e:
             print(f"Unable to get recent data for scoring: {e}")
             return
@@ -172,7 +180,7 @@ class MarketMakerScoring():
                                     features_df['current_1_interaction'] + features_df['current_1_interaction'] + features_df['current_1_interaction'] + 
                                     features_df['current_1_interaction'] + features_df['current_1_interaction'] + features_df['current_1_interaction'] + 
                                     features_df['current_1_interaction']) / 10
-                features_df['avg_10_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+                features_df[f'avg_10_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
         return features_df
 
     def get_model_config(self):

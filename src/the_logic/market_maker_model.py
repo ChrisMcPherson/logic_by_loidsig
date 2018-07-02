@@ -11,9 +11,8 @@ import market_maker_training
 # modeling
 from sklearn import linear_model
 from sklearn import ensemble
+import xgboost as xgb
 from sklearn.utils import resample
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
@@ -42,10 +41,10 @@ def main():
         return
     X = mm_training.training_df[mm_training.feature_column_list]
     y = mm_training.training_df[mm_training.target_column_list]
-    #mm_training.training_df.head().to_csv('test_train_features.csv')
-    model = ensemble.GradientBoostingRegressor(n_estimators=10, learning_rate=.01, max_depth=6, 
-                                              max_features=.1, min_samples_leaf=1)
-    model.fit(X, y)
+    #model = ensemble.GradientBoostingRegressor(n_estimators=10, learning_rate=.01, max_depth=6, 
+    #                                          max_features=.1, min_samples_leaf=1)
+    model = xgb.XGBRegressor()
+    model.fit(X, y.values.ravel())
     # Persist model and configuration
     mm_training.persist_model(model)
     mm_training.persist_model_config()

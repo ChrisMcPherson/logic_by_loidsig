@@ -1,29 +1,211 @@
-2018-06-27 05:01:05
-ETHUSDT: 1 unprocessed days between 1 Jan. 2018 UTC and the day before today
-2018-06-27 05:01:26: Beginning S3 load for 2018-06-26 with 60077 rows
-BNBUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
-Failed to get agg trade list for 2018-02-09. list index out of range
-2018-06-27 05:01:45: Beginning S3 load for 2018-06-26 with 32273 rows
-TRXETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
-Failed to get agg trade list for 2018-02-09. list index out of range
-2018-06-27 05:01:58: Beginning S3 load for 2018-06-26 with 15442 rows
-BTCUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
-Failed to get agg trade list for 2018-02-09. list index out of range
-2018-06-27 05:02:33: Beginning S3 load for 2018-06-26 with 105417 rows
-LTCUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
-Failed to get agg trade list for 2018-02-09. list index out of range
-2018-06-27 05:02:46: Beginning S3 load for 2018-06-26 with 18632 rows
-ETHBTC: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
-Failed to get agg trade list for 2018-02-09. list index out of range
-2018-06-27 05:03:20: Beginning S3 load for 2018-06-26 with 85226 rows
-XRPETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
-Failed to get agg trade list for 2018-02-09. list index out of range
-2018-06-27 05:03:32: Beginning S3 load for 2018-06-26 with 5504 rows
-NEOETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
-Failed to get agg trade list for 2018-02-09. list index out of range
-2018-06-27 05:03:38: Beginning S3 load for 2018-06-26 with 8256 rows
-ENJETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
-Failed to get agg trade list for 2018-02-09. list index out of range
-2018-06-27 05:03:42: Beginning S3 load for 2018-06-26 with 2119 rows
-**Time 23:57:51.590000 is not end of day for 2018-06-26 23:57:51.590000...
-2018-06-27 05:03:43
+2018-07-01 21:41:37
+Model(s): ['xgb']
+Sim Start Day: 175
+Training feature minutes: [1, 5, 10]
+Training Min(s): [360]
+Test Min(s): [10]
+Poly(s): [3]
+Coin feature configuration: {'ethusdt': 'target', 'btcusdt': 'alt', 'trxeth': 'through'}
+/mnt/src/lib/market_maker_training.py:45: DtypeWarning: Columns (37,38,40,41,46,47,49,50,55,56,58,59,64,65,67,68,73,74,76,77,82,83,85,86,91,92,94,95,100,101,103,104,109,110,112,113) have mixed types. Specify dtype option on import or set low_memory=False.
+  features_df = athena.pandas_read_athena(training_data_sql)
+(257756, 115)
+Model: xgb
+2018-07-01 21:43:13
+Number of days to iterate: 5
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+Empty test dataframe!!
+`ethusdt` Best Return at 0.1000000000000032: 142.4594052768993%
+    Target: futr_10_open_perc_chg; training_mins: 360; test_mins: 10
+    Number of intervals simulating 720.0
+    Trades: 1577
+/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/groupby.py:4291: FutureWarning: using a dict with renaming is deprecated and will be removed in a future version
+  return super(DataFrameGroupBy, self).aggregate(arg, *args, **kwargs)
+Traceback (most recent call last):
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2525, in get_loc
+    return self._engine.get_loc(key)
+  File "pandas/_libs/index.pyx", line 117, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 139, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1265, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1273, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'trade_minute'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "notebooks/return_simulation.py", line 232, in <module>
+    main()
+  File "notebooks/return_simulation.py", line 122, in main
+    training_mins=training_min, test_mins=test_min, poly_degree=polynomial)
+  File "notebooks/return_simulation.py", line 217, in identify_best_return
+    daily_trades = results_df.loc[results_df['buy'] == 1].groupby(f'{coin}_trade_date').agg({'return':'sum','trade_minute':'count'}).reset_index()
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/groupby.py", line 4291, in aggregate
+    return super(DataFrameGroupBy, self).aggregate(arg, *args, **kwargs)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/groupby.py", line 3724, in aggregate
+    result, how = self._aggregate(arg, _level=_level, *args, **kwargs)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/base.py", line 478, in _aggregate
+    result = _agg(arg, _agg_1dim)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/base.py", line 429, in _agg
+    result[fname] = func(fname, agg_how)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/base.py", line 408, in _agg_1dim
+    colg = self._gotitem(name, ndim=1, subset=subset)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/groupby.py", line 4318, in _gotitem
+    subset = self.obj[key]
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/frame.py", line 2139, in __getitem__
+    return self._getitem_column(key)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/frame.py", line 2146, in _getitem_column
+    return self._get_item_cache(key)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/generic.py", line 1842, in _get_item_cache
+    values = self._data.get(item)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/internals.py", line 3843, in get
+    loc = self.items.get_loc(item)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2527, in get_loc
+    return self._engine.get_loc(self._maybe_cast_indexer(key))
+  File "pandas/_libs/index.pyx", line 117, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 139, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1265, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 1273, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'trade_minute'
+Failed with exit code: 1

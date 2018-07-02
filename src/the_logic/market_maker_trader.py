@@ -32,29 +32,12 @@ def logic(iter_):
     model = mm_scoring.get_model()
     
     # Set scoring data and retrieve the most recent minutes features
-    mm_scoring.set_scoring_data()
-    print(f"Scoring data dtypes: {mm_scoring.scoring_features_df.dtypes}")
+    mm_scoring.set_scoring_data(in_parallel=True)
     X_scoring = mm_scoring.scoring_features_df.sort_values('open_time')
-    print(mm_scoring.feature_column_list)
-    X_scoring = X_scoring.iloc[-1, mm_scoring.feature_column_list]
-    #X_scoring = mm_scoring.scoring_features[mm_scoring.feature_column_list]
-    print(f"Scoring data dtypes: {X_scoring.dtypes}")
-    X_scoring.head().to_csv('test_recent_features.csv') ###
-    
-    # standardize and model
-    #scaler = StandardScaler()
-    #scaler.fit(X)
-    #X = scaler.transform(X)
-    #X_ = scaler.transform(X_scoring.reshape(1, -1))
-    #model = linear_model.SGDRegressor(penalty='l2', alpha=0.15, max_iter=2000)
-    #model.fit(X, y)
-    #predicted_growth = model.predict(X_)
+    X_scoring = X_scoring[mm_scoring.feature_column_list]
+    X_scoring = X_scoring.iloc[-1]
 
-    #poly = PolynomialFeatures(degree=4)
-    #X = poly.fit_transform(X)
-    #X_ = poly.fit_transform(X_scoring.reshape(1, -1))
-
-    #predicted_growth = clf.predict(X_scoring.reshape(1, -1))
+    predicted_growth = model.predict(X_scoring.reshape(1, -1))
     
     end = time.time()
     if iter_ == 1:
