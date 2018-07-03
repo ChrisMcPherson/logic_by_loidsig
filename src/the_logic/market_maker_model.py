@@ -21,10 +21,8 @@ coin_pair_dict = {'ethusdt':'target',
                   'btcusdt':'alt',
                   'trxeth':'through'}
                   
-#feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-#trade_window_list = [1,5,10,20]
-feature_minutes_list = [1,5,10]
-trade_window_list = [10]
+feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
+trade_window_list = [2,5,10,20]
 
 def main():
     """Control the training and persistance of a market maker model"""
@@ -39,14 +37,15 @@ def main():
     except Exception as e:
         print(f"Failed setting training data: {e}")
         return
-    X = mm_training.training_df[mm_training.feature_column_list]
-    y = mm_training.training_df[mm_training.target_column_list]
-    #model = ensemble.GradientBoostingRegressor(n_estimators=10, learning_rate=.01, max_depth=6, 
-    #                                          max_features=.1, min_samples_leaf=1)
-    model = xgb.XGBRegressor()
-    model.fit(X, y.values.ravel())
-    # Persist model and configuration
-    mm_training.persist_model(model)
+    # Train a model for each trade window configured
+    for target_column in mm_training.target_column_list:
+        X = mm_training.training_df[mm_training.feature_column_list]
+        y = mm_training.training_df[target_column]
+        model = xgb.XGBRegressor() #n_estimators=1000
+        model.fit(X, y.values.ravel())
+        # Persist model
+        mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column))))
+    # Persis configuration
     mm_training.persist_model_config()
 
 if __name__ == '__main__':

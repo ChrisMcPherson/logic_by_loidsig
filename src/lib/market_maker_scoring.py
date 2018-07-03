@@ -198,7 +198,7 @@ class MarketMakerScoring():
             raise Exception(f"There must only be a single target coin initialized in the coin pair dictionary. Values: {target_coin_list}")
         return target_coin_list[0]
 
-    def get_model(self):
+    def get_model_objects(self):
         """Retrieve full S3 Key for model object and retrieve model object
 
         Args:
@@ -207,13 +207,14 @@ class MarketMakerScoring():
         Returns:
             obj: a model object
         """
-        object_path = 'model_objects/'
-        model_path = self.get_s3_object_keys(self.s3_bucket,
-                                             f"{object_path}market_maker_model")
-        if not model_path:
+        model_object_dict = {}
+        object_path = 'model_objects'
+        model_path_list = self.get_s3_object_keys(self.s3_bucket, f"{object_path}/market_maker_model_")
+        if not model_path_list:
             raise AttributeError(f"No model was found at the S3 path [{object_path}]")
-        model_object = self.get_pickle_from_s3(model_path[0][0])
-        return model_object
+        for model_path in model_path_list:
+            model_object_dict[model_path] = self.get_pickle_from_s3(model_path[0])
+        return model_object_dict
 
     def get_pickle_from_s3(self, s3_key):
         """Retrieve pickle object from S3 and unload it into Python object

@@ -159,10 +159,10 @@ class MarketMakerTraining():
             raise Exception(f"There must only be a single target coin initialized in the coin pair dictionary. Values: {target_coin_list}")
         return target_coin_list[0]
 
-    def persist_model(self, model):
+    def persist_model(self, model, trade_window):
         """Persist model object as pkl to S3"""
         object_path = 'model_objects/'
-        file_name = 'market_maker_model.pkl'
+        file_name = f'market_maker_model_{self.target_coin}_{trade_window}.pkl'
         self.s3_client.put_object(Bucket=self.s3_bucket,
                         Key=object_path + file_name,
                         Body=pickle.dumps(model, pickle.HIGHEST_PROTOCOL)

@@ -1,5 +1,6 @@
 import boto3
 import pandas as pd
+pd.options.mode.chained_assignment = None
 import numpy as np
 import io
 import sys
@@ -25,7 +26,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score, classification_report
 import xgboost as xgb
-pd.options.mode.chained_assignment = None
 
 def main():
     print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
@@ -34,9 +34,9 @@ def main():
     start = 175
     target_coin_list = ['ethusdt']
     feature_minutes_list = [1,5,10]
-    target_col_list = ['yup']
-    training_min_list = [360]
-    test_min_list = [10]
+    target_col_list = [2,5,10,20]
+    training_min_list = ['none']
+    test_min_list = [1440]
     model_list = ['xgb']
     poly_list = [3]
     
@@ -93,7 +93,7 @@ def main():
     # Simulate!
     for target_coin in target_coin_list:
         # Get features for target coin
-        features_df, feature_col, target_col_list = features(feature_minutes_list)
+        features_df, feature_col, target_col_list = features(feature_minutes_list, target_col_list)
         # Iterate over all simulation configurations
         sim_daily_trades_list = []
         for model in model_list:
@@ -107,16 +107,16 @@ def main():
                             results_df_list = []
                             days_to_test = features_df.loc[start_ix:,f'{target_coin}_trade_date'].nunique()
                             test_intervals = days_to_test * 1440 / test_min
-                            future_days = int(''.join(filter(str.isdigit, target_col)))
+                            trade_duration = int(''.join(filter(str.isdigit, target_col)))
                             print(f"Number of days to iterate: {days_to_test}")
-                            results_df_list = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(simulate_return)(model, features_df, feature_col, 
-                                                                                            target_col, target_coin, interval, start_ix, future_days, start_days=start, 
-                                                                                            training_mins=training_min, test_mins=test_min, 
-                                                                                            poly_degree=polynomial) for interval in range(int(test_intervals)))
-                            # results_df_list = [simulate_return(model, features_df, feature_col, 
-                            #                 target_col, target_coin, interval, start_ix, future_days, start_days=start, 
-                            #                 training_mins=training_min, test_mins=test_min, 
-                            #                 poly_degree=polynomial) for interval in range(int(test_intervals))]
+                            # results_df_list = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(simulate_return)(model, features_df, feature_col, 
+                            #                                                                 target_col, target_coin, interval, start_ix, trade_duration, start_days=start, 
+                            #                                                                 training_mins=training_min, test_mins=test_min, 
+                            #                                                                 poly_degree=polynomial) for interval in range(int(test_intervals)))
+                            results_df_list = [simulate_return(model, features_df, feature_col, 
+                                            target_col, target_coin, interval, start_ix, trade_duration, start_days=start, 
+                                            training_mins=training_min, test_mins=test_min, 
+                                            poly_degree=polynomial) for interval in range(int(test_intervals))]
                             results_df = pd.concat(results_df_list)
                             daily_trades_df = identify_best_return(model, results_df, feature_col, target_col, target_coin, test_intervals, start_days=start, 
                                                                     training_mins=training_min, test_mins=test_min, poly_degree=polynomial)
@@ -125,13 +125,12 @@ def main():
     finish_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
     sim_daily_trades.to_csv(f"notebooks/sim_results/sim_daily_trades_{finish_time}.csv", index = False)
                     
-def features(feature_minutes_list):
+def features(feature_minutes_list, trade_window_list):
     #TODO: move this config to simulation argument 
     coin_pair_dict = {'ethusdt':'target',
                   'btcusdt':'alt',
                   'trxeth':'through'}
     print(f"Coin feature configuration: {coin_pair_dict}")
-    trade_window_list = [10]
 
     mm_training = market_maker_training.MarketMakerTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
     try:
@@ -141,16 +140,19 @@ def features(feature_minutes_list):
         return
     return mm_training.training_df, mm_training.feature_column_list, mm_training.target_column_list
     
-def simulate_return(model, df, feature_cols, target_col, coin, interval, start_ix, future_days, start_days=1, training_mins=None, test_mins=1440, poly_degree=3):
-    end_train_ix = (interval * test_mins) + start_ix - future_days # subtract future day from outcome variable 
+def simulate_return(model, df, feature_cols, target_col, coin, interval, start_ix, trade_duration, start_days=1, training_mins=None, test_mins=1440, poly_degree=3):
+    end_train_ix = (interval * test_mins) + start_ix - trade_duration # subtract future day from outcome variable 
     end_test_ix = ((interval * test_mins) + test_mins) + start_ix
-    start_test_ix = end_train_ix + future_days
-    if training_mins:
+    start_test_ix = end_train_ix + trade_duration
+    if training_mins != 'none':
         start_train_ix = end_train_ix - training_mins
         start_train_ix = 0 if start_train_ix < 0 else start_train_ix
         train_df = df.iloc[start_train_ix:end_train_ix,:]
     else:
         train_df = df.iloc[:end_train_ix,:]
+    if end_train_ix > start_test_ix - trade_duration:
+        print("Error! You are training on data to be tested!")
+        return
     test_df = df.iloc[start_test_ix:end_test_ix,:]
     if test_df.empty:
         print("Empty test dataframe!!")
@@ -182,6 +184,11 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         model.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
         y_sim = model.predict(X_sim)
+    elif model == 'linear':
+        model = linear_model.LinearRegression()
+        model.fit(X, y)
+        X_sim = test_df.loc[:,feature_cols]
+        y_sim = model.predict(X_sim)
     elif model == 'xgb':
         model = xgb.XGBRegressor()
         model.fit(X, y)
@@ -198,6 +205,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
     return test_df
         
 def identify_best_return(model, results_df, feature_cols, target_col, coin, intervals, start_days=1, training_mins=None, test_mins=1440, poly_degree=3):
+    pd.options.mode.chained_assignment = None
     # Identify best cut off
     optimal_buy_threshold = None
     best_return = 0
@@ -214,7 +222,8 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, inte
     Target: {target_col}; training_mins: {training_mins}; test_mins: {test_mins}
     Number of intervals simulating {intervals}
     Trades: {num_trades}""")
-    daily_trades = results_df.loc[results_df['buy'] == 1].groupby(f'{coin}_trade_date').agg({'return':'sum',f'{coin}_trade_minute':'count'}).reset_index()
+    daily_trades = results_df.loc[results_df['buy'] == 1]
+    daily_trades = daily_trades.groupby(f'{coin}_trade_date').agg({'return':'sum',f'{coin}_trade_minute':'count'}).reset_index()
     daily_trades.rename(columns={f'{coin}_trade_minute':'num_daily_trades','return':'daily_return'}, inplace=True)
     daily_trades['target_coin'] = coin
     daily_trades['model'] = str(model)

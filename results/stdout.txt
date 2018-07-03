@@ -1,211 +1,31 @@
-2018-07-01 21:41:37
+2018-07-03 00:59:39
 Model(s): ['xgb']
-Sim Start Day: 175
-Training feature minutes: [1, 5, 10]
-Training Min(s): [360]
-Test Min(s): [10]
+Sim Start Day: 170
+Training feature minutes: [1, 5, 10, 20, 30, 40, 50, 60, 120, 240, 480, 960]
+Training Min(s): ['none']
+Test Min(s): [1440]
 Poly(s): [3]
 Coin feature configuration: {'ethusdt': 'target', 'btcusdt': 'alt', 'trxeth': 'through'}
-/mnt/src/lib/market_maker_training.py:45: DtypeWarning: Columns (37,38,40,41,46,47,49,50,55,56,58,59,64,65,67,68,73,74,76,77,82,83,85,86,91,92,94,95,100,101,103,104,109,110,112,113) have mixed types. Specify dtype option on import or set low_memory=False.
+/mnt/src/lib/market_maker_training.py:45: DtypeWarning: Columns (41,42,44,45,50,51,53,54,59,60,62,63,68,69,71,72,77,78,80,81,86,87,89,90,95,96,98,99,104,105,107,108,113,114,116,117,122,123,125,126,131,132,134,135,140,141,143,144,149,150,152,153,158,159,161,162,167,168,170,171,176,177,179,180,185,186,188,189,194,195,197,198,203,204,206,207,212,213,215,216,221,222,224,225,230,231,233,234,239,240,242,243,248,249,251,252,257,258,260,261,266,267,269,270,275,276,278,279,284,285,287,288,293,294,296,297,302,303,305,306,311,312,314,315,320,321,323,324,329,330,332,333,338,339,341,342,347,348,350,351,356,357,359,360) have mixed types. Specify dtype option on import or set low_memory=False.
   features_df = athena.pandas_read_athena(training_data_sql)
-(257756, 115)
+(259196, 365)
 Model: xgb
-2018-07-01 21:43:13
-Number of days to iterate: 5
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-Empty test dataframe!!
-`ethusdt` Best Return at 0.1000000000000032: 142.4594052768993%
-    Target: futr_10_open_perc_chg; training_mins: 360; test_mins: 10
-    Number of intervals simulating 720.0
-    Trades: 1577
-/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/groupby.py:4291: FutureWarning: using a dict with renaming is deprecated and will be removed in a future version
-  return super(DataFrameGroupBy, self).aggregate(arg, *args, **kwargs)
+2018-07-03 01:05:38
+Number of days to iterate: 11
 Traceback (most recent call last):
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2525, in get_loc
-    return self._engine.get_loc(key)
-  File "pandas/_libs/index.pyx", line 117, in pandas._libs.index.IndexEngine.get_loc
-  File "pandas/_libs/index.pyx", line 139, in pandas._libs.index.IndexEngine.get_loc
-  File "pandas/_libs/hashtable_class_helper.pxi", line 1265, in pandas._libs.hashtable.PyObjectHashTable.get_item
-  File "pandas/_libs/hashtable_class_helper.pxi", line 1273, in pandas._libs.hashtable.PyObjectHashTable.get_item
-KeyError: 'trade_minute'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "notebooks/return_simulation.py", line 232, in <module>
+  File "notebooks/return_simulation.py", line 236, in <module>
     main()
-  File "notebooks/return_simulation.py", line 122, in main
-    training_mins=training_min, test_mins=test_min, poly_degree=polynomial)
-  File "notebooks/return_simulation.py", line 217, in identify_best_return
-    daily_trades = results_df.loc[results_df['buy'] == 1].groupby(f'{coin}_trade_date').agg({'return':'sum','trade_minute':'count'}).reset_index()
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/groupby.py", line 4291, in aggregate
-    return super(DataFrameGroupBy, self).aggregate(arg, *args, **kwargs)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/groupby.py", line 3724, in aggregate
-    result, how = self._aggregate(arg, _level=_level, *args, **kwargs)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/base.py", line 478, in _aggregate
-    result = _agg(arg, _agg_1dim)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/base.py", line 429, in _agg
-    result[fname] = func(fname, agg_how)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/base.py", line 408, in _agg_1dim
-    colg = self._gotitem(name, ndim=1, subset=subset)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/groupby.py", line 4318, in _gotitem
-    subset = self.obj[key]
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/frame.py", line 2139, in __getitem__
-    return self._getitem_column(key)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/frame.py", line 2146, in _getitem_column
-    return self._get_item_cache(key)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/generic.py", line 1842, in _get_item_cache
-    values = self._data.get(item)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/internals.py", line 3843, in get
-    loc = self.items.get_loc(item)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/pandas/core/indexes/base.py", line 2527, in get_loc
-    return self._engine.get_loc(self._maybe_cast_indexer(key))
-  File "pandas/_libs/index.pyx", line 117, in pandas._libs.index.IndexEngine.get_loc
-  File "pandas/_libs/index.pyx", line 139, in pandas._libs.index.IndexEngine.get_loc
-  File "pandas/_libs/hashtable_class_helper.pxi", line 1265, in pandas._libs.hashtable.PyObjectHashTable.get_item
-  File "pandas/_libs/hashtable_class_helper.pxi", line 1273, in pandas._libs.hashtable.PyObjectHashTable.get_item
-KeyError: 'trade_minute'
+  File "notebooks/return_simulation.py", line 115, in main
+    poly_degree=polynomial) for interval in range(int(test_intervals)))
+  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/parallel.py", line 962, in __call__
+    self.retrieve()
+  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/parallel.py", line 865, in retrieve
+    self._output.extend(job.get(timeout=self.timeout))
+  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/_parallel_backends.py", line 515, in wrap_future_result
+    return future.result(timeout=timeout)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/externals/loky/_base.py", line 431, in result
+    return self.__get_result()
+  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/externals/loky/_base.py", line 382, in __get_result
+    raise self._exception
+joblib.externals.loky.process_executor.BrokenProcessPool: A process in the executor was terminated abruptly while the future was running or pending.
 Failed with exit code: 1
