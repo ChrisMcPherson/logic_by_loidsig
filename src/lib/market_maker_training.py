@@ -94,9 +94,13 @@ class MarketMakerTraining():
                                         , f'{coin_pair}_quote_asset_volume', f'{coin_pair}_trade_count', f'{coin_pair}_tbbav', f'{coin_pair}_tbqav'])
             # Interaction features for alt coins (base usdt)
             if pair_type == 'alt':
-                interaction_features_list.append(f"""AVG(({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute DESC ROWS 10 PRECEDING) 
+                interaction_features_list.append(f"""AVG(({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 5 PRECEDING) 
+                                                    - (({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) AS avg_5_{coin_pair}_open_interaction""")
+                interaction_features_list.append(f"""AVG(({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 10 PRECEDING) 
                                                     - (({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) AS avg_10_{coin_pair}_open_interaction""")
-                feature_col_list.append(f'avg_10_{coin_pair}_open_interaction')
+                interaction_features_list.append(f"""AVG(({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 20 PRECEDING) 
+                                                    - (({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) AS avg_20_{coin_pair}_open_interaction""")
+                feature_col_list.extend([f'avg_5_{coin_pair}_open_interaction',f'avg_10_{coin_pair}_open_interaction',f'avg_20_{coin_pair}_open_interaction'])
             # Lag features for every interval configured at runtime
             for interval in self.feature_minutes_list:
                 interval_list = []

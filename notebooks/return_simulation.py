@@ -210,8 +210,9 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, inte
     optimal_buy_threshold = None
     best_return = 0
     num_trades = 0
-    for thresh in list(np.arange(-4.0, 4.0, 0.1)):
+    for thresh in list(np.arange(0, 1.0, 0.1)):
         return_df = results_df.loc[results_df['predicted'] > thresh]
+        print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)}")
         if (return_df['return'].sum() > best_return) or (optimal_buy_threshold == None):
             optimal_buy_threshold = thresh
             best_return, num_trades = return_df['return'].sum(), len(return_df.index)

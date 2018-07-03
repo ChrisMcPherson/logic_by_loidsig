@@ -1,6 +1,6 @@
-2018-07-03 00:59:39
-Model(s): ['xgb']
-Sim Start Day: 170
+2018-07-03 03:11:40
+Model(s): ['linear']
+Sim Start Day: 175
 Training feature minutes: [1, 5, 10, 20, 30, 40, 50, 60, 120, 240, 480, 960]
 Training Min(s): ['none']
 Test Min(s): [1440]
@@ -8,24 +8,41 @@ Poly(s): [3]
 Coin feature configuration: {'ethusdt': 'target', 'btcusdt': 'alt', 'trxeth': 'through'}
 /mnt/src/lib/market_maker_training.py:45: DtypeWarning: Columns (41,42,44,45,50,51,53,54,59,60,62,63,68,69,71,72,77,78,80,81,86,87,89,90,95,96,98,99,104,105,107,108,113,114,116,117,122,123,125,126,131,132,134,135,140,141,143,144,149,150,152,153,158,159,161,162,167,168,170,171,176,177,179,180,185,186,188,189,194,195,197,198,203,204,206,207,212,213,215,216,221,222,224,225,230,231,233,234,239,240,242,243,248,249,251,252,257,258,260,261,266,267,269,270,275,276,278,279,284,285,287,288,293,294,296,297,302,303,305,306,311,312,314,315,320,321,323,324,329,330,332,333,338,339,341,342,347,348,350,351,356,357,359,360) have mixed types. Specify dtype option on import or set low_memory=False.
   features_df = athena.pandas_read_athena(training_data_sql)
-(259196, 365)
-Model: xgb
-2018-07-03 01:05:38
-Number of days to iterate: 11
-Traceback (most recent call last):
-  File "notebooks/return_simulation.py", line 236, in <module>
-    main()
-  File "notebooks/return_simulation.py", line 115, in main
-    poly_degree=polynomial) for interval in range(int(test_intervals)))
-  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/parallel.py", line 962, in __call__
-    self.retrieve()
-  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/parallel.py", line 865, in retrieve
-    self._output.extend(job.get(timeout=self.timeout))
-  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/_parallel_backends.py", line 515, in wrap_future_result
-    return future.result(timeout=timeout)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/externals/loky/_base.py", line 431, in result
-    return self.__get_result()
-  File "/usr/local/anaconda/lib/python3.6/site-packages/joblib/externals/loky/_base.py", line 382, in __get_result
-    raise self._exception
-joblib.externals.loky.process_executor.BrokenProcessPool: A process in the executor was terminated abruptly while the future was running or pending.
-Failed with exit code: 1
+(259196, 363)
+Model: linear
+2018-07-03 03:17:39
+Number of days to iterate: 6
+Empty test dataframe!!
+Return at 0.0: -155.2625783932543% with 3736
+Return at 0.1: 47.522792047493624% with 676
+Return at 0.2: 27.244184557302432% with 214
+Return at 0.30000000000000004: 21.01899524355489% with 91
+Return at 0.4: 14.24509722826267% with 46
+Return at 0.5: 12.760636529518637% with 27
+Return at 0.6000000000000001: 10.576405928912404% with 25
+Return at 0.7000000000000001: 10.848823685642442% with 24
+Return at 0.8: 11.73625135876724% with 20
+Return at 0.9: 7.844804678216635% with 17
+`ethusdt` Best Return at 0.1: 47.522792047493624%
+    Target: futr_10_open_perc_chg; training_mins: none; test_mins: 1440
+    Number of intervals simulating 6.0
+    Trades: 676
+Best return 47.522792047493624 at 0.1 threshold
+2018-07-03 03:18:11
+Number of days to iterate: 6
+Empty test dataframe!!
+Return at 0.0: -177.31284232387708% with 3638
+Return at 0.1: 5.658750541891692% with 922
+Return at 0.2: 19.116833527155492% with 331
+Return at 0.30000000000000004: 18.31609017538927% with 146
+Return at 0.4: 9.5083733658449% with 74
+Return at 0.5: 9.438318600168454% with 40
+Return at 0.6000000000000001: 9.537575933150062% with 32
+Return at 0.7000000000000001: 10.448398318250895% with 30
+Return at 0.8: 6.491445779447383% with 25
+Return at 0.9: 6.413210575372481% with 23
+`ethusdt` Best Return at 0.2: 19.116833527155492%
+    Target: futr_20_open_perc_chg; training_mins: none; test_mins: 1440
+    Number of intervals simulating 6.0
+    Trades: 331
+Best return 19.116833527155492 at 0.2 threshold

@@ -22,7 +22,7 @@ coin_pair_dict = {'ethusdt':'target',
                   'trxeth':'through'}
                   
 feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-trade_window_list = [2,5,10,20]
+trade_window_list = [5,10,20]
 
 def main():
     """Control the training and persistance of a market maker model"""
@@ -41,7 +41,8 @@ def main():
     for target_column in mm_training.target_column_list:
         X = mm_training.training_df[mm_training.feature_column_list]
         y = mm_training.training_df[target_column]
-        model = xgb.XGBRegressor() #n_estimators=1000
+        #model = xgb.XGBRegressor(n_estimators=200) #n_estimators=1000
+        model = linear_model.LinearRegression()
         model.fit(X, y.values.ravel())
         # Persist model
         mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column))))

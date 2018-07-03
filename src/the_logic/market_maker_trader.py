@@ -18,6 +18,9 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
+# Config
+predicted_return_threshold = .2
+
 def main():
     iter_ = 1
     while True:
@@ -50,11 +53,10 @@ def logic(iter_):
         print(f"From data collection to prediction, {int(end - start)} seconds have elapsed")
     # Buy/Sell
     # Does the growth rate need to be higher/lower for longer/shorter buy times?? I don't think so.
-    #if scoring_result_dict[optimal_hold_minutes][1] > 
-    if scoring_result_dict[optimal_hold_minutes][0] > .2:
+    if scoring_result_dict[optimal_hold_minutes][0] > predicted_return_threshold:
         print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
         print(f'Buying with predicted {optimal_hold_minutes} min return of: {predicted_growth}')
-        # trade for specified time
+        # Trade for specified time
         # TODO: the quantity will need to be standardized for different coin evaluations
         order = mm_scoring.bnb_client.order_market_buy(symbol=mm_scoring.target_coin.upper(), quantity=1)
         print(f"Buy info: {order}")
