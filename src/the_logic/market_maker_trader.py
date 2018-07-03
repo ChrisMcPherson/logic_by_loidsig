@@ -31,15 +31,17 @@ def main():
 def logic(iter_):
     """Control scoring against a market maker model"""
     start = time.time()
-    # Set scoring data and retrieve the most recent minutes features
+    
     mm_scoring = market_maker_scoring.MarketMakerScoring()
+    # Get trained models
+    model_object_dict = mm_scoring.get_model_objects()
+    # Set scoring data and retrieve the most recent minutes features
     mm_scoring.set_scoring_data(in_parallel=True)
     X_scoring = mm_scoring.scoring_features_df.sort_values('open_time')
     X_scoring = X_scoring[mm_scoring.feature_column_list]
     X_scoring = X_scoring.iloc[-1]
 
-    # Get trained models
-    model_object_dict = mm_scoring.get_model_objects()
+    
     scoring_result_dict = {}
     for model_path, model in model_object_dict.items():
         trade_hold_minutes = int(''.join(filter(str.isdigit, model_path)))

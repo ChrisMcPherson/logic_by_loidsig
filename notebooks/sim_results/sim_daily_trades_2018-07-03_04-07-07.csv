@@ -1,0 +1,7 @@
+ethusdt_trade_date,daily_return,num_daily_trades,target_coin,model,target_col,start_days,training_mins,test_mins,optimal_buy_threshold,best_return
+2018-06-26,-1.6824225452747692,16,ethusdt,xgb,futr_10_open_perc_chg,175,none,1440,0.1,55.57289948270224
+2018-06-27,12.094141917192282,98,ethusdt,xgb,futr_10_open_perc_chg,175,none,1440,0.1,55.57289948270224
+2018-06-28,-5.9340787802619674,75,ethusdt,xgb,futr_10_open_perc_chg,175,none,1440,0.1,55.57289948270224
+2018-06-29,29.945409567454373,120,ethusdt,xgb,futr_10_open_perc_chg,175,none,1440,0.1,55.57289948270224
+2018-06-30,19.51819479699993,106,ethusdt,xgb,futr_10_open_perc_chg,175,none,1440,0.1,55.57289948270224
+2018-07-01,1.6316545265923927,63,ethusdt,xgb,futr_10_open_perc_chg,175,none,1440,0.1,55.57289948270224

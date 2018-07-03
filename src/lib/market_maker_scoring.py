@@ -38,7 +38,7 @@ class MarketMakerScoring():
         self.feature_minutes_list = model_config_json['feature_minutes_list']
         self.trade_window_list = model_config_json['trade_window_list']
         self.feature_column_list = model_config_json['feature_column_list']
-        self.bnb_client = self.binance_client()
+        self.bnb_client = MarketMakerScoring.binance_client()
 
 
     def pandas_get_trades(self, coin_pair, start_time_str='360 min ago UTC'):
@@ -57,15 +57,17 @@ class MarketMakerScoring():
         df['minute'] = pd.to_numeric(df['micro_timestamp']/1000/60).astype(int)
         return df
 
-    def pandas_get_candlesticks(self, coin_pair, pair_type, start_time_str='1 min ago UTC'):
+    @staticmethod
+    def pandas_get_candlesticks(coin_pair, pair_type, start_time_str='1 min ago UTC'):
         """Return minute granularity recent candlestick metrics from Binance api for a given coin pair and historical interval
 
         Returns:
             (list): ['coin_pair',['pair_type', pandas.DataFrame]]
         """
+        bnb_client = MarketMakerScoring.binance_client()
         prefix = f"{coin_pair.lower()}"
         coin_pair_upper = coin_pair.upper()
-        klines = self.bnb_client.get_historical_klines(coin_pair_upper, Client.KLINE_INTERVAL_1MINUTE, start_time_str)
+        klines = bnb_client.get_historical_klines(coin_pair_upper, Client.KLINE_INTERVAL_1MINUTE, start_time_str)
         df = pd.DataFrame(klines, columns=['open_time',f'{prefix}_open',f'{prefix}_high',f'{prefix}_low',f'{prefix}_close',f'{prefix}_volume',
                         'close_time',f'{prefix}_quote_asset_volume',f'{prefix}_trade_count', f'{prefix}_tbbav',f'{prefix}_tbqav',f'{prefix}_ignore']
                     )
@@ -92,10 +94,10 @@ class MarketMakerScoring():
         cores = multiprocessing.cpu_count()
         try:
             if in_parallel:
-                scoring_df_list = Parallel(n_jobs=cores)(delayed(self.pandas_get_candlesticks)(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items())
+                scoring_df_list = Parallel(n_jobs=cores)(delayed(MarketMakerScoring.pandas_get_candlesticks)(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items())
                 scoring_df_dict = dict(scoring_df_list)
             else:
-                scoring_df_list = [self.pandas_get_candlesticks(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items()]
+                scoring_df_list = [MarketMakerScoring.pandas_get_candlesticks(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items()]
                 scoring_df_dict = dict(scoring_df_list)
         except Exception as e:
             print(f"Unable to get recent data for scoring: {e}")
@@ -172,15 +174,39 @@ class MarketMakerScoring():
                 features_df['current_3_interaction'] = (features_df[f'{self.target_coin}_close'].shift(3)-features_df[f'{coin_pair}_close'].shift(3))/features_df[f'{self.target_coin}_close'].shift(3)
                 features_df['current_4_interaction'] = (features_df[f'{self.target_coin}_close'].shift(4)-features_df[f'{coin_pair}_close'].shift(4))/features_df[f'{self.target_coin}_close'].shift(4)
                 features_df['current_5_interaction'] = (features_df[f'{self.target_coin}_close'].shift(5)-features_df[f'{coin_pair}_close'].shift(5))/features_df[f'{self.target_coin}_close'].shift(5)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction'] + 
+                                    features_df['current_3_interaction'] + features_df['current_4_interaction'] + features_df['current_5_interaction']) / 6
+                features_df[f'avg_5_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
                 features_df['current_6_interaction'] = (features_df[f'{self.target_coin}_close'].shift(6)-features_df[f'{coin_pair}_close'].shift(6))/features_df[f'{self.target_coin}_close'].shift(6)
                 features_df['current_7_interaction'] = (features_df[f'{self.target_coin}_close'].shift(7)-features_df[f'{coin_pair}_close'].shift(7))/features_df[f'{self.target_coin}_close'].shift(7)
                 features_df['current_8_interaction'] = (features_df[f'{self.target_coin}_close'].shift(8)-features_df[f'{coin_pair}_close'].shift(8))/features_df[f'{self.target_coin}_close'].shift(8)
                 features_df['current_9_interaction'] = (features_df[f'{self.target_coin}_close'].shift(9)-features_df[f'{coin_pair}_close'].shift(9))/features_df[f'{self.target_coin}_close'].shift(9)
-                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_1_interaction'] + 
-                                    features_df['current_1_interaction'] + features_df['current_1_interaction'] + features_df['current_1_interaction'] + 
-                                    features_df['current_1_interaction'] + features_df['current_1_interaction'] + features_df['current_1_interaction'] + 
-                                    features_df['current_1_interaction']) / 10
+                features_df['current_10_interaction'] = (features_df[f'{self.target_coin}_close'].shift(10)-features_df[f'{coin_pair}_close'].shift(10))/features_df[f'{self.target_coin}_close'].shift(10)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction'] + 
+                                    features_df['current_3_interaction'] + features_df['current_4_interaction'] + features_df['current_5_interaction'] + 
+                                    features_df['current_6_interaction'] + features_df['current_7_interaction'] + features_df['current_8_interaction'] + 
+                                    features_df['current_9_interaction'] + features_df['current_10_interaction']) / 11
                 features_df[f'avg_10_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
+                features_df['current_11_interaction'] = (features_df[f'{self.target_coin}_close'].shift(11)-features_df[f'{coin_pair}_close'].shift(11))/features_df[f'{self.target_coin}_close'].shift(11)
+                features_df['current_12_interaction'] = (features_df[f'{self.target_coin}_close'].shift(12)-features_df[f'{coin_pair}_close'].shift(12))/features_df[f'{self.target_coin}_close'].shift(12)
+                features_df['current_13_interaction'] = (features_df[f'{self.target_coin}_close'].shift(13)-features_df[f'{coin_pair}_close'].shift(13))/features_df[f'{self.target_coin}_close'].shift(13)
+                features_df['current_14_interaction'] = (features_df[f'{self.target_coin}_close'].shift(14)-features_df[f'{coin_pair}_close'].shift(14))/features_df[f'{self.target_coin}_close'].shift(14)
+                features_df['current_15_interaction'] = (features_df[f'{self.target_coin}_close'].shift(15)-features_df[f'{coin_pair}_close'].shift(15))/features_df[f'{self.target_coin}_close'].shift(15)
+                features_df['current_16_interaction'] = (features_df[f'{self.target_coin}_close'].shift(16)-features_df[f'{coin_pair}_close'].shift(16))/features_df[f'{self.target_coin}_close'].shift(16)
+                features_df['current_17_interaction'] = (features_df[f'{self.target_coin}_close'].shift(17)-features_df[f'{coin_pair}_close'].shift(17))/features_df[f'{self.target_coin}_close'].shift(17)
+                features_df['current_18_interaction'] = (features_df[f'{self.target_coin}_close'].shift(18)-features_df[f'{coin_pair}_close'].shift(18))/features_df[f'{self.target_coin}_close'].shift(18)
+                features_df['current_19_interaction'] = (features_df[f'{self.target_coin}_close'].shift(19)-features_df[f'{coin_pair}_close'].shift(19))/features_df[f'{self.target_coin}_close'].shift(19)
+                features_df['current_20_interaction'] = (features_df[f'{self.target_coin}_close'].shift(20)-features_df[f'{coin_pair}_close'].shift(20))/features_df[f'{self.target_coin}_close'].shift(20)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction'] + 
+                                    features_df['current_3_interaction'] + features_df['current_4_interaction'] + features_df['current_5_interaction'] + 
+                                    features_df['current_6_interaction'] + features_df['current_7_interaction'] + features_df['current_8_interaction'] + 
+                                    features_df['current_9_interaction'] + features_df['current_10_interaction'] + features_df['current_11_interaction'] + 
+                                    features_df['current_12_interaction'] + features_df['current_13_interaction'] + features_df['current_14_interaction'] +
+                                    features_df['current_15_interaction'] + features_df['current_16_interaction'] + features_df['current_17_interaction'] + 
+                                    features_df['current_18_interaction'] + features_df['current_19_interaction'] + features_df['current_20_interaction']) / 21
+                features_df[f'avg_20_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
         return features_df
 
     def get_model_config(self):
@@ -213,7 +239,8 @@ class MarketMakerScoring():
         if not model_path_list:
             raise AttributeError(f"No model was found at the S3 path [{object_path}]")
         for model_path in model_path_list:
-            model_object_dict[model_path] = self.get_pickle_from_s3(model_path[0])
+            s3_key = model_path[0]
+            model_object_dict[s3_key] = self.get_pickle_from_s3(s3_key)
         return model_object_dict
 
     def get_pickle_from_s3(self, s3_key):
@@ -249,7 +276,8 @@ class MarketMakerScoring():
             object_name_list.append([obj.key, os.path.basename(obj.key)])
         return object_name_list
 
-    def binance_client(self):
+    @staticmethod
+    def binance_client():
         # Instantiate Binance resources
         try:
             boto_session = boto3.Session(profile_name='loidsig')
