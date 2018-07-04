@@ -37,10 +37,12 @@ def logic(iter_):
     model_object_dict = mm_scoring.get_model_objects()
     # Set scoring data and retrieve the most recent minutes features
     mm_scoring.set_scoring_data(in_parallel=True)
-    X_scoring = mm_scoring.scoring_features_df.sort_values('open_time')
-    X_scoring = X_scoring[mm_scoring.feature_column_list]
+    try:
+        recent_df = mm_scoring.scoring_features_df.sort_values('open_time')
+    except:
+        return
+    X_scoring = recent_df[mm_scoring.feature_column_list]
     X_scoring = X_scoring.iloc[-1]
-
     
     scoring_result_dict = {}
     for model_path, model in model_object_dict.items():
@@ -53,6 +55,9 @@ def logic(iter_):
     end = time.time()
     if iter_ == 1:
         print(f"From data collection to prediction, {int(end - start)} seconds have elapsed")
+        # Validate amount of time passage
+        latest_timestamp = recent_df.iloc[-1:]['close_time_x'].item() / 1000
+        print(f"Last timestamp in scoring data: {latest_timestamp} compared to current: {time.time()} with {time.time() - latest_timestamp}")
     # Buy/Sell
     # Does the growth rate need to be higher/lower for longer/shorter buy times?? I don't think so.
     if scoring_result_dict[optimal_hold_minutes][0] > predicted_return_threshold:

@@ -77,7 +77,7 @@ class MarketMakerTraining():
                                         , (CAST(close_timestamp AS BIGINT) / 1000 / 60) AS {coin_pair}_trade_minute
                                         , CAST(open AS DOUBLE) AS {coin_pair}_open, CAST(high AS DOUBLE) AS {coin_pair}_high, CAST(low AS DOUBLE) AS {coin_pair}_low
                                         , CAST(close AS DOUBLE) AS {coin_pair}_close, CAST(volume AS DOUBLE) AS {coin_pair}_volume
-                                        , CAST(quote_asset_volume AS DOUBLE) AS {coin_pair}_quote_asset_volume, CAST(trade_count AS BIGINT) AS {coin_pair}_trade_count
+                                        , CAST(quote_asset_volume AS DOUBLE) AS {coin_pair}_quote_asset_volume, CAST(trade_count AS DOUBLE) AS {coin_pair}_trade_count
                                         , CAST(taker_buy_base_asset_volume AS DOUBLE) AS {coin_pair}_tbbav, CAST(taker_buy_quote_asset_volume AS DOUBLE) AS {coin_pair}_tbqav
                                     FROM binance.historic_candlesticks 
                                     WHERE coin_partition = '{coin_pair}'
@@ -106,10 +106,10 @@ class MarketMakerTraining():
                 interval_list = []
                 interval_list.append(f"""(({coin_pair}_open - LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
                                             / LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_open_perc_chg
-                                        ,((({coin_pair}_open - LEAD({coin_pair}_open) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_open) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100) -
-                                            ((({coin_pair}_open - LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100) AS prev_{interval}_{coin_pair}_open_rate_chg
+                                        ,((({coin_pair}_open - LEAD({coin_pair}_open, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_open, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC))
+                                           - (({coin_pair}_open - LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC))) * 100 AS prev_{interval}_{coin_pair}_open_rate_chg
                                         ,(({coin_pair}_high - LEAD({coin_pair}_high, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
                                             / LEAD({coin_pair}_high, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_high_perc_chg
                                         ,(({coin_pair}_low - LEAD({coin_pair}_low, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 

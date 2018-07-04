@@ -117,49 +117,49 @@ class MarketMakerScoring():
 
             if pair_type == 'target':
                 coin_df['trade_hour'] = pd.to_datetime(coin_df['open_time']/1000, unit='s').dt.hour
-                coin_df['trade_day_of_week'] = pd.to_datetime(coin_df['open_time']/1000, unit='s').dt.dayofweek
+                coin_df['trade_day_of_week'] = pd.to_datetime(coin_df['open_time']/1000, unit='s').dt.dayofweek + 1 # adjust for 0 indexed day of week
 
             # Lag features
             for interval in self.feature_minutes_list:
                 coin_df[f'prev_{interval}_{coin_pair}_open'] = coin_df[f'{coin_pair}_open'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_open_perc_chg'] = (coin_df[f'{coin_pair}_open'] - coin_df[f'prev_{interval}_{coin_pair}_open']) / coin_df[f'prev_{interval}_{coin_pair}_open'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_open_rate_chg'] = (((coin_df[f'{coin_pair}_open'] - coin_df[f'prev_{interval}_{coin_pair}_open']) / coin_df[f'prev_{interval}_{coin_pair}_open'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_open'] - coin_df[f'prev_{interval}_{coin_pair}_open']) / coin_df[f'prev_{interval}_{coin_pair}_open'] * 100))
+                coin_df[f'prev_{interval}_{coin_pair}_open_rate_chg'] = (((coin_df[f'{coin_pair}_open'] - coin_df[f'prev_1_{coin_pair}_open']) / coin_df[f'prev_1_{coin_pair}_open']) -
+                                                    ((coin_df[f'{coin_pair}_open'] - coin_df[f'prev_{interval}_{coin_pair}_open']) / coin_df[f'prev_{interval}_{coin_pair}_open'])) * 100
 
                 coin_df[f'prev_{interval}_{coin_pair}_high'] = coin_df[f'{coin_pair}_high'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_high_perc_chg'] = (coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_high_rate_chg'] = (((coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'] * 100))
+                coin_df[f'prev_{interval}_{coin_pair}_high_rate_chg'] = (((coin_df[f'{coin_pair}_high'] - coin_df[f'prev_1_{coin_pair}_high']) / coin_df[f'prev_1_{coin_pair}_high']) -
+                                                    ((coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'])) * 100
 
                 coin_df[f'prev_{interval}_{coin_pair}_low'] = coin_df[f'{coin_pair}_low'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_low_perc_chg'] = (coin_df[f'{coin_pair}_low'] - coin_df[f'prev_{interval}_{coin_pair}_low']) / coin_df[f'prev_{interval}_{coin_pair}_low'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_low_rate_chg'] = (((coin_df[f'{coin_pair}_low'] - coin_df[f'prev_{interval}_{coin_pair}_low']) / coin_df[f'prev_{interval}_{coin_pair}_low'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_low'] - coin_df[f'prev_{interval}_{coin_pair}_low']) / coin_df[f'prev_{interval}_{coin_pair}_low'] * 100))
+                coin_df[f'prev_{interval}_{coin_pair}_low_rate_chg'] = (((coin_df[f'{coin_pair}_low'] - coin_df[f'prev_1_{coin_pair}_low']) / coin_df[f'prev_1_{coin_pair}_low'] * 100) -
+                                                    ((coin_df[f'{coin_pair}_low'] - coin_df[f'prev_{interval}_{coin_pair}_low']) / coin_df[f'prev_{interval}_{coin_pair}_low'])) * 100
 
                 coin_df[f'prev_{interval}_{coin_pair}_volume'] = coin_df[f'{coin_pair}_volume'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_volume_perc_chg'] = (coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_volume_rate_chg'] = (((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'] * 100))
+                coin_df[f'prev_{interval}_{coin_pair}_volume_rate_chg'] = (((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_1_{coin_pair}_volume']) / coin_df[f'prev_1_{coin_pair}_volume']) -
+                                                    ((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'])) * 100
 
                 coin_df[f'prev_{interval}_{coin_pair}_qav'] = coin_df[f'{coin_pair}_quote_asset_volume'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_qav_perc_chg'] = (coin_df[f'{coin_pair}_quote_asset_volume'] - coin_df[f'prev_{interval}_{coin_pair}_qav']) / coin_df[f'prev_{interval}_{coin_pair}_qav'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_qav_rate_chg'] = (((coin_df[f'{coin_pair}_quote_asset_volume'] - coin_df[f'prev_{interval}_{coin_pair}_qav']) / coin_df[f'prev_{interval}_{coin_pair}_qav'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_quote_asset_volume'] - coin_df[f'prev_{interval}_{coin_pair}_qav']) / coin_df[f'prev_{interval}_{coin_pair}_qav'] * 100))
+                coin_df[f'prev_{interval}_{coin_pair}_qav_rate_chg'] = (((coin_df[f'{coin_pair}_quote_asset_volume'] - coin_df[f'prev_1_{coin_pair}_qav']) / coin_df[f'prev_1_{coin_pair}_qav']) -
+                                                    ((coin_df[f'{coin_pair}_quote_asset_volume'] - coin_df[f'prev_{interval}_{coin_pair}_qav']) / coin_df[f'prev_{interval}_{coin_pair}_qav'])) * 100
 
                 coin_df[f'prev_{interval}_{coin_pair}_trade_count'] = coin_df[f'{coin_pair}_trade_count'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_trade_count_perc_chg'] = (coin_df[f'{coin_pair}_trade_count'] - coin_df[f'prev_{interval}_{coin_pair}_trade_count']) / coin_df[f'prev_{interval}_{coin_pair}_trade_count'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_trade_count_rate_chg'] = (((coin_df[f'{coin_pair}_trade_count'] - coin_df[f'prev_{interval}_{coin_pair}_trade_count']) / coin_df[f'prev_{interval}_{coin_pair}_trade_count'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_trade_count'] - coin_df[f'prev_{interval}_{coin_pair}_trade_count']) / coin_df[f'prev_{interval}_{coin_pair}_trade_count'] * 100))
+                coin_df[f'prev_{interval}_{coin_pair}_trade_count_rate_chg'] = (((coin_df[f'{coin_pair}_trade_count'] - coin_df[f'prev_1_{coin_pair}_trade_count']) / coin_df[f'prev_1_{coin_pair}_trade_count']) -
+                                                    ((coin_df[f'{coin_pair}_trade_count'] - coin_df[f'prev_{interval}_{coin_pair}_trade_count']) / coin_df[f'prev_{interval}_{coin_pair}_trade_count'])) * 100
 
                 coin_df[f'prev_{interval}_{coin_pair}_tbbav'] = coin_df[f'{coin_pair}_tbbav'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_tbbav_perc_chg'] = (coin_df[f'{coin_pair}_tbbav'] - coin_df[f'prev_{interval}_{coin_pair}_tbbav']) / coin_df[f'prev_{interval}_{coin_pair}_tbbav'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_tbbav_rate_chg'] = (((coin_df[f'{coin_pair}_tbbav'] - coin_df[f'prev_{interval}_{coin_pair}_tbbav']) / coin_df[f'prev_{interval}_{coin_pair}_tbbav'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_tbbav'] - coin_df[f'prev_{interval}_{coin_pair}_tbbav']) / coin_df[f'prev_{interval}_{coin_pair}_tbbav'] * 100))
+                coin_df[f'prev_{interval}_{coin_pair}_tbbav_rate_chg'] = (((coin_df[f'{coin_pair}_tbbav'] - coin_df[f'prev_1_{coin_pair}_tbbav']) / coin_df[f'prev_1_{coin_pair}_tbbav']) -
+                                                    ((coin_df[f'{coin_pair}_tbbav'] - coin_df[f'prev_{interval}_{coin_pair}_tbbav']) / coin_df[f'prev_{interval}_{coin_pair}_tbbav'])) * 100
 
                 coin_df[f'prev_{interval}_{coin_pair}_tbqav'] = coin_df[f'{coin_pair}_tbqav'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_tbqav_perc_chg'] = (coin_df[f'{coin_pair}_tbqav'] - coin_df[f'prev_{interval}_{coin_pair}_tbqav']) / coin_df[f'prev_{interval}_{coin_pair}_tbqav'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_tbqav_rate_chg'] = (((coin_df[f'{coin_pair}_tbqav'] - coin_df[f'prev_{interval}_{coin_pair}_tbqav']) / coin_df[f'prev_{interval}_{coin_pair}_tbqav'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_tbqav'] - coin_df[f'prev_{interval}_{coin_pair}_tbqav']) / coin_df[f'prev_{interval}_{coin_pair}_tbqav'] * 100))
+                coin_df[f'prev_{interval}_{coin_pair}_tbqav_rate_chg'] = (((coin_df[f'{coin_pair}_tbqav'] - coin_df[f'prev_1_{coin_pair}_tbqav']) / coin_df[f'prev_1_{coin_pair}_tbqav']) -
+                                                    ((coin_df[f'{coin_pair}_tbqav'] - coin_df[f'prev_{interval}_{coin_pair}_tbqav']) / coin_df[f'prev_{interval}_{coin_pair}_tbqav'])) * 100
             coin_df_list.append(coin_df)
 
         # Combine features

@@ -155,7 +155,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         return
     test_df = df.iloc[start_test_ix:end_test_ix,:]
     if test_df.empty:
-        print("Empty test dataframe!!")
+        print("Skipping day that does not have adequate test data (likely end of iteration)")
         return
     X = train_df.loc[:,feature_cols]
     y = train_df.loc[:,target_col]
@@ -213,6 +213,11 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, inte
     for thresh in list(np.arange(0, 1.0, 0.1)):
         return_df = results_df.loc[results_df['predicted'] > thresh]
         print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)}")
+        # Save all trades for specified target threshold
+        if thresh == .2:
+            finish_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
+            return_df[[f'{coin}_trade_datetime','predicted', 'return']].to_csv(f"notebooks/sim_results/sim_2_thresh_trades_{finish_time}.csv", index = False)
+        # Retain optimal threshold
         if (return_df['return'].sum() > best_return) or (optimal_buy_threshold == None):
             optimal_buy_threshold = thresh
             best_return, num_trades = return_df['return'].sum(), len(return_df.index)

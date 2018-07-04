@@ -1,22 +1,38 @@
-Traceback (most recent call last):
-  File "src/the_logic/market_maker_trader.py", line 70, in <module>
-    main()
-  File "src/the_logic/market_maker_trader.py", line 28, in main
-    logic(iter_)
-  File "src/the_logic/market_maker_trader.py", line 37, in logic
-    model_object_dict = mm_scoring.get_model_objects()
-  File "/mnt/src/lib/market_maker_scoring.py", line 242, in get_model_objects
-    model_object_dict[model_path] = self.get_pickle_from_s3(model_path)
-  File "/mnt/src/lib/market_maker_scoring.py", line 255, in get_pickle_from_s3
-    obj = self.s3_client.get_object(Bucket=self.s3_bucket, Key=s3_key)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/botocore/client.py", line 314, in _api_call
-    return self._make_api_call(operation_name, kwargs)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/botocore/client.py", line 586, in _make_api_call
-    api_params, operation_model, context=request_context)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/botocore/client.py", line 621, in _convert_to_request_dict
-    api_params, operation_model)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/botocore/validate.py", line 291, in serialize_to_request
-    raise ParamValidationError(report=report.generate_report())
-botocore.exceptions.ParamValidationError: Parameter validation failed:
-Invalid type for parameter Key, value: ['model_objects/market_maker_model_ethusdt_10.pkl', 'market_maker_model_ethusdt_10.pkl'], type: <class 'list'>, valid types: <class 'str'>
-Failed with exit code: 1
+2018-07-04 05:12:52
+ETHUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+2018-07-04 05:13:36: Beginning S3 load for 2018-07-02 with 125171 rows
+2018-07-04 05:14:20: Beginning S3 load for 2018-07-03 with 129283 rows
+BNBUSDT: 3 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-07-04 05:14:42: Beginning S3 load for 2018-07-02 with 46982 rows
+2018-07-04 05:14:58: Beginning S3 load for 2018-07-03 with 43533 rows
+TRXETH: 3 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-07-04 05:15:18: Beginning S3 load for 2018-07-02 with 31402 rows
+2018-07-04 05:15:27: Beginning S3 load for 2018-07-03 with 20846 rows
+BTCUSDT: 3 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-07-04 05:16:44: Beginning S3 load for 2018-07-02 with 224646 rows
+2018-07-04 05:18:00: Beginning S3 load for 2018-07-03 with 217194 rows
+LTCUSDT: 3 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-07-04 05:18:22: Beginning S3 load for 2018-07-02 with 26891 rows
+2018-07-04 05:18:35: Beginning S3 load for 2018-07-03 with 30960 rows
+ETHBTC: 3 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-07-04 05:19:41: Beginning S3 load for 2018-07-02 with 198939 rows
+2018-07-04 05:20:54: Beginning S3 load for 2018-07-03 with 222661 rows
+XRPETH: 3 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-07-04 05:21:18: Beginning S3 load for 2018-07-02 with 7518 rows
+2018-07-04 05:21:23: Beginning S3 load for 2018-07-03 with 10015 rows
+NEOETH: 3 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-07-04 05:21:34: Beginning S3 load for 2018-07-02 with 16332 rows
+2018-07-04 05:21:40: Beginning S3 load for 2018-07-03 with 14388 rows
+ENJETH: 3 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-07-04 05:21:45: Beginning S3 load for 2018-07-02 with 2054 rows
+**Time 23:58:40.193000 is not end of day for 2018-07-02 23:58:40.193000...
+2018-07-04 05:21:46: Beginning S3 load for 2018-07-03 with 2936 rows
+2018-07-04 05:21:47
