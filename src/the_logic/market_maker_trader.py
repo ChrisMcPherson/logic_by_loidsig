@@ -57,7 +57,7 @@ def logic(iter_):
         print(f"From data collection to prediction, {int(end - start)} seconds have elapsed")
         # Validate amount of time passage
         latest_timestamp = recent_df.iloc[-1:]['close_time_x'].item() / 1000
-        print(f"Last timestamp in scoring data: {latest_timestamp} compared to current: {time.time()} with {time.time() - latest_timestamp}")
+        print(f"Last timestamp in scoring data: {latest_timestamp} compared to current timestamp: {time.time()} with {time.time() - latest_timestamp} diff")
     # Buy/Sell
     # Does the growth rate need to be higher/lower for longer/shorter buy times?? I don't think so.
     if scoring_result_dict[optimal_hold_minutes][0] > predicted_return_threshold:

@@ -288,6 +288,6 @@ class MarketMakerScoring():
             region_name='us-east-1',
             endpoint_url='https://secretsmanager.us-east-1.amazonaws.com'
         )
-        get_secret_value_response = sm_client.get_secret_value(SecretId='CPM_Binance')
+        get_secret_value_response = sm_client.get_secret_value(SecretId='Loidsig_CPM_Binance')
         key, value = ast.literal_eval(get_secret_value_response['SecretString']).popitem()
         return Client(key, value)

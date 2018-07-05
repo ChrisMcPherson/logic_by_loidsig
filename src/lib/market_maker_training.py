@@ -45,7 +45,8 @@ class MarketMakerTraining():
         features_df = athena.pandas_read_athena(training_data_sql)
         features_df.fillna(0, inplace=True)
         print(features_df.shape)
-        features_df = features_df[:-10] # Remove ??
+        features_df = features_df[max(self.feature_minutes_list):]
+        print(features_df.shape)
         # Remove infinity string
         features_df.replace({'Infinity': 0}, inplace=True)
         # Convert all object fields to numeric except date fields

@@ -9,6 +9,7 @@ import ast
 import time
 import datetime
 import json
+import collections
 from joblib import Parallel, delayed
 import multiprocessing
 # local libraries
@@ -194,6 +195,11 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         model.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
         y_sim = model.predict(X_sim)
+    elif model == 'rf':
+        model = ensemble.RandomForestRegressor(n_estimators=50)
+        model.fit(X, y)
+        X_sim = test_df.loc[:,feature_cols]
+        y_sim = model.predict(X_sim)
     else:
         model.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
@@ -211,12 +217,28 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, inte
     best_return = 0
     num_trades = 0
     for thresh in list(np.arange(0, 1.0, 0.1)):
+        # Output results of every threshold
         return_df = results_df.loc[results_df['predicted'] > thresh]
-        print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)}")
-        # Save all trades for specified target threshold
+        print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)} trades")
+        # Output total possible return for sequential trading
+        return_dict = dict(zip(return_df[f'{coin}_trade_minute'], return_df['return']))
+        return_dict = collections.OrderedDict(sorted(return_dict.items()))
+        realistic_returns = []
+        previous_trade_min = 0 
+        for trade_min, act_return in return_dict.items():
+            if previous_trade_min == 0:
+                previous_trade_min = trade_min
+                realistic_returns.append(act_return)
+                continue
+            if trade_min <= previous_trade_min + 10:
+                continue
+            previous_trade_min = trade_min
+            realistic_returns.append(act_return)
+        print(f"    -- Total possible sequential return: {sum(realistic_returns)}% with {len(realistic_returns)} trades")
+        # Save trades for specified target threshold
         if thresh == .2:
             finish_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
-            return_df[[f'{coin}_trade_datetime','predicted', 'return']].to_csv(f"notebooks/sim_results/sim_2_thresh_trades_{finish_time}.csv", index = False)
+            return_df[[f'{coin}_trade_datetime',f'{coin}_trade_minute','predicted', 'return']].to_csv(f"notebooks/sim_results/sim_2_thresh_trades_{finish_time}.csv", index = False)
         # Retain optimal threshold
         if (return_df['return'].sum() > best_return) or (optimal_buy_threshold == None):
             optimal_buy_threshold = thresh
@@ -240,6 +262,7 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, inte
     daily_trades['optimal_buy_threshold'] = optimal_buy_threshold
     daily_trades['best_return'] = best_return
     print(f"Best return {best_return} at {optimal_buy_threshold} threshold")
+    print(f"Total return if every minute we had made a trade: {results_df['return'].sum()}%")
     return daily_trades
 
 
