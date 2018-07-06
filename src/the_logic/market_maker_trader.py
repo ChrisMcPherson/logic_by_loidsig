@@ -37,7 +37,7 @@ def logic(iter_):
     # Get trained models
     model_object_dict = mm_scoring.get_model_objects()
     # Set scoring data and retrieve the most recent minutes features
-    mm_scoring.set_scoring_data(in_parallel=False)
+    mm_scoring.set_scoring_data(in_parallel=True)
     try:
         recent_df = mm_scoring.scoring_features_df.sort_values('open_time')
     except:
@@ -66,18 +66,17 @@ def logic(iter_):
         print(f"Last timestamp in scoring data: {latest_timestamp} compared to current timestamp: {time.time()} with {scoring_timestamp - latest_timestamp} diff")
     
     # Buy/Sell
-    order = '{"orderId": 1234, "clientOrderId": "test", "executedQty": 1}'
     scoring_datetime = datetime.datetime.fromtimestamp(scoring_timestamp).strftime('%Y-%m-%d %H:%M:%S')
-    # if scoring_result_dict[optimal_hold_minutes][0][0] > predicted_return_threshold:
-    #     print(scoring_datetime)
-    #     print(f'Buying with predicted {optimal_hold_minutes} min return of: {scoring_result_dict[optimal_hold_minutes][0][0]}')
-    #     # Trade for specified time
-    #     # TODO: the quantity will need to be standardized for different coin evaluations
-    #     order = mm_scoring.bnb_client.order_market_buy(symbol=mm_scoring.target_coin.upper(), quantity=1)
-    #     print(f"Buy info: {order}")
-    #     time.sleep(optimal_hold_minutes*60)
-    #     order = mm_scoring.bnb_client.order_market_sell(symbol=mm_scoring.target_coin.upper(), quantity=1)
-    #     print(f"Sell info: {order}")
+    if scoring_result_dict[optimal_hold_minutes][0][0] > predicted_return_threshold:
+        print(scoring_datetime)
+        print(f'Buying with predicted {optimal_hold_minutes} min return of: {scoring_result_dict[optimal_hold_minutes][0][0]}')
+        # Trade for specified time
+        # TODO: the quantity will need to be standardized for different coin evaluations
+        order = mm_scoring.bnb_client.order_market_buy(symbol=mm_scoring.target_coin.upper(), quantity=1)
+        print(f"Buy info: {order}")
+        time.sleep(optimal_hold_minutes*60)
+        order = mm_scoring.bnb_client.order_market_sell(symbol=mm_scoring.target_coin.upper(), quantity=1)
+        print(f"Sell info: {order}")
 
     # Persis scoring results to DB
     for trade_hold_minutes, payload in scoring_result_dict.items():

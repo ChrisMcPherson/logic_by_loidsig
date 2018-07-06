@@ -1,8 +1,34 @@
-------- Starting training of market maker model --------
-Coin pair config: {'ethusdt': 'target', 'btcusdt': 'alt', 'trxeth': 'through'}
-Feature minutes list: [1, 3, 5, 10, 20, 30, 40, 50, 60, 120, 240, 480, 960]
-Trade window list: [5, 10, 20]
-/mnt/src/lib/market_maker_training.py:45: DtypeWarning: Columns (42,43,44,45,46,51,52,53,54,55,60,61,62,63,64,69,70,71,72,73,78,79,80,81,82,87,88,89,90,91,96,97,98,99,100,105,106,107,108,109,114,115,116,117,118,123,124,125,126,127,132,133,134,135,136,141,142,143,144,145,150,151,152,153,154,159,160,161,162,163,168,169,170,171,172,177,178,179,180,181,186,187,188,189,190,195,196,197,198,199,204,205,206,207,208,213,214,215,216,217,222,223,224,225,226,231,232,233,234,235,240,241,242,243,244,249,250,251,252,253,258,259,260,261,262,267,268,269,270,271,276,277,278,279,280,285,286,287,288,289,294,295,296,297,298,303,304,305,306,307,312,313,314,315,316,321,322,323,324,325,330,331,332,333,334,339,340,341,342,343,348,349,350,351,352,357,358,359,360,361,366,367,368,369,370,375,376,377,378,379,384,385,386,387,388) have mixed types. Specify dtype option on import or set low_memory=False.
-  features_df = athena.pandas_read_athena(training_data_sql)
-(264499, 392)
-(263539, 392)
+/usr/local/anaconda/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use "pip install psycopg2-binary" instead. For details see: <http://initd.org/psycopg/docs/install.html#binary-install-from-pypi>.
+  """)
+src/the_logic/market_maker_trader.py:52: FutureWarning: reshape is deprecated and will raise in a subsequent release. Please use .values.reshape(...) instead
+  predicted_growth = model.predict(X_scoring.reshape(1, -1))
+From data collection to prediction, 5 seconds have elapsed
+Last timestamp in scoring data: 1530909599.999 compared to current timestamp: 1530909551.6931624 with -48.305882692337036 diff
+Unable to connect to postgres! Error: could not connect to server: Connection timed out
+	Is the server running on host "loidsig.cdmisilrdksm.us-east-1.rds.amazonaws.com" (54.89.115.8) and accepting
+	TCP/IP connections on port 5432?
+
+Traceback (most recent call last):
+  File "src/the_logic/market_maker_trader.py", line 137, in <module>
+    main()
+  File "src/the_logic/market_maker_trader.py", line 29, in main
+    logic(iter_)
+  File "src/the_logic/market_maker_trader.py", line 134, in logic
+    mm_scoring.insert_into_postgres('the_logic', 'scoring_results', column_list_string, values)
+  File "/mnt/src/lib/market_maker_scoring.py", line 289, in insert_into_postgres
+    conn = self.logic_db_connection()
+  File "/mnt/src/lib/market_maker_scoring.py", line 331, in logic_db_connection
+    database=db_name,
+  File "/usr/local/anaconda/lib/python3.6/site-packages/psycopg2/__init__.py", line 130, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: could not connect to server: Connection timed out
+	Is the server running on host "loidsig.cdmisilrdksm.us-east-1.rds.amazonaws.com" (54.89.115.8) and accepting
+	TCP/IP connections on port 5432?
+
+/usr/local/anaconda/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use "pip install psycopg2-binary" instead. For details see: <http://initd.org/psycopg/docs/install.html#binary-install-from-pypi>.
+  """)
+/usr/local/anaconda/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use "pip install psycopg2-binary" instead. For details see: <http://initd.org/psycopg/docs/install.html#binary-install-from-pypi>.
+  """)
+/usr/local/anaconda/lib/python3.6/site-packages/psycopg2/__init__.py:144: UserWarning: The psycopg2 wheel package will be renamed from release 2.8; in order to keep installing from binary please use "pip install psycopg2-binary" instead. For details see: <http://initd.org/psycopg/docs/install.html#binary-install-from-pypi>.
+  """)
+Failed with exit code: 1

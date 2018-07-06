@@ -308,7 +308,11 @@ class MarketMakerScoring():
         Returns:
             A database connection object for Postgres
         """
-        sm_client = self.boto_session.client(
+        try:
+            boto_session = boto3.Session(profile_name='loidsig')
+        except:
+            boto_session = boto3.Session()
+        sm_client = boto_session.client(
             service_name='secretsmanager',
             region_name='us-east-1',
             endpoint_url='https://secretsmanager.us-east-1.amazonaws.com'
