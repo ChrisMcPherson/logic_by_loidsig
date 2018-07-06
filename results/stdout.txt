@@ -1,51 +1,8 @@
-2018-07-05 00:46:17
-Model(s): ['linear']
-Sim Start Day: 150
-Training feature minutes: [1, 5, 10, 20, 30, 40, 50, 60, 120, 240, 480, 960]
-Training Min(s): ['none']
-Test Min(s): [1440]
-Poly(s): [3]
-Coin feature configuration: {'ethusdt': 'target', 'btcusdt': 'alt', 'trxeth': 'through'}
-/mnt/src/lib/market_maker_training.py:45: DtypeWarning: Columns (40,41,42,43,44,49,50,51,52,53,58,59,60,61,62,67,68,69,70,71,76,77,78,79,80,85,86,87,88,89,94,95,96,97,98,103,104,105,106,107,112,113,114,115,116,121,122,123,124,125,130,131,132,133,134,139,140,141,142,143,148,149,150,151,152,157,158,159,160,161,166,167,168,169,170,175,176,177,178,179,184,185,186,187,188,193,194,195,196,197,202,203,204,205,206,211,212,213,214,215,220,221,222,223,224,229,230,231,232,233,238,239,240,241,242,247,248,249,250,251,256,257,258,259,260,265,266,267,268,269,274,275,276,277,278,283,284,285,286,287,292,293,294,295,296,301,302,303,304,305,310,311,312,313,314,319,320,321,322,323,328,329,330,331,332,337,338,339,340,341,346,347,348,349,350,355,356,357,358,359) have mixed types. Specify dtype option on import or set low_memory=False.
+------- Starting training of market maker model --------
+Coin pair config: {'ethusdt': 'target', 'btcusdt': 'alt', 'trxeth': 'through'}
+Feature minutes list: [1, 3, 5, 10, 20, 30, 40, 50, 60, 120, 240, 480, 960]
+Trade window list: [5, 10, 20]
+/mnt/src/lib/market_maker_training.py:45: DtypeWarning: Columns (42,43,44,45,46,51,52,53,54,55,60,61,62,63,64,69,70,71,72,73,78,79,80,81,82,87,88,89,90,91,96,97,98,99,100,105,106,107,108,109,114,115,116,117,118,123,124,125,126,127,132,133,134,135,136,141,142,143,144,145,150,151,152,153,154,159,160,161,162,163,168,169,170,171,172,177,178,179,180,181,186,187,188,189,190,195,196,197,198,199,204,205,206,207,208,213,214,215,216,217,222,223,224,225,226,231,232,233,234,235,240,241,242,243,244,249,250,251,252,253,258,259,260,261,262,267,268,269,270,271,276,277,278,279,280,285,286,287,288,289,294,295,296,297,298,303,304,305,306,307,312,313,314,315,316,321,322,323,324,325,330,331,332,333,334,339,340,341,342,343,348,349,350,351,352,357,358,359,360,361,366,367,368,369,370,375,376,377,378,379,384,385,386,387,388) have mixed types. Specify dtype option on import or set low_memory=False.
   features_df = athena.pandas_read_athena(training_data_sql)
-(262076, 361)
-(261116, 361)
-Model: linear
-2018-07-05 00:51:59
-Number of days to iterate: 33
-Skipping day that does not have adequate test data (likely end of iteration)
-Return at 0.0: -847.2625086733585% with 22645
-Total possible sequential trades at 0.0: 4103
-Total return for squential trades at 0.0: -438.50055758728814
-Return at 0.1: 418.53984858657714% with 3973
-Total possible sequential trades at 0.1: 4103
-Total return for squential trades at 0.1: -438.50055758728814
-Return at 0.2: 328.6240994775071% with 1370
-Total possible sequential trades at 0.2: 4103
-Total return for squential trades at 0.2: -438.50055758728814
-Return at 0.30000000000000004: 235.5184372849424% with 644
-Total possible sequential trades at 0.30000000000000004: 4103
-Total return for squential trades at 0.30000000000000004: -438.50055758728814
-Return at 0.4: 154.01365835017376% with 361
-Total possible sequential trades at 0.4: 4103
-Total return for squential trades at 0.4: -438.50055758728814
-Return at 0.5: 111.61968311749905% with 228
-Total possible sequential trades at 0.5: 4103
-Total return for squential trades at 0.5: -438.50055758728814
-Return at 0.6000000000000001: 89.46643677221833% with 166
-Total possible sequential trades at 0.6000000000000001: 4103
-Total return for squential trades at 0.6000000000000001: -438.50055758728814
-Return at 0.7000000000000001: 58.975936946858795% with 116
-Total possible sequential trades at 0.7000000000000001: 4103
-Total return for squential trades at 0.7000000000000001: -438.50055758728814
-Return at 0.8: 53.80524515966399% with 93
-Total possible sequential trades at 0.8: 4103
-Total return for squential trades at 0.8: -438.50055758728814
-Return at 0.9: 41.427696904831016% with 71
-Total possible sequential trades at 0.9: 4103
-Total return for squential trades at 0.9: -438.50055758728814
-`ethusdt` Best Return at 0.1: 418.53984858657714%
-    Target: futr_10_open_perc_chg; training_mins: none; test_mins: 1440
-    Number of intervals simulating 33.0
-    Trades: 3973
-Best return 418.53984858657714 at 0.1 threshold
+(264499, 392)
+(263539, 392)

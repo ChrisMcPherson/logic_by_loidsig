@@ -8,6 +8,7 @@ import io
 import ast
 import json
 import pickle
+import psycopg2
 from functools import reduce
 import time
 import datetime
@@ -275,6 +276,60 @@ class MarketMakerScoring():
         for obj in bucket.objects.filter(Prefix=s3_prefix):
             object_name_list.append([obj.key, os.path.basename(obj.key)])
         return object_name_list
+
+    def insert_into_postgres(self, schema, table, column_list_string, values):
+        """Inserts scoring results into Postgres db table
+
+        Args:
+            schema (str): A schema name
+            table (str): A table name
+            column_list_string (str): A comma delimited string of column names
+            values (str): comma seperated values to insert
+        """
+        conn = self.logic_db_connection()
+        try:
+            cur = conn.cursor()
+            insert_dml = """INSERT INTO {0}.{1}
+                    ({2})
+                    VALUES ({3}) 
+                    ;""".format(schema, table, column_list_string, values)
+            cur.execute(insert_dml)
+            conn.commit()
+        except Exception as e:
+            print(f'Unable to insert into Postgres table {table}. DDL: {insert_dml} Error: {e}')
+            raise
+        finally:
+            conn.close()
+        return
+
+    def logic_db_connection(self):
+        """Fetches Logic DB postgres connection object
+
+        Returns:
+            A database connection object for Postgres
+        """
+        sm_client = self.boto_session.client(
+            service_name='secretsmanager',
+            region_name='us-east-1',
+            endpoint_url='https://secretsmanager.us-east-1.amazonaws.com'
+        )
+        get_secret_value_response = sm_client.get_secret_value(SecretId='Loidsig_DB')
+        cred_dict = ast.literal_eval(get_secret_value_response['SecretString'])
+        db_user, db_pass = cred_dict['username'], cred_dict['password']
+        db_host, db_port, db_name = cred_dict['host'], cred_dict['port'], cred_dict['dbname']
+
+        try:
+            conn = psycopg2.connect(
+                host=db_host,
+                port=db_port,
+                user=db_user,
+                password=db_pass,
+                database=db_name,
+            )
+        except Exception as e:
+            print("Unable to connect to postgres! Error: {}".format(e))
+            raise
+        return conn
 
     @staticmethod
     def binance_client():
