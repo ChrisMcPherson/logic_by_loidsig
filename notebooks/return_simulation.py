@@ -109,6 +109,7 @@ def main():
                             days_to_test = features_df.loc[start_ix:,f'{target_coin}_trade_date'].nunique()
                             test_intervals = days_to_test * 1440 / test_min
                             trade_duration = int(''.join(filter(str.isdigit, target_col)))
+                            print(f"trade_duration={trade_duration}, training_mins={training_min}, test_mins={test_min}")
                             print(f"Number of days to iterate: {days_to_test}")
                             # results_df_list = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(simulate_return)(model, features_df, feature_col, 
                             #                                                                 target_col, target_coin, interval, start_ix, trade_duration, start_days=start, 
@@ -206,6 +207,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         y_sim = model.predict(X_sim)
     y_act = test_df.loc[:,target_col]
     # 
+    test_df.loc[:,'before_fees_return'] = test_df[target_col]
     test_df.loc[:,'return'] = test_df[target_col] - .1
     test_df.loc[:,'predicted'] = y_sim
     return test_df
@@ -219,7 +221,7 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, inte
     for thresh in list(np.arange(0, 1.0, 0.1)):
         # Output results of every threshold
         return_df = results_df.loc[results_df['predicted'] > thresh]
-        print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)} trades")
+        print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)} trades; Return before bnb fees: {return_df['before_fees_return'].sum()}%")
         # Output total possible return for sequential trading
         return_dict = dict(zip(return_df[f'{coin}_trade_minute'], return_df['return']))
         return_dict = collections.OrderedDict(sorted(return_dict.items()))

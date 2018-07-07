@@ -22,7 +22,7 @@ coin_pair_dict = {'ethusdt':'target',
                   'trxeth':'through'}
                   
 feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-trade_window_list = [5,10,20]
+trade_window_list = [5,6,7,8]
 
 def main():
     """Control the training and persistance of a market maker model"""
