@@ -43,20 +43,29 @@ def logic(iter_):
     except:
         return
     X_scoring = recent_df[mm_scoring.feature_column_list]
-    X_scoring = X_scoring.iloc[-1]
+    X_scoring = X_scoring.iloc[-2]
     
     # Iterate over each trained model and save predicted results to dict
     scoring_result_dict = {}
+    i = 0
+    optimal_growth_rate = 0
+    optimal_hold_minutes = 0
     for model_path, model in model_object_dict.items():
         trade_hold_minutes = int(''.join(filter(str.isdigit, model_path)))
         predicted_growth = model.predict(X_scoring.reshape(1, -1))
         predicted_growth_rate = predicted_growth / trade_hold_minutes
+        # Set optimal growth rate and associated trade holding minutes
+        if i == 0:
+            optimal_growth_rate = predicted_growth_rate
+            optimal_hold_minutes = trade_hold_minutes
+        elif predicted_growth_rate > optimal_growth_rate:
+            optimal_growth_rate = predicted_growth_rate
+            optimal_hold_minutes = trade_hold_minutes
         scoring_result_dict[trade_hold_minutes] = [predicted_growth, predicted_growth_rate]
+        i += 1
 
-    # Identify max predicted return rate out of all models (different trade holding lengths)
-    optimal_hold_minutes = max(scoring_result_dict)
     end = time.time()
-    latest_timestamp = recent_df.iloc[-1:]['close_time_x'].item() / 1000
+    latest_timestamp = recent_df.iloc[-2]['close_time'].item() / 1000
     scoring_timestamp = time.time()
 
     # Print important time latency information on first iteration
@@ -78,7 +87,7 @@ def logic(iter_):
         order = mm_scoring.bnb_client.order_market_sell(symbol=mm_scoring.target_coin.upper(), quantity=1)
         print(f"Sell info: {order}")
 
-    # Persis scoring results to DB
+    # Persist scoring results to DB
     for trade_hold_minutes, payload in scoring_result_dict.items():
         if trade_hold_minutes == optimal_hold_minutes:
             highest_return = True
@@ -115,7 +124,7 @@ def logic(iter_):
         , scoring_latency_seconds"""
 
         values = f"""'{scoring_datetime}'
-        , {recent_df.iloc[-1:]['minute'].item()}
+        , {recent_df.iloc[-2]['minute'].item()}
         , '{mm_scoring.target_coin}'
         , {trade_hold_minutes}
         , {payload[0][0]}
