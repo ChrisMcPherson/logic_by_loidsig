@@ -1,0 +1,2 @@
+ethusdt_trade_date,daily_return,num_daily_trades,target_coin,model,target_col,start_days,training_mins,test_mins,optimal_buy_threshold,best_return
+2018-07-10,1.1334186641843171,1,ethusdt,sgd,futr_10_close_perc_chg,183,none,1440,0.4,1.1334186641843171

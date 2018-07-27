@@ -9,6 +9,7 @@ import time
 sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
 import market_maker_training
 # modeling
+from sklearn.preprocessing import StandardScaler
 from sklearn import linear_model
 from sklearn import ensemble
 import xgboost as xgb
@@ -22,7 +23,7 @@ coin_pair_dict = {'ethusdt':'target',
                   'trxeth':'through'}
                   
 feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-trade_window_list = [5,6,7,8]
+trade_window_list = [25]
 
 def main():
     """Control the training and persistance of a market maker model"""
@@ -39,14 +40,22 @@ def main():
         return
     # Train a model for each trade window configured
     for target_column in mm_training.target_column_list:
-        X = mm_training.training_df[mm_training.feature_column_list]
-        y = mm_training.training_df[target_column]
+        X = mm_training.training_df.loc[:,mm_training.feature_column_list]
+        y = mm_training.training_df.loc[:,target_column]
         #model = xgb.XGBRegressor(n_estimators=200) #n_estimators=1000
         model = linear_model.LinearRegression()
-        model.fit(X, y.values.ravel())
-        # Persist model
+        #model = linear_model.SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', alpha=0.01, max_iter=2000)
+        # Standardize features (specific for sgd and other sensitive models)
+        #scaler = StandardScaler()
+        #scaler.fit(X)
+        #X = scaler.transform(X)
+        # Fit model
+        model.fit(X, y)
+        # Persist model and standardizer
+        print(f"{target_column} r2: {r2_score(y, model.predict(X))}")
         mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column))))
-    # Persis configuration
+        #mm_training.persist_standardizer(scaler)
+    # Persist configuration
     mm_training.persist_model_config()
 
 if __name__ == '__main__':

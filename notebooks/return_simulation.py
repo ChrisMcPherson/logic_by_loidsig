@@ -36,9 +36,9 @@ def main():
     target_coin_list = ['ethusdt']
     feature_minutes_list = [1,5,10]
     target_col_list = [2,5,10,20]
-    training_min_list = ['none']
+    training_min_list = [10000]
     test_min_list = [1440]
-    model_list = ['xgb']
+    model_list = ['linear']
     poly_list = [3]
     
     # Get argument configurations
@@ -120,7 +120,7 @@ def main():
                                             training_mins=training_min, test_mins=test_min, 
                                             poly_degree=polynomial) for interval in range(int(test_intervals))]
                             results_df = pd.concat(results_df_list)
-                            daily_trades_df = identify_best_return(model, results_df, feature_col, target_col, target_coin, test_intervals, start_days=start, 
+                            daily_trades_df = identify_best_return(model, results_df, feature_col, target_col, target_coin, trade_duration, test_intervals, start_days=start, 
                                                                     training_mins=training_min, test_mins=test_min, poly_degree=polynomial)
                             sim_daily_trades_list.append(daily_trades_df)
     sim_daily_trades = pd.concat(sim_daily_trades_list)
@@ -152,7 +152,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         train_df = df.iloc[start_train_ix:end_train_ix,:]
     else:
         train_df = df.iloc[:end_train_ix,:]
-    if end_train_ix > start_test_ix - trade_duration:
+    if end_train_ix > (start_test_ix - trade_duration):
         print("Error! You are training on data to be tested!")
         return
     test_df = df.iloc[start_test_ix:end_test_ix,:]
@@ -173,34 +173,61 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         clf.fit(X, y)
         y_sim = clf.predict(X_)
     elif model == 'sgd':
-        model = linear_model.SGDRegressor(penalty='l2', alpha=0.15, max_iter=2000)
+        sgd = linear_model.SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', alpha=0.01, max_iter=2000)
         scaler = StandardScaler()
         scaler.fit(X)
-        X = scaler.transform(X)
-        X_ = scaler.transform(X_sim)
-        model.fit(X, y)
-        y_sim = model.predict(X_)
+        X_ = scaler.transform(X)
+        X_sim_ = scaler.transform(X_sim)
+        sgd.fit(X_, y)
+        y_sim = sgd.predict(X_sim_)
+    elif model == 'sgdlinear':
+        sgd = linear_model.SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', alpha=0.01, max_iter=2000)
+        scaler = StandardScaler()
+        scaler.fit(X)
+        X_ = scaler.transform(X)
+        X_sim_ = scaler.transform(X_sim)
+        sgd.fit(X_, y)
+        X['sgd_pred'] = sgd.predict(X_)
+        X_sim['sgd_pred'] = sgd.predict(X_sim)
+        # Linear
+        lr = linear_model.LinearRegression()
+        lr.fit(X, y)
+        y_sim = lr.predict(X_sim)
     elif model == 'gb':
-        model = ensemble.GradientBoostingRegressor(n_estimators=500, learning_rate=.01, max_depth=6, 
+        gb = ensemble.GradientBoostingRegressor(n_estimators=500, learning_rate=.01, max_depth=6, 
                                                         max_features=.1, min_samples_leaf=1)
-        model.fit(X, y)
+        gb.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
-        y_sim = model.predict(X_sim)
+        y_sim = gb.predict(X_sim)
     elif model == 'linear':
-        model = linear_model.LinearRegression()
-        model.fit(X, y)
+        lr = linear_model.LinearRegression()
+        lr.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
-        y_sim = model.predict(X_sim)
+        y_sim = lr.predict(X_sim)
+    elif model == 'ridge':
+        ridge = linear_model.RidgeCV(alphas=(.0001,.001,.01,.1,1,10), normalize=True)
+        ridge.fit(X, y)
+        X_sim = test_df.loc[:,feature_cols]
+        y_sim = ridge.predict(X_sim)
     elif model == 'xgb':
+        xgb = xgb.XGBRegressor()
+        xgb.fit(X, y)
+        X_sim = test_df.loc[:,feature_cols]
+        y_sim = xgb.predict(X_sim)
+    elif model == 'xgblinear':
         model = xgb.XGBRegressor()
         model.fit(X, y)
-        X_sim = test_df.loc[:,feature_cols]
+        X['sgd_pred'] = model.predict(X)
+        X_sim['sgd_pred'] = model.predict(X_sim)
+        # Linear
+        model = linear_model.LinearRegression()
+        model.fit(X, y)
         y_sim = model.predict(X_sim)
     elif model == 'rf':
-        model = ensemble.RandomForestRegressor(n_estimators=50)
-        model.fit(X, y)
+        rf = ensemble.RandomForestRegressor(n_estimators=50)
+        rf.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
-        y_sim = model.predict(X_sim)
+        y_sim = rf.predict(X_sim)
     else:
         model.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
@@ -212,7 +239,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
     test_df.loc[:,'predicted'] = y_sim
     return test_df
         
-def identify_best_return(model, results_df, feature_cols, target_col, coin, intervals, start_days=1, training_mins=None, test_mins=1440, poly_degree=3):
+def identify_best_return(model, results_df, feature_cols, target_col, coin, trade_duration, intervals, start_days=1, training_mins=None, test_mins=1440, poly_degree=3):
     pd.options.mode.chained_assignment = None
     # Identify best cut off
     optimal_buy_threshold = None
@@ -220,7 +247,7 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, inte
     num_trades = 0
     for thresh in list(np.arange(0, 1.0, 0.1)):
         # Output results of every threshold
-        return_df = results_df.loc[results_df['predicted'] > thresh]
+        return_df = results_df.loc[results_df['predicted'] >= thresh]
         print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)} trades; Return before bnb fees: {return_df['before_fees_return'].sum()}%")
         # Output total possible return for sequential trading
         return_dict = dict(zip(return_df[f'{coin}_trade_minute'], return_df['return']))
@@ -232,19 +259,21 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, inte
                 previous_trade_min = trade_min
                 realistic_returns.append(act_return)
                 continue
-            if trade_min <= previous_trade_min + 10:
+            if trade_min <= previous_trade_min + trade_duration:
                 continue
             previous_trade_min = trade_min
             realistic_returns.append(act_return)
         print(f"    -- Total possible sequential return: {sum(realistic_returns)}% with {len(realistic_returns)} trades")
-        # Save trades for specified target threshold
-        if thresh == .2:
-            finish_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
-            return_df[[f'{coin}_trade_datetime',f'{coin}_trade_minute','predicted', 'return']].to_csv(f"notebooks/sim_results/sim_2_thresh_trades_{finish_time}.csv", index = False)
         # Retain optimal threshold
-        if (return_df['return'].sum() > best_return) or (optimal_buy_threshold == None):
+        if (sum(realistic_returns) > best_return) or (optimal_buy_threshold == None):
             optimal_buy_threshold = thresh
-            best_return, num_trades = return_df['return'].sum(), len(return_df.index)
+            best_return, num_trades = sum(realistic_returns), len(return_df.index)
+            ind_best_returns_df = return_df[[f'{coin}_trade_datetime',f'{coin}_trade_minute','predicted', 'return']]
+            ind_best_returns_df['trade_threshold'] = thresh
+            ind_best_returns_df['trade_mins'] = trade_duration
+    # Save trades for specified target threshold
+    finish_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
+    ind_best_returns_df.to_csv(f"notebooks/sim_results/sim_{optimal_buy_threshold}_thresh_trades_{finish_time}.csv", index = False)
             
     # print/return
     results_df.loc[results_df['predicted'] >= optimal_buy_threshold, 'buy'] = 1 # reset buy threshold with optimum

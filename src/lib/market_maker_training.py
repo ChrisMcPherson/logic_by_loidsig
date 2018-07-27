@@ -95,22 +95,22 @@ class MarketMakerTraining():
                                         , f'{coin_pair}_quote_asset_volume', f'{coin_pair}_trade_count', f'{coin_pair}_tbbav', f'{coin_pair}_tbqav'])
             # Interaction features for alt coins (base usdt)
             if pair_type == 'alt':
-                interaction_features_list.append(f"""AVG(({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 5 PRECEDING) 
-                                                    - (({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) AS avg_5_{coin_pair}_open_interaction""")
-                interaction_features_list.append(f"""AVG(({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 10 PRECEDING) 
-                                                    - (({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) AS avg_10_{coin_pair}_open_interaction""")
-                interaction_features_list.append(f"""AVG(({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 20 PRECEDING) 
-                                                    - (({self.target_coin}_open-{coin_pair}_open)/{self.target_coin}_open) AS avg_20_{coin_pair}_open_interaction""")
-                feature_col_list.extend([f'avg_5_{coin_pair}_open_interaction',f'avg_10_{coin_pair}_open_interaction',f'avg_20_{coin_pair}_open_interaction'])
+                interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 5 PRECEDING) 
+                                                    - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_5_{coin_pair}_close_interaction""")
+                interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 10 PRECEDING) 
+                                                    - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_10_{coin_pair}_close_interaction""")
+                interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 20 PRECEDING) 
+                                                    - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_20_{coin_pair}_close_interaction""")
+                feature_col_list.extend([f'avg_5_{coin_pair}_close_interaction',f'avg_10_{coin_pair}_close_interaction',f'avg_20_{coin_pair}_close_interaction'])
             # Lag features for every interval configured at runtime
             for interval in self.feature_minutes_list:
                 interval_list = []
-                interval_list.append(f"""(({coin_pair}_open - LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_open_perc_chg
-                                        ,((({coin_pair}_open - LEAD({coin_pair}_open, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_open, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC))
-                                           - (({coin_pair}_open - LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_open, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC))) * 100 AS prev_{interval}_{coin_pair}_open_rate_chg
+                interval_list.append(f"""(({coin_pair}_close - LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_close_perc_chg
+                                        ,((({coin_pair}_close - LEAD({coin_pair}_close, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_close, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC))
+                                           - (({coin_pair}_close - LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC))) * 100 AS prev_{interval}_{coin_pair}_close_rate_chg
                                         ,(({coin_pair}_high - LEAD({coin_pair}_high, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
                                             / LEAD({coin_pair}_high, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_high_perc_chg
                                         ,(({coin_pair}_low - LEAD({coin_pair}_low, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
@@ -126,14 +126,14 @@ class MarketMakerTraining():
                                         ,COALESCE(TRY((({coin_pair}_tbqav - LEAD({coin_pair}_tbqav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
                                             / LEAD({coin_pair}_tbqav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_tbqav_perc_chg""")  
                 lag_features_list.append(','.join(interval_list))  
-                feature_col_list.extend([f'prev_{interval}_{coin_pair}_open_perc_chg',f'prev_{interval}_{coin_pair}_open_rate_chg',f'prev_{interval}_{coin_pair}_high_perc_chg',
+                feature_col_list.extend([f'prev_{interval}_{coin_pair}_close_perc_chg',f'prev_{interval}_{coin_pair}_close_rate_chg',f'prev_{interval}_{coin_pair}_high_perc_chg',
                                         f'prev_{interval}_{coin_pair}_low_perc_chg',f'prev_{interval}_{coin_pair}_volume_perc_chg',f'prev_{interval}_{coin_pair}_qav_perc_chg',
                                         f'prev_{interval}_{coin_pair}_trade_count_perc_chg',f'prev_{interval}_{coin_pair}_tbbav_perc_chg',f'prev_{interval}_{coin_pair}_tbqav_perc_chg'])
             # Target variables for every interval configured at runtime
             if pair_type == 'target':
                 for target in self.trade_window_list:
-                    target_variables_list.append(f"""((LAG({self.target_coin}_open, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {self.target_coin}_open) / {self.target_coin}_open) * 100 AS futr_{target}_open_perc_chg""")
-                    target_col_list.append(f'futr_{target}_open_perc_chg')
+                    target_variables_list.append(f"""((LAG({self.target_coin}_close, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {self.target_coin}_close) / {self.target_coin}_close) * 100 AS futr_{target}_close_perc_chg""")
+                    target_col_list.append(f'futr_{target}_close_perc_chg')
                 # Join conditions
                 join_conditions_list.append(f"""{pair_type}_{coin_pair}""")      
             else:
@@ -163,6 +163,16 @@ class MarketMakerTraining():
         if len(target_coin_list) > 1:
             raise Exception(f"There must only be a single target coin initialized in the coin pair dictionary. Values: {target_coin_list}")
         return target_coin_list[0]
+
+    def persist_standardizer(self, std_object):
+        """Persist standardize object as pkl to S3"""
+        object_path = 'model_objects/'
+        file_name = f'market_maker_standardizer_{self.target_coin}.pkl'
+        self.s3_client.put_object(Bucket=self.s3_bucket,
+                        Key=object_path + file_name,
+                        Body=pickle.dumps(std_object, pickle.HIGHEST_PROTOCOL)
+                    )
+        return
 
     def persist_model(self, model, trade_window):
         """Persist model object as pkl to S3"""

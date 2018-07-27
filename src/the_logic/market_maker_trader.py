@@ -20,7 +20,8 @@ from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
 # Config
-predicted_return_threshold = .2
+predicted_return_threshold = .6
+model_version = 1.2
 # TODO: add this config somewhere external
 trade_qty = 1
 
@@ -47,6 +48,10 @@ def logic(iter_):
     X_scoring = recent_df[mm_scoring.feature_column_list]
     X_scoring = X_scoring.iloc[-2]
     
+    # get standardize object    
+    #scaler = mm_scoring.get_model_standardizer()
+    #X_scoring = scaler.transform(X_scoring)
+    
     # Iterate over each trained model and save predicted results to dict
     scoring_result_dict = {}
     i = 0
@@ -54,14 +59,14 @@ def logic(iter_):
     optimal_hold_minutes = 0
     for model_path, model in model_object_dict.items():
         trade_hold_minutes = int(''.join(filter(str.isdigit, model_path)))
-        predicted_growth = model.predict(X_scoring.reshape(1, -1))
+        predicted_growth = model.predict(X_scoring.values.reshape(1, -1))
         predicted_growth_rate = predicted_growth / trade_hold_minutes
         # Set optimal growth rate and associated trade holding minutes
         if i == 0:
-            optimal_growth_rate = predicted_growth_rate
+            optimal_growth_rate = predicted_growth#predicted_growth_rate
             optimal_hold_minutes = trade_hold_minutes
-        elif predicted_growth_rate > optimal_growth_rate:
-            optimal_growth_rate = predicted_growth_rate
+        elif predicted_growth > optimal_growth_rate:
+            optimal_growth_rate = predicted_growth#predicted_growth_rate
             optimal_hold_minutes = trade_hold_minutes
         scoring_result_dict[trade_hold_minutes] = [predicted_growth, predicted_growth_rate]
         i += 1
@@ -79,7 +84,7 @@ def logic(iter_):
     
     # Buy/Sell
     scoring_datetime = datetime.datetime.fromtimestamp(scoring_timestamp).strftime('%Y-%m-%d %H:%M:%S')
-    if scoring_result_dict[optimal_hold_minutes][0][0] > predicted_return_threshold:
+    if scoring_result_dict[optimal_hold_minutes][0][0] >= predicted_return_threshold:
         print(scoring_datetime)
         print(f'Buying with predicted {optimal_hold_minutes} min return of: {scoring_result_dict[optimal_hold_minutes][0][0]}')
         # Trade for specified time
@@ -106,7 +111,7 @@ def logic(iter_):
         sell_quantity = 'Null'
         sell_commission = 'Null'
         sell_price = 'Null'
-        buy_commission_coin = 'Null'
+        sell_commission_coin = 'Null'
         if trade_hold_minutes == optimal_hold_minutes:
             highest_return = True
             if scoring_result_dict[optimal_hold_minutes][0][0] > predicted_return_threshold:
@@ -123,7 +128,7 @@ def logic(iter_):
                 buy_fills_df['qty_perc'] = buy_fills_df['qty'] / total_buy_qty
                 buy_fills_df['price_x_qty_perc'] = buy_fills_df['price'] * buy_fills_df['qty_perc']
                 buy_price = buy_fills_df['price_x_qty_perc'].sum()
-                buy_commission_coin = buy_fills_df.iloc[0]['commissionAsset'].item()
+                buy_commission_coin = buy_fills_df.iloc[0]['commissionAsset']
 
                 sell_order_id = sell_order['orderId']
                 sell_client_order_id = sell_order['clientOrderId']
@@ -137,7 +142,7 @@ def logic(iter_):
                 sell_fills_df['qty_perc'] = sell_fills_df['qty'] / total_sell_qty
                 sell_fills_df['price_x_qty_perc'] = sell_fills_df['price'] * sell_fills_df['qty_perc']
                 sell_price = sell_fills_df['price_x_qty_perc'].sum()
-                sell_commission_coin = sell_fills_df.iloc[0]['commissionAsset'].item()
+                sell_commission_coin = sell_fills_df.iloc[0]['commissionAsset']
             else:
                 is_trade = False
 
@@ -164,8 +169,9 @@ def logic(iter_):
         , sell_commission_coin
         , buy_order_id
         , buy_client_order_id
-        , sell_order_id int
+        , sell_order_id
         , sell_client_order_id
+        , model_version
         """
 
         values = f"""'{scoring_datetime}'
@@ -193,6 +199,7 @@ def logic(iter_):
         , '{buy_client_order_id}'
         , {sell_order_id}
         , '{sell_client_order_id}'
+        , {model_version}
         """
         mm_scoring.insert_into_postgres('the_logic', 'scoring_results', column_list_string, values)
 

@@ -96,6 +96,7 @@ class MarketMakerScoring():
         try:
             if in_parallel:
                 scoring_df_list = Parallel(n_jobs=cores)(delayed(MarketMakerScoring.pandas_get_candlesticks)(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items())
+                #scoring_df_list = Parallel(n_jobs=cores)(delayed(MarketMakerScoring.pandas_get_candlesticks)(coin_pair, pair_type, f'2880 min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items())
                 scoring_df_dict = dict(scoring_df_list)
             else:
                 scoring_df_list = [MarketMakerScoring.pandas_get_candlesticks(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items()]
@@ -117,15 +118,15 @@ class MarketMakerScoring():
             pair_type, coin_df = coin_data_list
 
             if pair_type == 'target':
-                coin_df['trade_hour'] = pd.to_datetime(coin_df['open_time']/1000, unit='s').dt.hour
-                coin_df['trade_day_of_week'] = pd.to_datetime(coin_df['open_time']/1000, unit='s').dt.dayofweek + 1 # adjust for 0 indexed day of week
+                coin_df['trade_hour'] = pd.to_datetime(coin_df['close_time']/1000, unit='s').dt.hour
+                coin_df['trade_day_of_week'] = pd.to_datetime(coin_df['close_time']/1000, unit='s').dt.dayofweek + 1 # adjust for 0 indexed day of week
 
             # Lag features
             for interval in self.feature_minutes_list:
-                coin_df[f'prev_{interval}_{coin_pair}_open'] = coin_df[f'{coin_pair}_open'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_open_perc_chg'] = (coin_df[f'{coin_pair}_open'] - coin_df[f'prev_{interval}_{coin_pair}_open']) / coin_df[f'prev_{interval}_{coin_pair}_open'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_open_rate_chg'] = (((coin_df[f'{coin_pair}_open'] - coin_df[f'prev_1_{coin_pair}_open']) / coin_df[f'prev_1_{coin_pair}_open']) -
-                                                    ((coin_df[f'{coin_pair}_open'] - coin_df[f'prev_{interval}_{coin_pair}_open']) / coin_df[f'prev_{interval}_{coin_pair}_open'])) * 100
+                coin_df[f'prev_{interval}_{coin_pair}_close'] = coin_df[f'{coin_pair}_close'].shift(interval)
+                coin_df[f'prev_{interval}_{coin_pair}_close_perc_chg'] = (coin_df[f'{coin_pair}_close'] - coin_df[f'prev_{interval}_{coin_pair}_close']) / coin_df[f'prev_{interval}_{coin_pair}_close'] * 100
+                coin_df[f'prev_{interval}_{coin_pair}_close_rate_chg'] = (((coin_df[f'{coin_pair}_close'] - coin_df[f'prev_1_{coin_pair}_close']) / coin_df[f'prev_1_{coin_pair}_close']) -
+                                                    ((coin_df[f'{coin_pair}_close'] - coin_df[f'prev_{interval}_{coin_pair}_close']) / coin_df[f'prev_{interval}_{coin_pair}_close'])) * 100
 
                 coin_df[f'prev_{interval}_{coin_pair}_high'] = coin_df[f'{coin_pair}_high'].shift(interval)
                 coin_df[f'prev_{interval}_{coin_pair}_high_perc_chg'] = (coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'] * 100
@@ -164,7 +165,7 @@ class MarketMakerScoring():
             coin_df_list.append(coin_df)
 
         # Combine features
-        features_df = reduce(lambda x, y: pd.merge(x, y, on='open_time', how='inner'), coin_df_list)
+        features_df = reduce(lambda x, y: pd.merge(x, y, on='close_time', how='inner'), coin_df_list)
         # Create Interaction Features
         for coin_pair, coin_data_list in scoring_df_dict.items():
             pair_type, coin_df = coin_data_list
@@ -177,7 +178,7 @@ class MarketMakerScoring():
                 features_df['current_5_interaction'] = (features_df[f'{self.target_coin}_close'].shift(5)-features_df[f'{coin_pair}_close'].shift(5))/features_df[f'{self.target_coin}_close'].shift(5)
                 features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction'] + 
                                     features_df['current_3_interaction'] + features_df['current_4_interaction'] + features_df['current_5_interaction']) / 6
-                features_df[f'avg_5_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+                features_df[f'avg_5_{coin_pair}_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
 
                 features_df['current_6_interaction'] = (features_df[f'{self.target_coin}_close'].shift(6)-features_df[f'{coin_pair}_close'].shift(6))/features_df[f'{self.target_coin}_close'].shift(6)
                 features_df['current_7_interaction'] = (features_df[f'{self.target_coin}_close'].shift(7)-features_df[f'{coin_pair}_close'].shift(7))/features_df[f'{self.target_coin}_close'].shift(7)
@@ -188,7 +189,7 @@ class MarketMakerScoring():
                                     features_df['current_3_interaction'] + features_df['current_4_interaction'] + features_df['current_5_interaction'] + 
                                     features_df['current_6_interaction'] + features_df['current_7_interaction'] + features_df['current_8_interaction'] + 
                                     features_df['current_9_interaction'] + features_df['current_10_interaction']) / 11
-                features_df[f'avg_10_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+                features_df[f'avg_10_{coin_pair}_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
 
                 features_df['current_11_interaction'] = (features_df[f'{self.target_coin}_close'].shift(11)-features_df[f'{coin_pair}_close'].shift(11))/features_df[f'{self.target_coin}_close'].shift(11)
                 features_df['current_12_interaction'] = (features_df[f'{self.target_coin}_close'].shift(12)-features_df[f'{coin_pair}_close'].shift(12))/features_df[f'{self.target_coin}_close'].shift(12)
@@ -207,7 +208,7 @@ class MarketMakerScoring():
                                     features_df['current_12_interaction'] + features_df['current_13_interaction'] + features_df['current_14_interaction'] +
                                     features_df['current_15_interaction'] + features_df['current_16_interaction'] + features_df['current_17_interaction'] + 
                                     features_df['current_18_interaction'] + features_df['current_19_interaction'] + features_df['current_20_interaction']) / 21
-                features_df[f'avg_20_{coin_pair}_open_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+                features_df[f'avg_20_{coin_pair}_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
         return features_df
 
     def get_model_config(self):
@@ -224,6 +225,23 @@ class MarketMakerScoring():
         if len(target_coin_list) > 1:
             raise Exception(f"There must only be a single target coin initialized in the coin pair dictionary. Values: {target_coin_list}")
         return target_coin_list[0]
+
+    def get_model_standardizer(self):
+        """Retrieve full S3 Key for standardize object and retrieve standardize object
+
+        Args:
+            model_name (str): a supported standardize name string
+
+        Returns:
+            obj: a model object
+        """
+        object_path = 'model_objects'
+        model_path_list = self.get_s3_object_keys(self.s3_bucket, f"{object_path}/market_maker_standardizer_")
+        if not model_path_list:
+            raise AttributeError(f"No standardizer was found at the S3 path [{object_path}]")
+        s3_key = model_path_list[0][0]
+        standardize_object = self.get_pickle_from_s3(s3_key)
+        return standardize_object
 
     def get_model_objects(self):
         """Retrieve full S3 Key for model object and retrieve model object
@@ -301,6 +319,20 @@ class MarketMakerScoring():
         finally:
             conn.close()
         return
+    
+    def pandas_read_postgres(self, sql_query):
+        """Given a Redshift SQL query, this method returns a pandas dataframe
+
+        Args:
+            sql_query: a Presto sql query (use the Hue Presto notebook interface to validate sql)
+
+        Returns:
+            A pandas dataframe
+        """
+        logic_db_conn = self.logic_db_connection()
+        df = pd.read_sql_query(sql_query, logic_db_conn)
+        logic_db_conn.close()
+        return df
 
     def logic_db_connection(self):
         """Fetches Logic DB postgres connection object
