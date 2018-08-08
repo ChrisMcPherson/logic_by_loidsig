@@ -20,7 +20,8 @@ pd.options.mode.chained_assignment = None
 # Config
 coin_pair_dict = {'btcusdt':'target',
                   'ethusdt':'alt',
-                  'trxeth':'through'}
+                  'trxeth':'through',
+                  'btcusdt':'excharb'}
                   
 feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
 trade_window_list = [25]
@@ -32,7 +33,7 @@ def main():
     print(f"Feature minutes list: {feature_minutes_list}")
     print(f"Trade window list: {trade_window_list}")
     # Get historic features and train model
-    mm_training = market_maker_training.BinanceTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
+    mm_training = market_maker_training.CobinhoodTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
     try:
         mm_training.set_training_data()
     except Exception as e:

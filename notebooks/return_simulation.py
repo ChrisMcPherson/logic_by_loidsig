@@ -129,8 +129,8 @@ def main():
                     
 def features(feature_minutes_list, trade_window_list):
     #TODO: move this config to simulation argument 
-    coin_pair_dict = {'ethusdt':'target',
-                  'btcusdt':'alt',
+    coin_pair_dict = {'btcusdt':'target',
+                  'ethusdt':'alt',
                   'trxeth':'through'}
     print(f"Coin feature configuration: {coin_pair_dict}")
 

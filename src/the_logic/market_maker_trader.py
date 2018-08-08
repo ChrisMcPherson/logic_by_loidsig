@@ -21,9 +21,7 @@ pd.options.mode.chained_assignment = None
 
 # Config
 predicted_return_threshold = .6
-model_version = 1.2
-# TODO: add this config somewhere external
-trade_qty = 1
+model_version = 1.3
 
 def main():
     iter_ = 1
@@ -47,10 +45,11 @@ def logic(iter_):
         return
     X_scoring = recent_df[mm_scoring.feature_column_list]
     X_scoring = X_scoring.iloc[-2]
+    X_scoring = X_scoring.values.reshape(1, -1)
     
     # get standardize object    
-    #scaler = mm_scoring.get_model_standardizer()
-    #X_scoring = scaler.transform(X_scoring)
+    scaler = mm_scoring.get_model_standardizer()
+    X_scoring = scaler.transform(X_scoring)
     
     # Iterate over each trained model and save predicted results to dict
     scoring_result_dict = {}
@@ -59,7 +58,7 @@ def logic(iter_):
     optimal_hold_minutes = 0
     for model_path, model in model_object_dict.items():
         trade_hold_minutes = int(''.join(filter(str.isdigit, model_path)))
-        predicted_growth = model.predict(X_scoring.values.reshape(1, -1))
+        predicted_growth = model.predict(X_scoring)
         predicted_growth_rate = predicted_growth / trade_hold_minutes
         # Set optimal growth rate and associated trade holding minutes
         if i == 0:
@@ -76,6 +75,8 @@ def logic(iter_):
     scoring_timestamp = time.time()
     data_latency_seconds = scoring_timestamp - latest_timestamp
 
+    latest_minute = recent_df.iloc[-2]['minute'].item()
+
     # Print important time latency information on first iteration
     if iter_ == 1:
         print(f"From data collection to prediction, {int(end - start)} seconds have elapsed")
@@ -85,6 +86,8 @@ def logic(iter_):
     # Buy/Sell
     scoring_datetime = datetime.datetime.fromtimestamp(scoring_timestamp).strftime('%Y-%m-%d %H:%M:%S')
     if scoring_result_dict[optimal_hold_minutes][0][0] >= predicted_return_threshold:
+        # TODO: Add the exchange and percent_funds_trading to config
+        trade_qty = mm_scoring.get_trade_qty(target_coin=mm_scoring.target_coin.upper(), exchange='binance', percent_funds_trading=.9)
         print(scoring_datetime)
         print(f'Buying with predicted {optimal_hold_minutes} min return of: {scoring_result_dict[optimal_hold_minutes][0][0]}')
         # Trade for specified time
@@ -94,114 +97,11 @@ def logic(iter_):
         time.sleep((optimal_hold_minutes*60)-data_latency_seconds)
         sell_order = mm_scoring.bnb_client.order_market_sell(symbol=mm_scoring.target_coin.upper(), quantity=trade_qty, newOrderRespType='FULL')
         print(f"Sell info: {sell_order}")
-
-    # Persist scoring results to DB
-    for trade_hold_minutes, payload in scoring_result_dict.items():
-        # default values
-        highest_return = False
-        is_trade = False
-        buy_order_id = 'Null'
-        buy_client_order_id = 'Null'
-        buy_quantity = 'Null'
-        buy_commission = 'Null'
-        buy_price = 'Null'
-        buy_commission_coin = 'Null'
-        sell_order_id = 'Null'
-        sell_client_order_id = 'Null'
-        sell_quantity = 'Null'
-        sell_commission = 'Null'
-        sell_price = 'Null'
-        sell_commission_coin = 'Null'
-        if trade_hold_minutes == optimal_hold_minutes:
-            highest_return = True
-            if scoring_result_dict[optimal_hold_minutes][0][0] > predicted_return_threshold:
-                is_trade = True
-                buy_order_id = buy_order['orderId']
-                buy_client_order_id = buy_order['clientOrderId']
-                buy_quantity = buy_order['executedQty']
-                buy_fills_df = pd.DataFrame(buy_order['fills'])
-                buy_fills_df['commission'] = pd.to_numeric(buy_fills_df['commission'], errors='coerce')
-                buy_fills_df['price'] = pd.to_numeric(buy_fills_df['price'], errors='coerce')
-                buy_fills_df['qty'] = pd.to_numeric(buy_fills_df['qty'], errors='coerce')
-                buy_commission = buy_fills_df['commission'].sum()
-                total_buy_qty = buy_fills_df['qty'].sum()
-                buy_fills_df['qty_perc'] = buy_fills_df['qty'] / total_buy_qty
-                buy_fills_df['price_x_qty_perc'] = buy_fills_df['price'] * buy_fills_df['qty_perc']
-                buy_price = buy_fills_df['price_x_qty_perc'].sum()
-                buy_commission_coin = buy_fills_df.iloc[0]['commissionAsset']
-
-                sell_order_id = sell_order['orderId']
-                sell_client_order_id = sell_order['clientOrderId']
-                sell_quantity = sell_order['executedQty']
-                sell_fills_df = pd.DataFrame(sell_order['fills'])
-                sell_fills_df['commission'] = pd.to_numeric(sell_fills_df['commission'], errors='coerce')
-                sell_fills_df['price'] = pd.to_numeric(sell_fills_df['price'], errors='coerce')
-                sell_fills_df['qty'] = pd.to_numeric(sell_fills_df['qty'], errors='coerce')
-                sell_commission = sell_fills_df['commission'].sum()
-                total_sell_qty = sell_fills_df['qty'].sum()
-                sell_fills_df['qty_perc'] = sell_fills_df['qty'] / total_sell_qty
-                sell_fills_df['price_x_qty_perc'] = sell_fills_df['price'] * sell_fills_df['qty_perc']
-                sell_price = sell_fills_df['price_x_qty_perc'].sum()
-                sell_commission_coin = sell_fills_df.iloc[0]['commissionAsset']
-            else:
-                is_trade = False
-
-        column_list_string = """trade_datetime
-        , trade_minute
-        , target_coin
-        , trade_duration
-        , predicted_return
-        , predicted_growth_rate
-        , highest_return
-        , is_trade
-        , trade_threshold
-        , feature_window_space
-        , trade_duration_space
-        , coin_pair_definition
-        , scoring_latency_seconds
-        , buy_quantity
-        , sell_quantity
-        , buy_price
-        , sell_price
-        , buy_commission
-        , sell_commission
-        , buy_commission_coin
-        , sell_commission_coin
-        , buy_order_id
-        , buy_client_order_id
-        , sell_order_id
-        , sell_client_order_id
-        , model_version
-        """
-
-        values = f"""'{scoring_datetime}'
-        , {recent_df.iloc[-2]['minute'].item()}
-        , '{mm_scoring.target_coin}'
-        , {trade_hold_minutes}
-        , {payload[0][0]}
-        , {payload[1][0]}
-        , {highest_return}
-        , {is_trade}
-        , {predicted_return_threshold}
-        , ARRAY{mm_scoring.feature_minutes_list}
-        , ARRAY{mm_scoring.trade_window_list}
-        , '{json.dumps(mm_scoring.coin_pair_dict)}'
-        , {data_latency_seconds}
-        , {buy_quantity}
-        , {sell_quantity}
-        , {buy_price}
-        , {sell_price}
-        , {buy_commission}
-        , {sell_commission}
-        , '{buy_commission_coin}'
-        , '{sell_commission_coin}'
-        , {buy_order_id}
-        , '{buy_client_order_id}'
-        , {sell_order_id}
-        , '{sell_client_order_id}'
-        , {model_version}
-        """
-        mm_scoring.insert_into_postgres('the_logic', 'scoring_results', column_list_string, values)
+        # Persist scoring results to DB
+        mm_scoring.persist_scoring_results(scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, model_version, buy_order, sell_order)
+    else:
+        # Persist scoring results to DB
+        mm_scoring.persist_scoring_results(scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, model_version)
 
 if __name__ == '__main__':
     main()

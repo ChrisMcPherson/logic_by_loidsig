@@ -48,16 +48,17 @@ def get_candlestick():
     days_between_list = list(range(start_day_id, current_day_id))
 
     # Process coin pairs
-    coins = ('ETH-USDT','COB-USDT','TRX-ETH','BTC-USDT','LTC-USDT','ETH-BTC','XRP-ETH','NEO-ETH','ENJ-ETH')
+    coins = ('BTC-USDT','ETH-USDT','COB-USDT','TRX-ETH','LTC-USDT','ETH-BTC','XRP-ETH','NEO-ETH','ENJ-ETH')
     
     for coin in coins:
+        coin_strip_lower = coin.lower().replace('-', '')
         ## Get last processed date from Athena (if empty, process as new coin)
-        # processed_days_df = athena_functions.pandas_read_athena(f"""SELECT DISTINCT CAST(close_timestamp as bigint)/1000/60/60/24 as day_id
-        #                                                           FROM cobinhood.historic_candlesticks
-        #                                                           WHERE coin_partition = '{coin.lower()}'
-        #                                                           UNION all SELECT 1 AS day_id""")
-        # processed_days_list = list(processed_days_df['day_id'])
-        processed_days_list = [1]
+        processed_days_df = athena_functions.pandas_read_athena(f"""SELECT DISTINCT CAST(open_timestamp as bigint)/1000/60/60/24 as day_id
+                                                                  FROM cobinhood.historic_candlesticks
+                                                                  WHERE coin_partition = '{coin_strip_lower}'
+                                                                  UNION all SELECT 1 AS day_id""")
+        processed_days_list = list(processed_days_df['day_id'])
+        #processed_days_list = [1] # when no table exists
 
         days_to_process_list = [day for day in days_between_list if day not in processed_days_list]
         print(f"{coin}: {len(days_to_process_list)} unprocessed days between {start_date} and the day before today")
@@ -77,8 +78,9 @@ def get_candlestick():
 
             candlestick_list = []
             trade_day_id = int(candlesticks[0]['timestamp']/1000/60/60/24)
-            if trade_day_id < day-1:
-                raise ValueError(f"The first trade from the generator has the day_id {trade_day_id} but should have {day}")
+            if trade_day_id < day-2:
+                #raise ValueError(f"The first trade from the generator has the day_id {trade_day_id} but should have {day}")
+                print(f"The first trade from the generator has the day_id {trade_day_id} but should have {day}")
             try:
                 for trade in candlesticks:
                     if int(trade['timestamp']/1000/60/60/24) < trade_day_id:
@@ -94,22 +96,22 @@ def get_candlestick():
 
             # Convert raw trade data (list of dicts) to Dataframe
             df = pd.DataFrame(candlestick_list)
-            df.rename(columns={'trading_pair_id':'coin','timestamp':'close_timestamp'}, inplace=True)
+            df.rename(columns={'trading_pair_id':'coin','timestamp':'open_timestamp'}, inplace=True)
             df['coin'] = df['coin'].replace(regex=True, to_replace=r'-', value=r'')
-            df['close_unix'] = df['close_timestamp']/1000
-            df['close_datetime'] = pd.to_datetime(df['close_unix'], unit='s')
+            df['open_unix'] = df['open_timestamp']/1000
+            df['open_datetime'] = pd.to_datetime(df['open_unix'], unit='s')
 
             # Validate days in Dataframe
-            daily_group_df = df.groupby([df['close_datetime'].dt.date])
+            daily_group_df = df.groupby([df['open_datetime'].dt.date])
             daily_df_list = [daily_group_df.get_group(x) for x in daily_group_df.groups]
             if len(daily_df_list) != 1:
                 raise ValueError(f"There are {len(daily_df_list)} dates in the dataframe for {process_date}")
 
             # Load day as csv file to S3
             print(f"{datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')}: Beginning S3 load for {process_date} with {len(df.index)} rows")
-            if not df['close_datetime'].dt.time.max() > datetime.time(23,58):
-                print(f"**Time {df['close_datetime'].dt.time.max()} is not end of day for {df['close_datetime'].max()}...")
-            recents_file_name = f"{coin.lower()}/{str(df['close_datetime'].dt.date.iloc[0])}.csv"
+            if not df['open_datetime'].dt.time.max() > datetime.time(23,58):
+                print(f"**Time {df['open_datetime'].dt.time.max()} is not end of day for {df['open_datetime'].max()}...")
+            recents_file_name = f"{coin_strip_lower}/{str(df['open_datetime'].dt.date.iloc[0])}.csv"
             df['file_name'] = recents_file_name
             recents_file_path = f"cobinhood/historic_candlesticks/{recents_file_name}"
             # Write out csv
