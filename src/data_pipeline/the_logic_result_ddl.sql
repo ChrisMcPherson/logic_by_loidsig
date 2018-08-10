@@ -27,5 +27,13 @@ create table the_logic.scoring_results (
 	, sell_client_order_id text
 );
 
----- order data
--- raw 
+---- Model Versions
+create table the_logic.model_versions(
+	model_version double precision
+  , description text
+);
+
+select * from the_logic.model_versions;
+
+insert into the_logic.model_versions
+values (1.3, 'Features: added feature scaler and current funds dependent trade quantity');

@@ -127,7 +127,7 @@ class MarketMakerScoring():
             object_name_list.append([obj.key, os.path.basename(obj.key)])
         return object_name_list
 
-    def persist_scoring_results(self, scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, model_version, buy_order=None, sell_order=None):
+    def persist_scoring_results(self, scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, scoring_datetime, model_version, buy_order=None, sell_order=None):
         """Inserts results from completed scoring cycle
 
         Args:
@@ -491,11 +491,10 @@ class BinanceScoring(MarketMakerScoring):
                 features_df[f'avg_20_{coin_pair}_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
         return features_df
 
-    def get_trade_qty(self, target_coin, exchange='binance', percent_funds_trading=.9):
-        if exchange == 'binance':
-            usdt_balance = float(self.bnb_client.get_asset_balance(asset='usdt')['free'])
-            all_tickers_df = pd.DataFrame(self.bnb_client.get_all_tickers())
-            target_price = float(all_tickers_df.loc[all_tickers_df['symbol'] == target_coin, 'price'].item())
+    def get_trade_qty(self, target_coin, percent_funds_trading=.9):
+        usdt_balance = float(self.bnb_client.get_asset_balance(asset='usdt')['free'])
+        all_tickers_df = pd.DataFrame(self.bnb_client.get_all_tickers())
+        target_price = float(all_tickers_df.loc[all_tickers_df['symbol'] == target_coin, 'price'].item())
         quantity_to_trade = (usdt_balance / target_price) * percent_funds_trading
         quantity_to_trade = round(quantity_to_trade, 6)
         return quantity_to_trade
@@ -524,7 +523,8 @@ class CobinhoodScoring(MarketMakerScoring):
 
     def __init__(self):
         super().__init__()
-        self.bnb_client = CobinhoodScoring.cobinhood_client()
+        self.cob_client = CobinhoodScoring.cobinhood_client()
+        self.formatted_target_coin = self.get_formatted_coin_pair()
 
 
     def set_scoring_data(self, in_parallel=True):
@@ -550,22 +550,6 @@ class CobinhoodScoring(MarketMakerScoring):
         scoring_features_df.replace([np.inf, -np.inf], 0, inplace=True)
         self.scoring_features_df = scoring_features_df
 
-    def pandas_get_trades(self, coin_pair, start_time_str='360 min ago UTC'):
-        """Return individual recent trades from Binance api for a given coin pair and historical interval
-
-        Args:
-            coin_pair (str): i.e. 'ethusdt' is buying eth with usdt or selling eth into usdt
-        """
-        trades = self.bnb_client.aggregate_trade_iter(symbol=coin_pair.upper(), start_str=start_time_str)
-        trade_dict_list = list(trades)
-        df = pd.DataFrame(trade_dict_list)
-        df.rename(columns={'a':'trade_count','p':'avg_price','q':'quantity','f':'first_trade_id','l':'last_trade_id',
-                        'T':'micro_timestamp','m':'buyer_maker','M':'best_price_match'}, inplace=True)
-        df['avg_price'] = pd.to_numeric(df['avg_price'])
-        df['quantity'] = pd.to_numeric(df['quantity'])
-        df['minute'] = pd.to_numeric(df['micro_timestamp']/1000/60).astype(int)
-        return df
-
     @staticmethod
     def pandas_get_candlesticks(coin_pair, pair_type, start_time_str='1 min ago UTC'):
         """Return minute granularity recent candlestick metrics from Binance api for a given coin pair and historical interval
@@ -573,10 +557,19 @@ class CobinhoodScoring(MarketMakerScoring):
         Returns:
             (list): ['coin_pair',['pair_type', pandas.DataFrame]]
         """
-        bnb_client = CobinhoodScoring.cobinhood_client()
+        cob_client = CobinhoodScoring.cobinhood_client()
         prefix = f"{coin_pair.lower()}"
         coin_pair_upper = coin_pair.upper()
-        klines = bnb_client.get_historical_klines(coin_pair_upper, Client.KLINE_INTERVAL_1MINUTE, start_time_str)
+
+        cob_candles_list = cob.chart.get_candles(trading_pair_id='ETH-USDT', start_time=1519862400000, end_time=1519948800000, timeframe='1m')['result']['candles']
+        df = pd.DataFrame(cob_candles_list)
+        df.rename(columns={'trading_pair_id':'coin','timestamp':'close_timestamp'}, inplace=True)
+        df['coin'] = df['coin'].replace(regex=True, to_replace=r'-', value=r'')
+        df['close_timestamp_trim'] = df['close_timestamp']/1000
+        df['close_datetime'] = pd.to_datetime(df['close_timestamp_trim'], unit='s')
+
+
+        klines = cob_client.get_historical_klines(coin_pair_upper, Client.KLINE_INTERVAL_1MINUTE, start_time_str)
         df = pd.DataFrame(klines, columns=['open_time',f'{prefix}_open',f'{prefix}_high',f'{prefix}_low',f'{prefix}_close',f'{prefix}_volume',
                         'close_time',f'{prefix}_quote_asset_volume',f'{prefix}_trade_count', f'{prefix}_tbbav',f'{prefix}_tbqav',f'{prefix}_ignore']
                     )
@@ -627,25 +620,6 @@ class CobinhoodScoring(MarketMakerScoring):
                 coin_df[f'prev_{interval}_{coin_pair}_volume_rate_chg'] = (((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_1_{coin_pair}_volume']) / coin_df[f'prev_1_{coin_pair}_volume']) -
                                                     ((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'])) * 100
 
-                coin_df[f'prev_{interval}_{coin_pair}_qav'] = coin_df[f'{coin_pair}_quote_asset_volume'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_qav_perc_chg'] = (coin_df[f'{coin_pair}_quote_asset_volume'] - coin_df[f'prev_{interval}_{coin_pair}_qav']) / coin_df[f'prev_{interval}_{coin_pair}_qav'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_qav_rate_chg'] = (((coin_df[f'{coin_pair}_quote_asset_volume'] - coin_df[f'prev_1_{coin_pair}_qav']) / coin_df[f'prev_1_{coin_pair}_qav']) -
-                                                    ((coin_df[f'{coin_pair}_quote_asset_volume'] - coin_df[f'prev_{interval}_{coin_pair}_qav']) / coin_df[f'prev_{interval}_{coin_pair}_qav'])) * 100
-
-                coin_df[f'prev_{interval}_{coin_pair}_trade_count'] = coin_df[f'{coin_pair}_trade_count'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_trade_count_perc_chg'] = (coin_df[f'{coin_pair}_trade_count'] - coin_df[f'prev_{interval}_{coin_pair}_trade_count']) / coin_df[f'prev_{interval}_{coin_pair}_trade_count'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_trade_count_rate_chg'] = (((coin_df[f'{coin_pair}_trade_count'] - coin_df[f'prev_1_{coin_pair}_trade_count']) / coin_df[f'prev_1_{coin_pair}_trade_count']) -
-                                                    ((coin_df[f'{coin_pair}_trade_count'] - coin_df[f'prev_{interval}_{coin_pair}_trade_count']) / coin_df[f'prev_{interval}_{coin_pair}_trade_count'])) * 100
-
-                coin_df[f'prev_{interval}_{coin_pair}_tbbav'] = coin_df[f'{coin_pair}_tbbav'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_tbbav_perc_chg'] = (coin_df[f'{coin_pair}_tbbav'] - coin_df[f'prev_{interval}_{coin_pair}_tbbav']) / coin_df[f'prev_{interval}_{coin_pair}_tbbav'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_tbbav_rate_chg'] = (((coin_df[f'{coin_pair}_tbbav'] - coin_df[f'prev_1_{coin_pair}_tbbav']) / coin_df[f'prev_1_{coin_pair}_tbbav']) -
-                                                    ((coin_df[f'{coin_pair}_tbbav'] - coin_df[f'prev_{interval}_{coin_pair}_tbbav']) / coin_df[f'prev_{interval}_{coin_pair}_tbbav'])) * 100
-
-                coin_df[f'prev_{interval}_{coin_pair}_tbqav'] = coin_df[f'{coin_pair}_tbqav'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_tbqav_perc_chg'] = (coin_df[f'{coin_pair}_tbqav'] - coin_df[f'prev_{interval}_{coin_pair}_tbqav']) / coin_df[f'prev_{interval}_{coin_pair}_tbqav'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_tbqav_rate_chg'] = (((coin_df[f'{coin_pair}_tbqav'] - coin_df[f'prev_1_{coin_pair}_tbqav']) / coin_df[f'prev_1_{coin_pair}_tbqav']) -
-                                                    ((coin_df[f'{coin_pair}_tbqav'] - coin_df[f'prev_{interval}_{coin_pair}_tbqav']) / coin_df[f'prev_{interval}_{coin_pair}_tbqav'])) * 100
             coin_df_list.append(coin_df)
 
         # Combine features
@@ -695,14 +669,22 @@ class CobinhoodScoring(MarketMakerScoring):
                 features_df[f'avg_20_{coin_pair}_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
         return features_df
 
-    def get_trade_qty(self, target_coin, exchange='binance', percent_funds_trading=.9):
-        if exchange == 'binance':
-            usdt_balance = float(self.bnb_client.get_asset_balance(asset='usdt')['free'])
-            all_tickers_df = pd.DataFrame(self.bnb_client.get_all_tickers())
-            target_price = float(all_tickers_df.loc[all_tickers_df['symbol'] == target_coin, 'price'].item())
+    def get_trade_qty(self, percent_funds_trading=.9):
+        usdt_balance = float([balance for balance in self.cob_client.wallet.get_balances()['result']['balances'] if balance['currency'] == 'USDT'][0]['total'])
+        target_price = float([data['last_price'] for coin_pair, data in self.cob_client.market.get_stats()['result'].items() if data['id'] == self.formatted_target_coin][0])
         quantity_to_trade = (usdt_balance / target_price) * percent_funds_trading
         quantity_to_trade = round(quantity_to_trade, 6)
         return quantity_to_trade
+
+    def get_formatted_coin_pair(self):
+        """Given an unformatted coin pair, return the cobinhood formatted coin pair
+        """
+        coin_pair = self.target_coin.upper()
+        pairs_payload = self.cob_client.market.get_trading_pairs()
+        pairs_list = [[pair['id'].replace('-', ''), pair['id']] for pair in pairs_payload['result']['trading_pairs']]
+        pairs_dict = dict(pairs_list)
+        formatted_coin_pair = pairs_dict[coin_pair]
+        return formatted_coin_pair
 
     @staticmethod
     def cobinhood_client():

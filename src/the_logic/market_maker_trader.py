@@ -87,7 +87,7 @@ def logic(iter_):
     scoring_datetime = datetime.datetime.fromtimestamp(scoring_timestamp).strftime('%Y-%m-%d %H:%M:%S')
     if scoring_result_dict[optimal_hold_minutes][0][0] >= predicted_return_threshold:
         # TODO: Add the exchange and percent_funds_trading to config
-        trade_qty = mm_scoring.get_trade_qty(target_coin=mm_scoring.target_coin.upper(), exchange='binance', percent_funds_trading=.9)
+        trade_qty = mm_scoring.get_trade_qty(target_coin=mm_scoring.target_coin.upper(), percent_funds_trading=.9)
         print(scoring_datetime)
         print(f'Buying with predicted {optimal_hold_minutes} min return of: {scoring_result_dict[optimal_hold_minutes][0][0]}')
         # Trade for specified time
@@ -98,10 +98,10 @@ def logic(iter_):
         sell_order = mm_scoring.bnb_client.order_market_sell(symbol=mm_scoring.target_coin.upper(), quantity=trade_qty, newOrderRespType='FULL')
         print(f"Sell info: {sell_order}")
         # Persist scoring results to DB
-        mm_scoring.persist_scoring_results(scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, model_version, buy_order, sell_order)
+        mm_scoring.persist_scoring_results(scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, scoring_datetime, model_version, buy_order, sell_order)
     else:
         # Persist scoring results to DB
-        mm_scoring.persist_scoring_results(scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, model_version)
+        mm_scoring.persist_scoring_results(scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, scoring_datetime, model_version)
 
 if __name__ == '__main__':
     main()
