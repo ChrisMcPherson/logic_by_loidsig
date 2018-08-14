@@ -561,7 +561,7 @@ class CobinhoodScoring(MarketMakerScoring):
         prefix = f"{coin_pair.lower()}"
         coin_pair_upper = coin_pair.upper()
 
-        cob_candles_list = cob.chart.get_candles(trading_pair_id='ETH-USDT', start_time=1519862400000, end_time=1519948800000, timeframe='1m')['result']['candles']
+        cob_candles_list = cob_client.chart.get_candles(trading_pair_id='ETH-USDT', start_time=1519862400000, end_time=1519948800000, timeframe='1m')['result']['candles']
         df = pd.DataFrame(cob_candles_list)
         df.rename(columns={'trading_pair_id':'coin','timestamp':'close_timestamp'}, inplace=True)
         df['coin'] = df['coin'].replace(regex=True, to_replace=r'-', value=r'')
