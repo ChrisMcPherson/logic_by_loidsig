@@ -24,7 +24,7 @@ coin_pair_dict = {'btcusdt':'target',
                   'btcusdt':'excharb'}
                   
 feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-trade_window_list = [25]
+trade_window_list = [5]
 
 def main():
     """Control the training and persistance of a market maker model"""

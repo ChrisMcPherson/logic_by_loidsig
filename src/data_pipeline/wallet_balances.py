@@ -6,6 +6,7 @@ import datetime
 import time
 from sqlalchemy import create_engine
 from cobinhood_api import Cobinhood
+from binance.client import Client
 
 
 def main():
@@ -15,7 +16,7 @@ def main():
     cob_wallet_df = pd.DataFrame(cob_wallet_dict)
     cob_wallet_df.rename(columns={'total':'quantity', 'currency':'coin'}, inplace=True)
     cob_wallet_df['access_datetime'] = datetime.datetime.utcfromtimestamp(time.time()).strftime('%Y-%m-%d %I:%M:%S')
-    cob_wallet_df.to_sql('cobinhood', logic_db_engine(), schema='wallet')
+    cob_wallet_df.to_sql('cobinhood', logic_db_engine(), schema='wallet', if_exists='append')
 
     # Binance balances
     bnb_client = binance_client()
@@ -38,7 +39,7 @@ def main():
     bnb_wallet_df.rename(columns={'free':'quantity', 'price':'usd_value', 'asset':'coin'}, inplace=True)
     bnb_wallet_df.drop(columns=['asset_usdt_pair','symbol'], inplace=True)
     bnb_wallet_df['access_datetime'] = datetime.datetime.utcfromtimestamp(time.time()).strftime('%Y-%m-%d %I:%M:%S')
-    bnb_wallet_df.to_sql('binance', logic_db_engine(), schema='wallet')
+    bnb_wallet_df.to_sql('binance', logic_db_engine(), schema='wallet', if_exists='append')
 
 def logic_db_engine():
     """Fetches Logic DB postgres connection object

@@ -1,4 +1,5 @@
 -- Add and check partitions
+-- Only seems to work if you are using the date=20180101 file partition format (https://stackoverflow.com/questions/48421866/failure-to-repair-partitions-in-amazon-athena)
 ALTER TABLE historic_trades 
 ADD PARTITION (coin_partition='ltcusdt') location 's3://loidsig-crypto/binance/historic_trades/ltcusdt/',
 PARTITION (coin_partition='enjeth') location 's3://loidsig-crypto/binance/historic_trades/enjeth/',
