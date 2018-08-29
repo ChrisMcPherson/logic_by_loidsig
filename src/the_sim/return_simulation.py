@@ -131,9 +131,8 @@ def features(feature_minutes_list, trade_window_list):
     #TODO: move this config to simulation argument 
     coin_pair_dict = {'target':'btcusdt',
                   'alt':'ethusdt',
-                  'through':'trxeth',
-                  'excharb_btc':'btcusdt',
-                  'excharb_eth':'ethusdt'}
+                  'through':'eoseth',#'ethbtc',
+                  'excharb_btc':'btcusdt'}
     print(f"Coin feature configuration: {coin_pair_dict}")
 
     mm_training = market_maker_training.CobinhoodTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
@@ -204,6 +203,15 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
     elif model == 'linear':
         lr = linear_model.LinearRegression()
         lr.fit(X, y)
+        X_sim = test_df.loc[:,feature_cols]
+        y_sim = lr.predict(X_sim)
+    elif model == 'stdlinear':
+        lr = linear_model.LinearRegression()
+        scaler = StandardScaler()
+        scaler.fit(X)
+        X_ = scaler.transform(X)
+        X_sim_ = scaler.transform(X_sim)
+        lr.fit(X_, y)
         X_sim = test_df.loc[:,feature_cols]
         y_sim = lr.predict(X_sim)
     elif model == 'ridge':

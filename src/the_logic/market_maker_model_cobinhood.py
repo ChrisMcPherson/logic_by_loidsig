@@ -18,13 +18,14 @@ from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
 # Config
-coin_pair_dict = {'btcusdt':'target',
-                  'ethusdt':'alt',
-                  'trxeth':'through',
-                  'btcusdt':'excharb'}
+coin_pair_dict = {'target':'btcusdt',
+                  'alt':'ethusdt',
+                  'through':'trxeth',
+                  'excharb':'btcusdt'}
                   
-feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-trade_window_list = [5]
+#feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
+feature_minutes_list = [1,5]
+trade_window_list = [4]
 
 def main():
     """Control the training and persistance of a market maker model"""

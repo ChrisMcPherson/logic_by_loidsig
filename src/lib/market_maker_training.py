@@ -261,17 +261,19 @@ class CobinhoodTraining(MarketMakerTraining):
                                         , CAST(hour({coin_pair}_trade_datetime) AS SMALLINT) as trade_hour""")
                 feature_col_list.extend(['trade_day_of_week', 'trade_hour'])
             if 'excharb' not in pair_type:
-                base_features_list.append(f"""{coin_pair}_open, {coin_pair}_high, {coin_pair}_low, {coin_pair}_close, {coin_pair}_volume""")
-                feature_col_list.extend([f'{coin_pair}_open', f'{coin_pair}_high', f'{coin_pair}_low', f'{coin_pair}_close', f'{coin_pair}_volume'])
+                base_features_list.append(f"""{coin_pair}_close, {coin_pair}_volume""") #{coin_pair}_open, {coin_pair}_high, {coin_pair}_low, 
+                feature_col_list.extend([f'{coin_pair}_close', f'{coin_pair}_volume']) #f'{coin_pair}_open', f'{coin_pair}_high', f'{coin_pair}_low', 
             # Interaction features for alt coins (base usdt)
             if pair_type == 'alt':
+                interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 1 PRECEDING) 
+                                                    - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_1_{coin_pair}_close_interaction""")
                 interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 5 PRECEDING) 
                                                     - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_5_{coin_pair}_close_interaction""")
                 interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 10 PRECEDING) 
                                                     - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_10_{coin_pair}_close_interaction""")
                 interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 20 PRECEDING) 
                                                     - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_20_{coin_pair}_close_interaction""")
-                feature_col_list.extend([f'avg_5_{coin_pair}_close_interaction',f'avg_10_{coin_pair}_close_interaction',f'avg_20_{coin_pair}_close_interaction'])
+                feature_col_list.extend([f'avg_1_{coin_pair}_close_interaction',f'avg_5_{coin_pair}_close_interaction',f'avg_10_{coin_pair}_close_interaction',f'avg_20_{coin_pair}_close_interaction'])
             elif 'excharb' in pair_type:
                 excharb_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 1 PRECEDING) 
                                                     - (({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) AS avg_1_{coin_pair}_excharb_close_interaction""")
@@ -279,7 +281,14 @@ class CobinhoodTraining(MarketMakerTraining):
                                                     - (({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) AS avg_2_{coin_pair}_excharb_close_interaction""")
                 excharb_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 3 PRECEDING) 
                                                     - (({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) AS avg_3_{coin_pair}_excharb_close_interaction""")
-                feature_col_list.extend([f'avg_1_{coin_pair}_excharb_close_interaction',f'avg_2_{coin_pair}_excharb_close_interaction',f'avg_3_{coin_pair}_excharb_close_interaction'])
+
+                excharb_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 10 PRECEDING) 
+                                                    - (({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) AS avg_10_{coin_pair}_excharb_close_interaction""")
+                excharb_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 20 PRECEDING) 
+                                                    - (({self.target_coin}_close-{coin_pair}_excharb_close)/{self.target_coin}_close) AS avg_20_{coin_pair}_excharb_close_interaction""")
+
+                feature_col_list.extend([f'avg_1_{coin_pair}_excharb_close_interaction',f'avg_2_{coin_pair}_excharb_close_interaction',f'avg_3_{coin_pair}_excharb_close_interaction'
+                                        ,f'avg_10_{coin_pair}_excharb_close_interaction',f'avg_20_{coin_pair}_excharb_close_interaction'])
             # Lag features for every interval configured at runtime
             if 'excharb' not in pair_type:
                 for interval in self.feature_minutes_list:
@@ -299,8 +308,9 @@ class CobinhoodTraining(MarketMakerTraining):
                                             ,(({coin_pair}_close - LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
                                                 / LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 * {coin_pair}_volume AS prev_{interval}_{coin_pair}_volume_direction""")  
                     lag_features_list.append(','.join(interval_list))  
-                    feature_col_list.extend([f'prev_{interval}_{coin_pair}_close_perc_chg',f'prev_{interval}_{coin_pair}_close_rate_chg',f'prev_{interval}_{coin_pair}_high_perc_chg',
-                                            f'prev_{interval}_{coin_pair}_low_perc_chg',f'prev_{interval}_{coin_pair}_volume_perc_chg',f'prev_{interval}_{coin_pair}_volume_direction'])
+                    feature_col_list.extend([f'prev_{interval}_{coin_pair}_close_perc_chg',f'prev_{interval}_{coin_pair}_close_rate_chg'#,f'prev_{interval}_{coin_pair}_high_perc_chg',
+                                            #f'prev_{interval}_{coin_pair}_low_perc_chg'
+                                            ,f'prev_{interval}_{coin_pair}_volume_perc_chg',f'prev_{interval}_{coin_pair}_volume_direction'])
             # Target variables for every interval configured at runtime
             if pair_type == 'target':
                 for target in self.trade_window_list:

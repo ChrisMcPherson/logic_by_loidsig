@@ -53,10 +53,8 @@ class MarketMakerScoring():
 
     def get_target_coin(self):
         """Return target coin pair that will be traded"""
-        target_coin_list = [cp for cp, ct in self.coin_pair_dict.items() if ct == 'target']
-        if len(target_coin_list) > 1:
-            raise Exception(f"There must only be a single target coin initialized in the coin pair dictionary. Values: {target_coin_list}")
-        return target_coin_list[0]
+        target_coin = self.coin_pair_dict['target']
+        return target_coin
 
     def get_model_standardizer(self):
         """Retrieve full S3 Key for standardize object and retrieve standardize object
@@ -386,16 +384,16 @@ class BinanceScoring(MarketMakerScoring):
         df[f'{prefix}_tbqav'] = pd.to_numeric(df[f'{prefix}_tbqav'])
         df['minute'] = pd.to_numeric(df['close_time']/1000/60).astype(int)
         recent_df_list = []
-        recent_df_list.append(coin_pair)
-        recent_df_list.append([pair_type, df])
+        recent_df_list.append(pair_type)
+        recent_df_list.append([coin_pair, df])
         return recent_df_list
 
     def engineer_scoring_features(self, scoring_df_dict):
         """Engineer scoring features for multiple coin pairs"""
         coin_df_list = []
 
-        for coin_pair, coin_data_list in scoring_df_dict.items():
-            pair_type, coin_df = coin_data_list
+        for pair_type, coin_data_list in scoring_df_dict.items():
+            coin_pair, coin_df = coin_data_list
 
             if pair_type == 'target':
                 coin_df['trade_hour'] = pd.to_datetime(coin_df['close_time']/1000, unit='s').dt.hour
@@ -524,7 +522,7 @@ class CobinhoodScoring(MarketMakerScoring):
     def __init__(self):
         super().__init__()
         self.cob_client = CobinhoodScoring.cobinhood_client()
-        self.formatted_target_coin = self.get_formatted_coin_pair()
+        self.set_formatted_target_coin()
 
 
     def set_scoring_data(self, in_parallel=True):
@@ -532,18 +530,19 @@ class CobinhoodScoring(MarketMakerScoring):
         if self.feature_minutes_list == None or self.trade_window_list == None:
             raise Exception("To construct scoring dataframe, the optional feature_minutes_list and trade_window_list attributes must be set!")
         # Get recent trade data for both target coin pair and through coin pair
-        recent_trades_interval = max(self.feature_minutes_list) + 10
+        #recent_trades_interval = max(self.feature_minutes_list) + 10
+        recent_trades_interval = 2890
         cores = multiprocessing.cpu_count()
         try:
             if in_parallel:
-                scoring_df_list = Parallel(n_jobs=cores)(delayed(CobinhoodScoring.pandas_get_candlesticks)(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items())
+                scoring_df_list = Parallel(n_jobs=cores)(delayed(CobinhoodScoring.pandas_get_candlesticks)(coin_pair, pair_type, recent_trades_interval) for pair_type, coin_pair in self.coin_pair_dict.items())
                 scoring_df_dict = dict(scoring_df_list)
             else:
-                scoring_df_list = [CobinhoodScoring.pandas_get_candlesticks(coin_pair, pair_type, f'{recent_trades_interval} min ago UTC') for coin_pair, pair_type in self.coin_pair_dict.items()]
+                scoring_df_list = [CobinhoodScoring.pandas_get_candlesticks(coin_pair, pair_type, recent_trades_interval) for pair_type, coin_pair in self.coin_pair_dict.items()]
                 scoring_df_dict = dict(scoring_df_list)
         except Exception as e:
-            print(f"Unable to get recent data for scoring: {e}")
-            return
+           print(f"Unable to get recent data for scoring: {e}")
+           return
 
         scoring_features_df = self.engineer_scoring_features(scoring_df_dict)
         scoring_features_df.fillna(0, inplace=True)
@@ -551,85 +550,108 @@ class CobinhoodScoring(MarketMakerScoring):
         self.scoring_features_df = scoring_features_df
 
     @staticmethod
-    def pandas_get_candlesticks(coin_pair, pair_type, start_time_str='1 min ago UTC'):
-        """Return minute granularity recent candlestick metrics from Binance api for a given coin pair and historical interval
+    def pandas_get_candlesticks(coin_pair, pair_type, min_ago=1):
+        """Return minute granularity recent candlestick metrics from Cobinhood or Binance api for a given coin pair and historical interval
 
         Returns:
             (list): ['coin_pair',['pair_type', pandas.DataFrame]]
         """
-        cob_client = CobinhoodScoring.cobinhood_client()
-        prefix = f"{coin_pair.lower()}"
-        coin_pair_upper = coin_pair.upper()
+        if 'excharb' not in pair_type:
+            cob_client = CobinhoodScoring.cobinhood_client()
+            prefix = f"{coin_pair}"
+            formatted_coin_pair = CobinhoodScoring.get_formatted_coin_pair(coin_pair)
+            starting_unix_time = int((time.time() - (min_ago * 60)) * 1000)
+            ending_unix_time = int(time.time() * 1000)
 
-        cob_candles_list = cob_client.chart.get_candles(trading_pair_id='ETH-USDT', start_time=1519862400000, end_time=1519948800000, timeframe='1m')['result']['candles']
-        df = pd.DataFrame(cob_candles_list)
-        df.rename(columns={'trading_pair_id':'coin','timestamp':'close_timestamp'}, inplace=True)
-        df['coin'] = df['coin'].replace(regex=True, to_replace=r'-', value=r'')
-        df['close_timestamp_trim'] = df['close_timestamp']/1000
-        df['close_datetime'] = pd.to_datetime(df['close_timestamp_trim'], unit='s')
+            cob_candles_list = cob_client.chart.get_candles(trading_pair_id=formatted_coin_pair, start_time=starting_unix_time, end_time=ending_unix_time, timeframe='1m')['result']['candles']
+            df = pd.DataFrame(cob_candles_list)
+            df.rename(columns={'close':f'{prefix}_close',
+                                'high':f'{prefix}_high',
+                                'low':f'{prefix}_low',
+                                'open':f'{prefix}_open',
+                                'timestamp':'close_timestamp',
+                                'trading_pair_id':'coin',
+                                'volume':f'{prefix}_volume'}, inplace=True)
+            df[f'{prefix}_open'] = pd.to_numeric(df[f'{prefix}_open'])
+            df[f'{prefix}_high'] = pd.to_numeric(df[f'{prefix}_high'])
+            df[f'{prefix}_low'] = pd.to_numeric(df[f'{prefix}_low'])
+            df[f'{prefix}_close'] = pd.to_numeric(df[f'{prefix}_close'])
+            df[f'{prefix}_volume'] = pd.to_numeric(df[f'{prefix}_volume'])
+            df['coin'] = df['coin'].replace(regex=True, to_replace=r'-', value=r'')
+            df['close_timestamp_trim'] = df['close_timestamp']/1000
+            df['close_datetime'] = pd.to_datetime(df['close_timestamp_trim'], unit='s')
+            df['minute'] = pd.to_numeric(df['close_timestamp']/1000/60).astype(int)
+        else:
+            bnb_client = BinanceScoring.binance_client()
+            prefix = f"{coin_pair}_excharb"
+            coin_pair_upper = coin_pair.upper()
+            klines = bnb_client.get_historical_klines(coin_pair_upper, Client.KLINE_INTERVAL_1MINUTE, f'{min_ago} min ago UTC')
+            df = pd.DataFrame(klines, columns=['open_time',f'{prefix}_open',f'{prefix}_high',f'{prefix}_low',f'{prefix}_close',f'{prefix}_volume',
+                            'close_timestamp',f'{prefix}_quote_asset_volume',f'{prefix}_trade_count', f'{prefix}_tbbav',f'{prefix}_tbqav',f'{prefix}_ignore']
+                        )
+            df[f'{prefix}_open'] = pd.to_numeric(df[f'{prefix}_open'])
+            df[f'{prefix}_high'] = pd.to_numeric(df[f'{prefix}_high'])
+            df[f'{prefix}_low'] = pd.to_numeric(df[f'{prefix}_low'])
+            df[f'{prefix}_close'] = pd.to_numeric(df[f'{prefix}_close'])
+            df[f'{prefix}_volume'] = pd.to_numeric(df[f'{prefix}_volume'])
+            df[f'{prefix}_quote_asset_volume'] = pd.to_numeric(df[f'{prefix}_quote_asset_volume'])
+            df[f'{prefix}_tbbav'] = pd.to_numeric(df[f'{prefix}_tbbav'])
+            df[f'{prefix}_tbqav'] = pd.to_numeric(df[f'{prefix}_tbqav'])
+            df['minute'] = pd.to_numeric(df['close_timestamp']/1000/60).astype(int)
 
-
-        klines = cob_client.get_historical_klines(coin_pair_upper, Client.KLINE_INTERVAL_1MINUTE, start_time_str)
-        df = pd.DataFrame(klines, columns=['open_time',f'{prefix}_open',f'{prefix}_high',f'{prefix}_low',f'{prefix}_close',f'{prefix}_volume',
-                        'close_time',f'{prefix}_quote_asset_volume',f'{prefix}_trade_count', f'{prefix}_tbbav',f'{prefix}_tbqav',f'{prefix}_ignore']
-                    )
-        df[f'{prefix}_open'] = pd.to_numeric(df[f'{prefix}_open'])
-        df[f'{prefix}_high'] = pd.to_numeric(df[f'{prefix}_high'])
-        df[f'{prefix}_low'] = pd.to_numeric(df[f'{prefix}_low'])
-        df[f'{prefix}_close'] = pd.to_numeric(df[f'{prefix}_close'])
-        df[f'{prefix}_volume'] = pd.to_numeric(df[f'{prefix}_volume'])
-        df[f'{prefix}_quote_asset_volume'] = pd.to_numeric(df[f'{prefix}_quote_asset_volume'])
-        df[f'{prefix}_tbbav'] = pd.to_numeric(df[f'{prefix}_tbbav'])
-        df[f'{prefix}_tbqav'] = pd.to_numeric(df[f'{prefix}_tbqav'])
-        df['minute'] = pd.to_numeric(df['close_time']/1000/60).astype(int)
         recent_df_list = []
-        recent_df_list.append(coin_pair)
-        recent_df_list.append([pair_type, df])
+        recent_df_list.append(pair_type)
+        recent_df_list.append([coin_pair, df])
         return recent_df_list
 
     def engineer_scoring_features(self, scoring_df_dict):
         """Engineer scoring features for multiple coin pairs"""
         coin_df_list = []
 
-        for coin_pair, coin_data_list in scoring_df_dict.items():
-            pair_type, coin_df = coin_data_list
+        for pair_type, coin_data_list in scoring_df_dict.items():
+            coin_pair, coin_df = coin_data_list
 
             if pair_type == 'target':
-                coin_df['trade_hour'] = pd.to_datetime(coin_df['close_time']/1000, unit='s').dt.hour
-                coin_df['trade_day_of_week'] = pd.to_datetime(coin_df['close_time']/1000, unit='s').dt.dayofweek + 1 # adjust for 0 indexed day of week
+                coin_df['trade_hour'] = pd.to_datetime(coin_df['close_timestamp']/1000, unit='s').dt.hour
+                coin_df['trade_day_of_week'] = pd.to_datetime(coin_df['close_timestamp']/1000, unit='s').dt.dayofweek + 1 # adjust for 0 indexed day of week
 
             # Lag features
-            for interval in self.feature_minutes_list:
-                coin_df[f'prev_{interval}_{coin_pair}_close'] = coin_df[f'{coin_pair}_close'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_close_perc_chg'] = (coin_df[f'{coin_pair}_close'] - coin_df[f'prev_{interval}_{coin_pair}_close']) / coin_df[f'prev_{interval}_{coin_pair}_close'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_close_rate_chg'] = (((coin_df[f'{coin_pair}_close'] - coin_df[f'prev_1_{coin_pair}_close']) / coin_df[f'prev_1_{coin_pair}_close']) -
-                                                    ((coin_df[f'{coin_pair}_close'] - coin_df[f'prev_{interval}_{coin_pair}_close']) / coin_df[f'prev_{interval}_{coin_pair}_close'])) * 100
+            if 'excharb' not in pair_type:
+                for interval in self.feature_minutes_list:
+                    coin_df[f'prev_{interval}_{coin_pair}_close'] = coin_df[f'{coin_pair}_close'].shift(interval)
+                    coin_df[f'prev_{interval}_{coin_pair}_close_perc_chg'] = (coin_df[f'{coin_pair}_close'] - coin_df[f'prev_{interval}_{coin_pair}_close']) / coin_df[f'prev_{interval}_{coin_pair}_close'] * 100
+                    coin_df[f'prev_{interval}_{coin_pair}_close_rate_chg'] = (((coin_df[f'{coin_pair}_close'] - coin_df[f'prev_1_{coin_pair}_close']) / coin_df[f'prev_1_{coin_pair}_close']) -
+                                                        ((coin_df[f'{coin_pair}_close'] - coin_df[f'prev_{interval}_{coin_pair}_close']) / coin_df[f'prev_{interval}_{coin_pair}_close'])) * 100
 
-                coin_df[f'prev_{interval}_{coin_pair}_high'] = coin_df[f'{coin_pair}_high'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_high_perc_chg'] = (coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_high_rate_chg'] = (((coin_df[f'{coin_pair}_high'] - coin_df[f'prev_1_{coin_pair}_high']) / coin_df[f'prev_1_{coin_pair}_high']) -
-                                                    ((coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'])) * 100
+                    coin_df[f'prev_{interval}_{coin_pair}_high'] = coin_df[f'{coin_pair}_high'].shift(interval)
+                    coin_df[f'prev_{interval}_{coin_pair}_high_perc_chg'] = (coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'] * 100
+                    coin_df[f'prev_{interval}_{coin_pair}_high_rate_chg'] = (((coin_df[f'{coin_pair}_high'] - coin_df[f'prev_1_{coin_pair}_high']) / coin_df[f'prev_1_{coin_pair}_high']) -
+                                                        ((coin_df[f'{coin_pair}_high'] - coin_df[f'prev_{interval}_{coin_pair}_high']) / coin_df[f'prev_{interval}_{coin_pair}_high'])) * 100
 
-                coin_df[f'prev_{interval}_{coin_pair}_low'] = coin_df[f'{coin_pair}_low'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_low_perc_chg'] = (coin_df[f'{coin_pair}_low'] - coin_df[f'prev_{interval}_{coin_pair}_low']) / coin_df[f'prev_{interval}_{coin_pair}_low'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_low_rate_chg'] = (((coin_df[f'{coin_pair}_low'] - coin_df[f'prev_1_{coin_pair}_low']) / coin_df[f'prev_1_{coin_pair}_low'] * 100) -
-                                                    ((coin_df[f'{coin_pair}_low'] - coin_df[f'prev_{interval}_{coin_pair}_low']) / coin_df[f'prev_{interval}_{coin_pair}_low'])) * 100
+                    coin_df[f'prev_{interval}_{coin_pair}_low'] = coin_df[f'{coin_pair}_low'].shift(interval)
+                    coin_df[f'prev_{interval}_{coin_pair}_low_perc_chg'] = (coin_df[f'{coin_pair}_low'] - coin_df[f'prev_{interval}_{coin_pair}_low']) / coin_df[f'prev_{interval}_{coin_pair}_low'] * 100
+                    coin_df[f'prev_{interval}_{coin_pair}_low_rate_chg'] = (((coin_df[f'{coin_pair}_low'] - coin_df[f'prev_1_{coin_pair}_low']) / coin_df[f'prev_1_{coin_pair}_low'] * 100) -
+                                                        ((coin_df[f'{coin_pair}_low'] - coin_df[f'prev_{interval}_{coin_pair}_low']) / coin_df[f'prev_{interval}_{coin_pair}_low'])) * 100
 
-                coin_df[f'prev_{interval}_{coin_pair}_volume'] = coin_df[f'{coin_pair}_volume'].shift(interval)
-                coin_df[f'prev_{interval}_{coin_pair}_volume_perc_chg'] = (coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'] * 100
-                coin_df[f'prev_{interval}_{coin_pair}_volume_rate_chg'] = (((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_1_{coin_pair}_volume']) / coin_df[f'prev_1_{coin_pair}_volume']) -
-                                                    ((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'])) * 100
+                    coin_df[f'prev_{interval}_{coin_pair}_volume'] = coin_df[f'{coin_pair}_volume'].shift(interval)
+                    coin_df[f'prev_{interval}_{coin_pair}_volume_perc_chg'] = (coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'] * 100
+                    coin_df[f'prev_{interval}_{coin_pair}_volume_rate_chg'] = (((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_1_{coin_pair}_volume']) / coin_df[f'prev_1_{coin_pair}_volume']) -
+                                                        ((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'])) * 100
 
             coin_df_list.append(coin_df)
 
         # Combine features
-        features_df = reduce(lambda x, y: pd.merge(x, y, on='close_time', how='inner'), coin_df_list)
+        features_df = reduce(lambda x, y: pd.merge(x, y, on='minute', how='inner'), coin_df_list)
+
         # Create Interaction Features
         for coin_pair, coin_data_list in scoring_df_dict.items():
             pair_type, coin_df = coin_data_list
             if pair_type == 'alt':
                 features_df['current_interaction'] = (features_df[f'{self.target_coin}_close']-features_df[f'{coin_pair}_close'])/features_df[f'{self.target_coin}_close']
                 features_df['current_1_interaction'] = (features_df[f'{self.target_coin}_close'].shift(1)-features_df[f'{coin_pair}_close'].shift(1))/features_df[f'{self.target_coin}_close'].shift(1)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction']) / 2
+                features_df[f'avg_1_{coin_pair}_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
                 features_df['current_2_interaction'] = (features_df[f'{self.target_coin}_close'].shift(2)-features_df[f'{coin_pair}_close'].shift(2))/features_df[f'{self.target_coin}_close'].shift(2)
                 features_df['current_3_interaction'] = (features_df[f'{self.target_coin}_close'].shift(3)-features_df[f'{coin_pair}_close'].shift(3))/features_df[f'{self.target_coin}_close'].shift(3)
                 features_df['current_4_interaction'] = (features_df[f'{self.target_coin}_close'].shift(4)-features_df[f'{coin_pair}_close'].shift(4))/features_df[f'{self.target_coin}_close'].shift(4)
@@ -667,6 +689,21 @@ class CobinhoodScoring(MarketMakerScoring):
                                     features_df['current_15_interaction'] + features_df['current_16_interaction'] + features_df['current_17_interaction'] + 
                                     features_df['current_18_interaction'] + features_df['current_19_interaction'] + features_df['current_20_interaction']) / 21
                 features_df[f'avg_20_{coin_pair}_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
+            elif 'excharb' in pair_type:
+                features_df['current_interaction'] = (features_df[f'{self.target_coin}_close'] - features_df[f'{coin_pair}_excharb_close']) / features_df[f'{self.target_coin}_close']
+                features_df['current_1_interaction'] = (features_df[f'{self.target_coin}_close'].shift(1) - features_df[f'{coin_pair}_excharb_close'].shift(1) ) / features_df[f'{self.target_coin}_close'].shift(1)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction']) / 2
+                features_df[f'avg_1_{coin_pair}_excharb_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
+                features_df['current_2_interaction'] = (features_df[f'{self.target_coin}_close'].shift(2) - features_df[f'{coin_pair}_excharb_close'].shift(2) ) / features_df[f'{self.target_coin}_close'].shift(2)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction']) / 3
+                features_df[f'avg_2_{coin_pair}_excharb_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
+                features_df['current_3_interaction'] = (features_df[f'{self.target_coin}_close'].shift(3) - features_df[f'{coin_pair}_excharb_close'].shift(3) ) / features_df[f'{self.target_coin}_close'].shift(3)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction'] + features_df['current_3_interaction']) / 4
+                features_df[f'avg_3_{coin_pair}_excharb_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
         return features_df
 
     def get_trade_qty(self, percent_funds_trading=.9):
@@ -676,12 +713,17 @@ class CobinhoodScoring(MarketMakerScoring):
         quantity_to_trade = round(quantity_to_trade, 6)
         return quantity_to_trade
 
-    def get_formatted_coin_pair(self):
+    def set_formatted_target_coin(self):
+        formatted_target_coin = CobinhoodScoring.get_formatted_coin_pair(self.target_coin)
+        self.formatted_target_coin = formatted_target_coin
+
+    @staticmethod
+    def get_formatted_coin_pair(coin_pair):
         """Given an unformatted coin pair, return the cobinhood formatted coin pair
         """
-        coin_pair = self.target_coin.upper()
-        pairs_payload = self.cob_client.market.get_trading_pairs()
-        pairs_list = [[pair['id'].replace('-', ''), pair['id']] for pair in pairs_payload['result']['trading_pairs']]
+        cob_client = CobinhoodScoring.cobinhood_client()
+        pairs_payload = cob_client.market.get_trading_pairs()
+        pairs_list = [[pair['id'].lower().replace('-', ''), pair['id']] for pair in pairs_payload['result']['trading_pairs']]
         pairs_dict = dict(pairs_list)
         formatted_coin_pair = pairs_dict[coin_pair]
         return formatted_coin_pair
