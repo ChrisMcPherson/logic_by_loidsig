@@ -2,8 +2,9 @@ import pandas as pd
 from io import StringIO
 import boto3
 import json
+import psycopg2
 
-
+# Instantiate resources
 try:
     boto_session = boto3.Session(profile_name='loidsig')
 except:
@@ -41,11 +42,11 @@ def build_orderbook_df(orderbook_json, order_type, coin_pair, unix_timestamp):
 def df_to_s3(df, coin_pair, order_type, timestamp):
     file_name = f"{order_type}/{coin_pair}/{timestamp}.csv"
     df['file_name'] = file_name
-    recents_file_path = f"cobinhood/historic_orderbook/{file_name}"
+    file_path = f"cobinhood/historic_orderbook/{file_name}"
     # Write out csv
     csv_buffer = StringIO()
     df.to_csv(csv_buffer)
-    s3_resource.Object(s3_bucket, recents_file_path).put(Body=csv_buffer.getvalue())
+    s3_resource.Object(s3_bucket, file_path).put(Body=csv_buffer.getvalue())
 
 def engineer_features():
     pass

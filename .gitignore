@@ -15,4 +15,5 @@ domino.log
 
 # Files
 test_train_features.csv
+*.zip
 .DS_Store
