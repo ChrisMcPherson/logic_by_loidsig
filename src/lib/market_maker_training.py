@@ -134,6 +134,7 @@ class BinanceTraining(MarketMakerTraining):
                                         , CAST(taker_buy_base_asset_volume AS DOUBLE) AS {coin_pair}_tbbav, CAST(taker_buy_quote_asset_volume AS DOUBLE) AS {coin_pair}_tbqav
                                     FROM binance.historic_candlesticks 
                                     WHERE coin_partition = '{coin_pair}'
+                                    AND DATE(from_unixtime(cast(open_timestamp AS BIGINT) / 1000)) > DATE('2018-03-01')
                                     )""")
             # Base features
             if pair_type == 'target':
@@ -253,6 +254,7 @@ class CobinhoodTraining(MarketMakerTraining):
                                         , CAST(volume AS DOUBLE) AS {coin_pair}{'_excharb' if 'excharb' in pair_type else ''}_volume
                                     FROM {'binance' if 'excharb' in pair_type else 'cobinhood'}.historic_candlesticks 
                                     WHERE coin_partition = '{coin_pair}'
+                                        AND DATE(from_unixtime(cast(open_timestamp AS BIGINT) / 1000)) > DATE('2018-06-01')
                                     )""")
             # Base features
             if pair_type == 'target':
@@ -332,7 +334,7 @@ class CobinhoodTraining(MarketMakerTraining):
         query_template = f"""WITH {raw_features}
                             SELECT {base_features}
                                 ,{interaction_features}
-                                ,{excharb_features}
+                                {','+excharb_features if excharb_features else ''}
                                 ,{target_variables}
                                 ,{lag_features}
                                 ,{target_variables}

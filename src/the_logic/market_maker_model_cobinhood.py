@@ -20,12 +20,11 @@ pd.options.mode.chained_assignment = None
 # Config
 coin_pair_dict = {'target':'btcusdt',
                   'alt':'ethusdt',
-                  'through':'trxeth',
-                  'excharb':'btcusdt'}
+                  'through':'eoseth',
+                  'excharb_btc':'btcusdt'}
                   
-#feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-feature_minutes_list = [1,5]
-trade_window_list = [4]
+feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
+trade_window_list = [7]
 
 def main():
     """Control the training and persistance of a market maker model"""
@@ -46,15 +45,15 @@ def main():
         y = mm_training.training_df.loc[:,target_column]
         model = linear_model.LinearRegression()
         # Standardize features (specific for sgd and other sensitive models)
-        scaler = StandardScaler()
-        scaler.fit(X)
-        X = scaler.transform(X)
+        #scaler = StandardScaler()
+        #scaler.fit(X)
+        #X = scaler.transform(X)
         # Fit model
         model.fit(X, y)
         # Persist model and standardizer
         print(f"{target_column} r2: {r2_score(y, model.predict(X))}")
         mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column))))
-        mm_training.persist_standardizer(scaler)
+        #mm_training.persist_standardizer(scaler)
     # Persist configuration
     mm_training.persist_model_config()
 

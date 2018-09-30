@@ -13,8 +13,13 @@ create table the_logic.scoring_results (
 	, trade_duration_space int[]
 	, coin_pair_definition json
 	, scoring_latency_seconds double precision
+	, scoring_close_price double precision
+	, buy_timestamp bigint
+	, sell_timestamp bigint
 	, buy_quantity double precision
 	, sell_quantity double precision
+	, buy_price_pre_order double precision
+	, sell_price_pre_order double precision
 	, buy_price double precision
 	, sell_price double precision
 	, buy_commission double precision
@@ -25,7 +30,15 @@ create table the_logic.scoring_results (
 	, buy_client_order_id text
 	, sell_order_id int
 	, sell_client_order_id text
+	, buy_fill_latency_seconds int
+	, sell_fill_latency_seconds int
 );
+
+alter table the_logic.scoring_results 
+add column scoring_close_price double precision;
+
+	
+ALTER TABLE the_logic.scoring_results ALTER COLUMN sell_timestamp TYPE bigint;
 
 ---- Model Versions
 create table the_logic.model_versions(
@@ -36,4 +49,4 @@ create table the_logic.model_versions(
 select * from the_logic.model_versions;
 
 insert into the_logic.model_versions
-values (1.3, 'Features: added feature scaler and current funds dependent trade quantity');
+values (2.2, 'Added more robust data logging');

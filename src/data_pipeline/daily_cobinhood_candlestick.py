@@ -48,7 +48,7 @@ def get_candlestick():
     days_between_list = list(range(start_day_id, current_day_id))
 
     # Process coin pairs
-    coins = ('BTC-USDT','ETH-USDT','COB-USDT','TRX-ETH','LTC-USDT','ETH-BTC','XRP-ETH','NEO-ETH','ENJ-ETH')
+    coins = ('BTC-USDT','ETH-USDT','COB-USDT','TRX-ETH','EOS-ETH','LTC-USDT','ETH-BTC','XRP-ETH','NEO-ETH','ENJ-ETH')
     
     for coin in coins:
         coin_strip_lower = coin.lower().replace('-', '')

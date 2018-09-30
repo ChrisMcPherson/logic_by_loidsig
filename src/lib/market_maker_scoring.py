@@ -10,6 +10,7 @@ import json
 import pickle
 import psycopg2
 from functools import reduce
+import logging.config
 import time
 import datetime
 from datetime import timedelta
@@ -41,6 +42,13 @@ class MarketMakerScoring():
         self.feature_minutes_list = model_config_json['feature_minutes_list']
         self.trade_window_list = model_config_json['trade_window_list']
         self.feature_column_list = model_config_json['feature_column_list']
+
+        requests_logger = logging.getLogger('cobinhood_api')
+        requests_logger.setLevel(logging.WARNING)
+        logging.config.dictConfig({
+            'version': 1,
+            'disable_existing_loggers': True,
+        })
 
 
     def get_model_config(self):
@@ -124,119 +132,6 @@ class MarketMakerScoring():
         for obj in bucket.objects.filter(Prefix=s3_prefix):
             object_name_list.append([obj.key, os.path.basename(obj.key)])
         return object_name_list
-
-    def persist_scoring_results(self, scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, scoring_datetime, model_version, buy_order=None, sell_order=None):
-        """Inserts results from completed scoring cycle
-
-        Args:
-            scoring_result_dict (dict): A dictionary containing the scoring results for each trade hold minute scored
-        """
-        for trade_hold_minutes, payload in scoring_result_dict.items():
-            # default values
-            highest_return = False
-            is_trade = False
-            buy_order_id = 'Null'
-            buy_client_order_id = 'Null'
-            buy_quantity = 'Null'
-            buy_commission = 'Null'
-            buy_price = 'Null'
-            buy_commission_coin = 'Null'
-            sell_order_id = 'Null'
-            sell_client_order_id = 'Null'
-            sell_quantity = 'Null'
-            sell_commission = 'Null'
-            sell_price = 'Null'
-            sell_commission_coin = 'Null'
-            if trade_hold_minutes == optimal_hold_minutes:
-                highest_return = True
-                if scoring_result_dict[optimal_hold_minutes][0][0] > predicted_return_threshold:
-                    is_trade = True
-                    buy_order_id = buy_order['orderId']
-                    buy_client_order_id = buy_order['clientOrderId']
-                    buy_quantity = buy_order['executedQty']
-                    buy_fills_df = pd.DataFrame(buy_order['fills'])
-                    buy_fills_df['commission'] = pd.to_numeric(buy_fills_df['commission'], errors='coerce')
-                    buy_fills_df['price'] = pd.to_numeric(buy_fills_df['price'], errors='coerce')
-                    buy_fills_df['qty'] = pd.to_numeric(buy_fills_df['qty'], errors='coerce')
-                    buy_commission = buy_fills_df['commission'].sum()
-                    total_buy_qty = buy_fills_df['qty'].sum()
-                    buy_fills_df['qty_perc'] = buy_fills_df['qty'] / total_buy_qty
-                    buy_fills_df['price_x_qty_perc'] = buy_fills_df['price'] * buy_fills_df['qty_perc']
-                    buy_price = buy_fills_df['price_x_qty_perc'].sum()
-                    buy_commission_coin = buy_fills_df.iloc[0]['commissionAsset']
-
-                    sell_order_id = sell_order['orderId']
-                    sell_client_order_id = sell_order['clientOrderId']
-                    sell_quantity = sell_order['executedQty']
-                    sell_fills_df = pd.DataFrame(sell_order['fills'])
-                    sell_fills_df['commission'] = pd.to_numeric(sell_fills_df['commission'], errors='coerce')
-                    sell_fills_df['price'] = pd.to_numeric(sell_fills_df['price'], errors='coerce')
-                    sell_fills_df['qty'] = pd.to_numeric(sell_fills_df['qty'], errors='coerce')
-                    sell_commission = sell_fills_df['commission'].sum()
-                    total_sell_qty = sell_fills_df['qty'].sum()
-                    sell_fills_df['qty_perc'] = sell_fills_df['qty'] / total_sell_qty
-                    sell_fills_df['price_x_qty_perc'] = sell_fills_df['price'] * sell_fills_df['qty_perc']
-                    sell_price = sell_fills_df['price_x_qty_perc'].sum()
-                    sell_commission_coin = sell_fills_df.iloc[0]['commissionAsset']
-                else:
-                    is_trade = False
-
-            column_list_string = """trade_datetime
-            , trade_minute
-            , target_coin
-            , trade_duration
-            , predicted_return
-            , predicted_growth_rate
-            , highest_return
-            , is_trade
-            , trade_threshold
-            , feature_window_space
-            , trade_duration_space
-            , coin_pair_definition
-            , scoring_latency_seconds
-            , buy_quantity
-            , sell_quantity
-            , buy_price
-            , sell_price
-            , buy_commission
-            , sell_commission
-            , buy_commission_coin
-            , sell_commission_coin
-            , buy_order_id
-            , buy_client_order_id
-            , sell_order_id
-            , sell_client_order_id
-            , model_version
-            """
-
-            values = f"""'{scoring_datetime}'
-            , {latest_minute}
-            , '{self.target_coin}'
-            , {trade_hold_minutes}
-            , {payload[0][0]}
-            , {payload[1][0]}
-            , {highest_return}
-            , {is_trade}
-            , {predicted_return_threshold}
-            , ARRAY{self.feature_minutes_list}
-            , ARRAY{self.trade_window_list}
-            , '{json.dumps(self.coin_pair_dict)}'
-            , {data_latency_seconds}
-            , {buy_quantity}
-            , {sell_quantity}
-            , {buy_price}
-            , {sell_price}
-            , {buy_commission}
-            , {sell_commission}
-            , '{buy_commission_coin}'
-            , '{sell_commission_coin}'
-            , {buy_order_id}
-            , '{buy_client_order_id}'
-            , {sell_order_id}
-            , '{sell_client_order_id}'
-            , {model_version}
-            """
-            self.insert_into_postgres('the_logic', 'scoring_results', column_list_string, values)
 
     def insert_into_postgres(self, schema, table, column_list_string, values):
         """Inserts scoring results into Postgres db table
@@ -497,6 +392,119 @@ class BinanceScoring(MarketMakerScoring):
         quantity_to_trade = round(quantity_to_trade, 6)
         return quantity_to_trade
 
+    def persist_scoring_results(self, scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, scoring_datetime, model_version, buy_order=None, sell_order=None):
+        """Inserts results from completed scoring cycle
+
+        Args:
+            scoring_result_dict (dict): A dictionary containing the scoring results for each trade hold minute scored
+        """
+        for trade_hold_minutes, payload in scoring_result_dict.items():
+            # default values
+            highest_return = False
+            is_trade = False
+            buy_order_id = 'Null'
+            buy_client_order_id = 'Null'
+            buy_quantity = 'Null'
+            buy_commission = 'Null'
+            buy_price = 'Null'
+            buy_commission_coin = 'Null'
+            sell_order_id = 'Null'
+            sell_client_order_id = 'Null'
+            sell_quantity = 'Null'
+            sell_commission = 'Null'
+            sell_price = 'Null'
+            sell_commission_coin = 'Null'
+            if trade_hold_minutes == optimal_hold_minutes:
+                highest_return = True
+                if scoring_result_dict[optimal_hold_minutes][0][0] > predicted_return_threshold:
+                    is_trade = True
+                    buy_order_id = buy_order['orderId']
+                    buy_client_order_id = buy_order['clientOrderId']
+                    buy_quantity = buy_order['executedQty']
+                    buy_fills_df = pd.DataFrame(buy_order['fills'])
+                    buy_fills_df['commission'] = pd.to_numeric(buy_fills_df['commission'], errors='coerce')
+                    buy_fills_df['price'] = pd.to_numeric(buy_fills_df['price'], errors='coerce')
+                    buy_fills_df['qty'] = pd.to_numeric(buy_fills_df['qty'], errors='coerce')
+                    buy_commission = buy_fills_df['commission'].sum()
+                    total_buy_qty = buy_fills_df['qty'].sum()
+                    buy_fills_df['qty_perc'] = buy_fills_df['qty'] / total_buy_qty
+                    buy_fills_df['price_x_qty_perc'] = buy_fills_df['price'] * buy_fills_df['qty_perc']
+                    buy_price = buy_fills_df['price_x_qty_perc'].sum()
+                    buy_commission_coin = buy_fills_df.iloc[0]['commissionAsset']
+
+                    sell_order_id = sell_order['orderId']
+                    sell_client_order_id = sell_order['clientOrderId']
+                    sell_quantity = sell_order['executedQty']
+                    sell_fills_df = pd.DataFrame(sell_order['fills'])
+                    sell_fills_df['commission'] = pd.to_numeric(sell_fills_df['commission'], errors='coerce')
+                    sell_fills_df['price'] = pd.to_numeric(sell_fills_df['price'], errors='coerce')
+                    sell_fills_df['qty'] = pd.to_numeric(sell_fills_df['qty'], errors='coerce')
+                    sell_commission = sell_fills_df['commission'].sum()
+                    total_sell_qty = sell_fills_df['qty'].sum()
+                    sell_fills_df['qty_perc'] = sell_fills_df['qty'] / total_sell_qty
+                    sell_fills_df['price_x_qty_perc'] = sell_fills_df['price'] * sell_fills_df['qty_perc']
+                    sell_price = sell_fills_df['price_x_qty_perc'].sum()
+                    sell_commission_coin = sell_fills_df.iloc[0]['commissionAsset']
+                else:
+                    is_trade = False
+
+            column_list_string = """trade_datetime
+            , trade_minute
+            , target_coin
+            , trade_duration
+            , predicted_return
+            , predicted_growth_rate
+            , highest_return
+            , is_trade
+            , trade_threshold
+            , feature_window_space
+            , trade_duration_space
+            , coin_pair_definition
+            , scoring_latency_seconds
+            , buy_quantity
+            , sell_quantity
+            , buy_price
+            , sell_price
+            , buy_commission
+            , sell_commission
+            , buy_commission_coin
+            , sell_commission_coin
+            , buy_order_id
+            , buy_client_order_id
+            , sell_order_id
+            , sell_client_order_id
+            , model_version
+            """
+
+            values = f"""'{scoring_datetime}'
+            , {latest_minute}
+            , '{self.target_coin}'
+            , {trade_hold_minutes}
+            , {payload[0][0]}
+            , {payload[1][0]}
+            , {highest_return}
+            , {is_trade}
+            , {predicted_return_threshold}
+            , ARRAY{self.feature_minutes_list}
+            , ARRAY{self.trade_window_list}
+            , '{json.dumps(self.coin_pair_dict)}'
+            , {data_latency_seconds}
+            , {buy_quantity}
+            , {sell_quantity}
+            , {buy_price}
+            , {sell_price}
+            , {buy_commission}
+            , {sell_commission}
+            , '{buy_commission_coin}'
+            , '{sell_commission_coin}'
+            , {buy_order_id}
+            , '{buy_client_order_id}'
+            , {sell_order_id}
+            , '{sell_client_order_id}'
+            , {model_version}
+            """
+            self.insert_into_postgres('the_logic', 'scoring_results', column_list_string, values)
+
     @staticmethod
     def binance_client():
         # Instantiate Binance resources
@@ -530,8 +538,8 @@ class CobinhoodScoring(MarketMakerScoring):
         if self.feature_minutes_list == None or self.trade_window_list == None:
             raise Exception("To construct scoring dataframe, the optional feature_minutes_list and trade_window_list attributes must be set!")
         # Get recent trade data for both target coin pair and through coin pair
-        #recent_trades_interval = max(self.feature_minutes_list) + 10
-        recent_trades_interval = 2890
+        recent_trades_interval = max(self.feature_minutes_list) + 10
+        #recent_trades_interval = 2890
         cores = multiprocessing.cpu_count()
         try:
             if in_parallel:
@@ -637,6 +645,11 @@ class CobinhoodScoring(MarketMakerScoring):
                     coin_df[f'prev_{interval}_{coin_pair}_volume_perc_chg'] = (coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'] * 100
                     coin_df[f'prev_{interval}_{coin_pair}_volume_rate_chg'] = (((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_1_{coin_pair}_volume']) / coin_df[f'prev_1_{coin_pair}_volume']) -
                                                         ((coin_df[f'{coin_pair}_volume'] - coin_df[f'prev_{interval}_{coin_pair}_volume']) / coin_df[f'prev_{interval}_{coin_pair}_volume'])) * 100
+                    coin_df[f'prev_{interval}_{coin_pair}_volume_direction'] = (coin_df[f'{coin_pair}_close'] - coin_df[f'prev_{interval}_{coin_pair}_close']) / coin_df[f'prev_{interval}_{coin_pair}_close'] * 100 * coin_df[f'{coin_pair}_volume']
+            
+            # Drop shared columns that aren't relevant
+            if pair_type != 'target':
+                coin_df.drop(['close_timestamp'], axis=1, inplace=True)
 
             coin_df_list.append(coin_df)
 
@@ -644,8 +657,8 @@ class CobinhoodScoring(MarketMakerScoring):
         features_df = reduce(lambda x, y: pd.merge(x, y, on='minute', how='inner'), coin_df_list)
 
         # Create Interaction Features
-        for coin_pair, coin_data_list in scoring_df_dict.items():
-            pair_type, coin_df = coin_data_list
+        for pair_type, coin_data_list in scoring_df_dict.items():
+            coin_pair, coin_df = coin_data_list
             if pair_type == 'alt':
                 features_df['current_interaction'] = (features_df[f'{self.target_coin}_close']-features_df[f'{coin_pair}_close'])/features_df[f'{self.target_coin}_close']
                 features_df['current_1_interaction'] = (features_df[f'{self.target_coin}_close'].shift(1)-features_df[f'{coin_pair}_close'].shift(1))/features_df[f'{self.target_coin}_close'].shift(1)
@@ -704,14 +717,52 @@ class CobinhoodScoring(MarketMakerScoring):
                 features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction'] + features_df['current_3_interaction']) / 4
                 features_df[f'avg_3_{coin_pair}_excharb_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
 
+                features_df['current_4_interaction'] = (features_df[f'{self.target_coin}_close'].shift(4)-features_df[f'{coin_pair}_excharb_close'].shift(4))/features_df[f'{self.target_coin}_close'].shift(4)
+                features_df['current_5_interaction'] = (features_df[f'{self.target_coin}_close'].shift(5)-features_df[f'{coin_pair}_excharb_close'].shift(5))/features_df[f'{self.target_coin}_close'].shift(5)
+                features_df['current_6_interaction'] = (features_df[f'{self.target_coin}_close'].shift(6)-features_df[f'{coin_pair}_excharb_close'].shift(6))/features_df[f'{self.target_coin}_close'].shift(6)
+                features_df['current_7_interaction'] = (features_df[f'{self.target_coin}_close'].shift(7)-features_df[f'{coin_pair}_excharb_close'].shift(7))/features_df[f'{self.target_coin}_close'].shift(7)
+                features_df['current_8_interaction'] = (features_df[f'{self.target_coin}_close'].shift(8)-features_df[f'{coin_pair}_excharb_close'].shift(8))/features_df[f'{self.target_coin}_close'].shift(8)
+                features_df['current_9_interaction'] = (features_df[f'{self.target_coin}_close'].shift(9)-features_df[f'{coin_pair}_excharb_close'].shift(9))/features_df[f'{self.target_coin}_close'].shift(9)
+                features_df['current_10_interaction'] = (features_df[f'{self.target_coin}_close'].shift(10)-features_df[f'{coin_pair}_excharb_close'].shift(10))/features_df[f'{self.target_coin}_close'].shift(10)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction'] + 
+                                    features_df['current_3_interaction'] + features_df['current_4_interaction'] + features_df['current_5_interaction'] + 
+                                    features_df['current_6_interaction'] + features_df['current_7_interaction'] + features_df['current_8_interaction'] + 
+                                    features_df['current_9_interaction'] + features_df['current_10_interaction']) / 11
+                features_df[f'avg_10_{coin_pair}_excharb_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
+                features_df['current_11_interaction'] = (features_df[f'{self.target_coin}_close'].shift(11)-features_df[f'{coin_pair}_excharb_close'].shift(11))/features_df[f'{self.target_coin}_close'].shift(11)
+                features_df['current_12_interaction'] = (features_df[f'{self.target_coin}_close'].shift(12)-features_df[f'{coin_pair}_excharb_close'].shift(12))/features_df[f'{self.target_coin}_close'].shift(12)
+                features_df['current_13_interaction'] = (features_df[f'{self.target_coin}_close'].shift(13)-features_df[f'{coin_pair}_excharb_close'].shift(13))/features_df[f'{self.target_coin}_close'].shift(13)
+                features_df['current_14_interaction'] = (features_df[f'{self.target_coin}_close'].shift(14)-features_df[f'{coin_pair}_excharb_close'].shift(14))/features_df[f'{self.target_coin}_close'].shift(14)
+                features_df['current_15_interaction'] = (features_df[f'{self.target_coin}_close'].shift(15)-features_df[f'{coin_pair}_excharb_close'].shift(15))/features_df[f'{self.target_coin}_close'].shift(15)
+                features_df['current_16_interaction'] = (features_df[f'{self.target_coin}_close'].shift(16)-features_df[f'{coin_pair}_excharb_close'].shift(16))/features_df[f'{self.target_coin}_close'].shift(16)
+                features_df['current_17_interaction'] = (features_df[f'{self.target_coin}_close'].shift(17)-features_df[f'{coin_pair}_excharb_close'].shift(17))/features_df[f'{self.target_coin}_close'].shift(17)
+                features_df['current_18_interaction'] = (features_df[f'{self.target_coin}_close'].shift(18)-features_df[f'{coin_pair}_excharb_close'].shift(18))/features_df[f'{self.target_coin}_close'].shift(18)
+                features_df['current_19_interaction'] = (features_df[f'{self.target_coin}_close'].shift(19)-features_df[f'{coin_pair}_excharb_close'].shift(19))/features_df[f'{self.target_coin}_close'].shift(19)
+                features_df['current_20_interaction'] = (features_df[f'{self.target_coin}_close'].shift(20)-features_df[f'{coin_pair}_excharb_close'].shift(20))/features_df[f'{self.target_coin}_close'].shift(20)
+                features_df['interaction_average'] = (features_df['current_interaction'] + features_df['current_1_interaction'] + features_df['current_2_interaction'] + 
+                                    features_df['current_3_interaction'] + features_df['current_4_interaction'] + features_df['current_5_interaction'] + 
+                                    features_df['current_6_interaction'] + features_df['current_7_interaction'] + features_df['current_8_interaction'] + 
+                                    features_df['current_9_interaction'] + features_df['current_10_interaction'] + features_df['current_11_interaction'] + 
+                                    features_df['current_12_interaction'] + features_df['current_13_interaction'] + features_df['current_14_interaction'] +
+                                    features_df['current_15_interaction'] + features_df['current_16_interaction'] + features_df['current_17_interaction'] + 
+                                    features_df['current_18_interaction'] + features_df['current_19_interaction'] + features_df['current_20_interaction']) / 21
+                features_df[f'avg_20_{coin_pair}_excharb_close_interaction'] = features_df['interaction_average'] - features_df['current_interaction']
+
         return features_df
 
     def get_trade_qty(self, percent_funds_trading=.9):
-        usdt_balance = float([balance for balance in self.cob_client.wallet.get_balances()['result']['balances'] if balance['currency'] == 'USDT'][0]['total'])
-        target_price = float([data['last_price'] for coin_pair, data in self.cob_client.market.get_stats()['result'].items() if data['id'] == self.formatted_target_coin][0])
+        usdt_balance = self.get_usdt_wallet_balance()
+        target_price = self.get_target_coin_price()
         quantity_to_trade = (usdt_balance / target_price) * percent_funds_trading
         quantity_to_trade = round(quantity_to_trade, 6)
         return quantity_to_trade
+
+    def get_usdt_wallet_balance(self):
+        return float([balance for balance in self.cob_client.wallet.get_balances()['result']['balances'] if balance['currency'] == 'USDT'][0]['total'])
+
+    def get_target_coin_price(self):
+        return float(self.cob_client.market.get_tickers(self.formatted_target_coin)['result']['ticker']['last_trade_price'])
 
     def set_formatted_target_coin(self):
         formatted_target_coin = CobinhoodScoring.get_formatted_coin_pair(self.target_coin)
@@ -727,6 +778,123 @@ class CobinhoodScoring(MarketMakerScoring):
         pairs_dict = dict(pairs_list)
         formatted_coin_pair = pairs_dict[coin_pair]
         return formatted_coin_pair
+
+    def persist_scoring_results(self, scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, scoring_datetime, model_version, scoring_close_price, target_coin_price_pre_buy_order='Null', buy_order=None, target_coin_price_pre_sell_order='Null', sell_order=None, buy_fill_latency_seconds='Null', sell_fill_latency_seconds='Null'):
+        """Inserts results from completed scoring cycle
+
+        Args:
+            scoring_result_dict (dict): A dictionary containing the scoring results for each trade hold minute scored
+        """
+        for trade_hold_minutes, payload in scoring_result_dict.items():
+            # default values
+            highest_return = False
+            is_trade = False
+            buy_timestamp = 'Null'
+            buy_order_id = 'Null'
+            buy_client_order_id = 'Null'
+            buy_quantity = 'Null'
+            buy_commission = 'Null'
+            buy_price = 'Null'
+            buy_commission_coin = 'Null'
+            sell_timestamp = 'Null'
+            sell_order_id = 'Null'
+            sell_client_order_id = 'Null'
+            sell_quantity = 'Null'
+            sell_commission = 'Null'
+            sell_price = 'Null'
+            sell_commission_coin = 'Null'
+            if trade_hold_minutes == optimal_hold_minutes:
+                highest_return = True
+                if scoring_result_dict[optimal_hold_minutes][0][0] > predicted_return_threshold:
+                    is_trade = True
+                    buy_order_id = 0
+                    buy_client_order_id = buy_order['result']['order']['id']
+                    buy_quantity = buy_order['result']['order']['size']
+                    buy_commission = 0
+                    buy_price = buy_order['result']['order']['eq_price']
+                    buy_commission_coin = ''
+                    buy_timestamp = buy_order['result']['order']['timestamp']
+
+                    sell_order_id = 0
+                    sell_client_order_id = sell_order['result']['order']['id']
+                    sell_quantity = sell_order['result']['order']['size']
+                    sell_commission = 0
+                    sell_price = sell_order['result']['order']['eq_price']
+                    sell_commission_coin = ''
+                    sell_timestamp = sell_order['result']['order']['timestamp']
+                else:
+                    is_trade = False
+
+            column_list_string = """trade_datetime
+            , trade_minute
+            , target_coin
+            , trade_duration
+            , predicted_return
+            , predicted_growth_rate
+            , highest_return
+            , is_trade
+            , trade_threshold
+            , feature_window_space
+            , trade_duration_space
+            , coin_pair_definition
+            , scoring_latency_seconds
+            , scoring_close_price
+            , buy_timestamp
+            , sell_timestamp
+            , buy_quantity
+            , sell_quantity
+            , buy_price_pre_order 
+            , sell_price_pre_order
+            , buy_price
+            , sell_price
+            , buy_commission
+            , sell_commission
+            , buy_commission_coin
+            , sell_commission_coin
+            , buy_order_id
+            , buy_client_order_id
+            , sell_order_id
+            , sell_client_order_id
+            , buy_fill_latency_seconds
+            , sell_fill_latency_seconds
+            , model_version
+            """
+
+            values = f"""'{scoring_datetime}'
+            , {latest_minute}
+            , '{self.target_coin}'
+            , {trade_hold_minutes}
+            , {payload[0][0]}
+            , {payload[1][0]}
+            , {highest_return}
+            , {is_trade}
+            , {predicted_return_threshold}
+            , ARRAY{self.feature_minutes_list}
+            , ARRAY{self.trade_window_list}
+            , '{json.dumps(self.coin_pair_dict)}'
+            , {data_latency_seconds}
+            , {scoring_close_price}
+            , {buy_timestamp}
+            , {sell_timestamp}
+            , {buy_quantity}
+            , {sell_quantity}
+            , {target_coin_price_pre_buy_order}
+            , {target_coin_price_pre_sell_order}
+            , {buy_price}
+            , {sell_price}
+            , {buy_commission}
+            , {sell_commission}
+            , '{buy_commission_coin}'
+            , '{sell_commission_coin}'
+            , {buy_order_id}
+            , '{buy_client_order_id}'
+            , {sell_order_id}
+            , '{sell_client_order_id}'
+            , {buy_fill_latency_seconds}
+            , {sell_fill_latency_seconds}
+            , {model_version}
+            """
+            self.insert_into_postgres('the_logic', 'scoring_results', column_list_string, values)
 
     @staticmethod
     def cobinhood_client():

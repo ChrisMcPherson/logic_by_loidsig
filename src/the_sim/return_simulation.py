@@ -131,11 +131,10 @@ def features(feature_minutes_list, trade_window_list):
     #TODO: move this config to simulation argument 
     coin_pair_dict = {'target':'btcusdt',
                   'alt':'ethusdt',
-                  'through':'eoseth',#'ethbtc',
-                  'excharb_btc':'btcusdt'}
+                  'through':'eoseth'}
     print(f"Coin feature configuration: {coin_pair_dict}")
 
-    mm_training = market_maker_training.CobinhoodTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
+    mm_training = market_maker_training.BinanceTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
     try:
         mm_training.set_training_data()
     except Exception as e:
@@ -245,7 +244,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
     y_act = test_df.loc[:,target_col]
     # 
     test_df.loc[:,'before_fees_return'] = test_df[target_col]
-    test_df.loc[:,'return'] = test_df[target_col] #- .1
+    test_df.loc[:,'return'] = test_df[target_col] - .2 # .1 each way bid/ask
     test_df.loc[:,'predicted'] = y_sim
     return test_df
         
@@ -255,7 +254,7 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, trad
     optimal_buy_threshold = None
     best_return = 0
     num_trades = 0
-    for thresh in list(np.arange(0, 0.2, 0.02)):
+    for thresh in list(np.arange(0, 2.1, 0.1)):
         # Output results of every threshold
         return_df = results_df.loc[results_df['predicted'] >= thresh]
         print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)} trades; Return before bnb fees: {return_df['before_fees_return'].sum()}%")
