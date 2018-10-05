@@ -16,9 +16,15 @@ docker ps -a
 docker cp 79ec9f41a509:/cobinhood_orderbook_events/cobinhood_orderbook_events_lambda.zip /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/lambda_resources
 
 #### Combine code files with zip [local -in dir with zip]
-cd /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/lambda_resources
-zip -ur cobinhood_orderbook_events_lambda.zip ../cobinhood_orderbook/cobinhood_orderbook_events.py
+cd /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/orderbook
+zip -ur ../lambda_resources/cobinhood_orderbook_events_lambda.zip cobinhood_orderbook_events.py
 
+
+## staging
+pip3 install python-binance -t ./
+zip -r binance_orderbook_events_lambda.zip * 
+docker cp 79ec9f41a509:/binance_orderbook_events/binance_orderbook_events_lambda.zip /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/lambda_resources
+zip -ur ../lambda_resources/binance_orderbook_events_lambda.zip binance_orderbook_events.py
 
 
 ## staging
@@ -26,4 +32,4 @@ pip3 install pandas -t ./
 pip3 install psycopg2 -t ./
 zip -r cobinhood_orderbook_features_lambda.zip * 
 docker cp 79ec9f41a509:/cobinhood_orderbook_features/cobinhood_orderbook_features_lambda.zip /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/lambda_resources
-zip -ur cobinhood_orderbook_features_lambda.zip ../cobinhood_orderbook/cobinhood_orderbook_features.py
+zip -ur ../lambda_resources/cobinhood_orderbook_features_lambda.zip cobinhood_orderbook_features.py

@@ -14,15 +14,15 @@ s3_resource = boto_session.resource('s3')
 s3_bucket = 'loidsig-crypto'
 
 def main(event, context):
-    coins = ('BTC-USDT','ETH-USDT','COB-USDT','ETH-BTC','TRX-ETH','EOS-ETH','LTC-USDT','NEO-ETH')
+    coins = ('BTC-USDT','ETH-USDT','COB-USDT','LTC-USDT','ETH-BTC','TRX-ETH','EOS-ETH','NEO-ETH')
     for coin_pair in coins:
         json_message, unix_timestamp = get_orderbook_message(coin_pair)
         message_to_s3(json_message, coin_pair, unix_timestamp)
-        message_to_queue(json_message)
+        #message_to_queue(json_message)
 
 def get_orderbook_message(coin_pair):
     unix_timestamp = int(time.time())
-    order_book = cob.market.get_orderbooks(coin_pair, limit=100)
+    order_book = cob.market.get_orderbooks(coin_pair, limit=0)
     # Bids - flatten volume/qty
     orderbook_bids = order_book['result']['orderbook']['bids']
     for bid in orderbook_bids:
@@ -44,14 +44,14 @@ def get_orderbook_message(coin_pair):
     return message_json, unix_timestamp
 
 def message_to_s3(json, coin_pair, timestamp):
-    file_name = f"{coin_pair}/{timestamp}.json"
-    file_path = f"cobinhood/historic_orderbook_raw/{file_name}"
+    file_name = f"{timestamp}.json"
+    file_path = f"cobinhood/historic_orderbook_raw/{coin_pair}/{file_name}"
     s3_resource.Object(s3_bucket, file_path).put(Body=json)
 
 def message_to_queue(message):
     # Send message
     sqs_resource = boto_session.resource('sqs', region_name='us-east-1')
-    sqs_queue = sqs_resource.get_queue_by_name(QueueName='cobinhood_orderbook')
+    sqs_queue = sqs_resource.get_queue_by_name(QueueName='orderbook')
     response = sqs_queue.send_message(MessageBody=message)
     print(response.get('MessageId'))
     print(response.get('MD5OfMessageBody'))

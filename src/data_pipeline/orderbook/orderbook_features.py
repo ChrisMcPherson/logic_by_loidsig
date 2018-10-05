@@ -14,6 +14,7 @@ except:
 s3_resource = boto_session.resource('s3')
 s3_bucket = 'loidsig-crypto'
 
+
 def main(event, context):
     #orderbook_str = event.body
     orderbook_str = event
@@ -25,33 +26,28 @@ def main(event, context):
     bids_df = build_orderbook_df(orderbook_json, 'bids', coin_pair, unix_timestamp)
     asks_df = build_orderbook_df(orderbook_json, 'asks', coin_pair, unix_timestamp)
     # Write to S3 archive
-    df_to_s3(bids_df, exchange, coin_pair, 'bid', unix_timestamp)
-    df_to_s3(asks_df, exchange, coin_pair, 'ask', unix_timestamp)
+    #df_to_s3(bids_df, exchange, coin_pair, 'bid', unix_timestamp)
+    #df_to_s3(asks_df, exchange, coin_pair, 'ask', unix_timestamp)
     # Engineer features
-    asks_fea_df = engineer_features(asks_df)
-    bids_fea_df = engineer_features(bids_df)
+    asks_fea_df = engineer_features(asks_df, 'asks')
+    bids_fea_df = engineer_features(bids_df, 'bids')
     # Write to RDS
-    df_to_rds(bids_fea_df, asks_fea_df, exchange)
-
+    #df_to_rds(bids_fea_df, asks_fea_df, exchange)
 
 def build_orderbook_df(orderbook_json, order_type, coin_pair, unix_timestamp):
-    orderbook_df = pd.DataFrame(orderbook_json[order_type], columns=['price','volume','empty']).sort_values('price',ascending=False)
+    if order_type == 'bids':
+        order_asc = False
+    else:
+        order_asc = True
+    orderbook_df = pd.DataFrame(orderbook_json[order_type], columns=['price','volume','empty'])
     orderbook_df['price'] = pd.to_numeric(orderbook_df['price'])
     orderbook_df['volume'] = pd.to_numeric(orderbook_df['volume'])
     orderbook_df['order_type'] = order_type
     orderbook_df['coin_pair'] = coin_pair
+    orderbook_df.sort_values('price', ascending=order_asc, inplace=True)
     orderbook_df.insert(0, 'order_position', range(1, 1 + len(orderbook_df.index)))
     orderbook_df['unix_timestamp'] = unix_timestamp
     return orderbook_df
-
-def df_to_s3(df, exchange, coin_pair, order_type, timestamp):
-    file_name = f"{order_type}/{coin_pair}/{timestamp}.csv"
-    df['file_name'] = file_name
-    file_path = f"{exchange}/historic_orderbook/{file_name}"
-    # Write out csv
-    csv_buffer = StringIO()
-    df.to_csv(csv_buffer)
-    s3_resource.Object(s3_bucket, file_path).put(Body=csv_buffer.getvalue())
 
 def weighted_avg(values, weights):
     """
@@ -72,7 +68,13 @@ def weighted_std(values, weights):
     variance = np.average((values-average)**2, weights=weights)
     return math.sqrt(variance)
 
-def engineer_features(df):
+def weighted_avg_price(df, amount):
+    return weighted_avg(df[df['cumsum_dollar_dollar_bills'] < amount]['price'], df[df['cumsum_dollar_dollar_bills'] < amount]['volume'])
+
+def weighted_std_price(df, amount):
+    return weighted_std(df[df['cumsum_dollar_dollar_bills'] < amount]['price'], df[df['cumsum_dollar_dollar_bills'] < amount]['volume'])
+     
+def engineer_features(df, order_type):
     df['dollar_volume'] = df['price'] * df['volume']
     df['cumsum_dollar_dollar_bills'] = df['dollar_volume'].cumsum()
 
@@ -80,22 +82,51 @@ def engineer_features(df):
         [[
             df['coin_pair'][0],
             df['unix_timestamp'][0],
-            weighted_avg(df['price'], df['volume']),
-            weighted_std(df['price'], df['volume']),
-            (weighted_avg(df[df['cumsum_dollar_dollar_bills'] < 5000]['price'], df[df['cumsum_dollar_dollar_bills'] < 5000]['volume']) - df['price'][0]) / df['price'][0] * 100,
-            (weighted_avg(df[df['cumsum_dollar_dollar_bills'] < 10000]['price'], df[df['cumsum_dollar_dollar_bills'] < 10000]['volume']) - df['price'][0]) / df['price'][0] * 100,
-            (weighted_avg(df[df['cumsum_dollar_dollar_bills'] < 20000]['price'], df[df['cumsum_dollar_dollar_bills'] < 20000]['volume']) - df['price'][0]) / df['price'][0] * 100
+            df['price'][0],
+            weighted_avg_price(df, 5000),
+            weighted_avg_price(df, 10000),
+            weighted_avg_price(df, 20000),
+            weighted_avg_price(df, 50000),
+            weighted_avg_price(df, 100000),
+            weighted_avg_price(df, 200000),
+            weighted_std_price(df, 5000),
+            weighted_std_price(df, 10000),
+            weighted_std_price(df, 20000),
+            weighted_std_price(df, 50000),
+            weighted_std_price(df, 100000),
+            weighted_std_price(df, 200000),
         ]],
         columns=[
-                    "coin_pair", "unix_timestamp", f"{df['order_type'][0]}_price_weighted_avg", f"{df['order_type'][0]}_price_weighted_std_dev", 
-                    f"{df['order_type'][0]}_cum_5000_spread_price_diff", f"{df['order_type'][0]}_cum_10000_spread_price_diff", f"{df['order_type'][0]}_cum_20000_spread_price_diff"
+                    "coin_pair", 
+                    "unix_timestamp", 
+                    f"{df['order_type'][0]}_top_price", 
+                    f"{df['order_type'][0]}_cum_5000_weighted_avg", 
+                    f"{df['order_type'][0]}_cum_10000_weighted_avg", 
+                    f"{df['order_type'][0]}_cum_20000_weighted_avg",
+                    f"{df['order_type'][0]}_cum_50000_weighted_avg",
+                    f"{df['order_type'][0]}_cum_100000_weighted_avg",
+                    f"{df['order_type'][0]}_cum_200000_weighted_avg",
+                    f"{df['order_type'][0]}_cum_5000_weighted_std", 
+                    f"{df['order_type'][0]}_cum_10000_weighted_std", 
+                    f"{df['order_type'][0]}_cum_20000_weighted_std",
+                    f"{df['order_type'][0]}_cum_50000_weighted_std",
+                    f"{df['order_type'][0]}_cum_100000_weighted_std",
+                    f"{df['order_type'][0]}_cum_200000_weighted_std"
                 ]
     )
     return fea_df
 
+def df_to_s3(df, exchange, coin_pair, order_type, timestamp):
+    file_name = f"{order_type}/{coin_pair}/{timestamp}.csv"
+    df['file_name'] = file_name
+    file_path = f"{exchange}/historic_orderbook/{file_name}"
+    # Write out csv
+    csv_buffer = StringIO()
+    df.to_csv(csv_buffer)
+    s3_resource.Object(s3_bucket, file_path).put(Body=csv_buffer.getvalue())
+
 def df_to_rds(bids_df, asks_df, exchange):
     df = pd.merge(bids_df, asks_df, on='unix_timestamp', how='inner')
-
 
 
 if __name__ == '__main__':
