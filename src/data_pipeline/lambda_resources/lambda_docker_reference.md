@@ -20,16 +20,17 @@ cd /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/orderbook
 zip -ur ../lambda_resources/cobinhood_orderbook_events_lambda.zip cobinhood_orderbook_events.py
 
 
-## staging
+## staging binance events
 pip3 install python-binance -t ./
 zip -r binance_orderbook_events_lambda.zip * 
 docker cp 79ec9f41a509:/binance_orderbook_events/binance_orderbook_events_lambda.zip /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/lambda_resources
 zip -ur ../lambda_resources/binance_orderbook_events_lambda.zip binance_orderbook_events.py
 
 
-## staging
+## staging orderbook features
+pip3 install numpy -t ./
 pip3 install pandas -t ./
-pip3 install psycopg2 -t ./
-zip -r cobinhood_orderbook_features_lambda.zip * 
-docker cp 79ec9f41a509:/cobinhood_orderbook_features/cobinhood_orderbook_features_lambda.zip /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/lambda_resources
-zip -ur ../lambda_resources/cobinhood_orderbook_features_lambda.zip cobinhood_orderbook_features.py
+pip3 install SQLAlchemy -t ./
+zip -r orderbook_features_lambda.zip * 
+docker cp 79ec9f41a509:/orderbook_features/orderbook_features_lambda.zip /Users/puter/OneDrive/Projects/logic_by_loidsig/src/data_pipeline/lambda_resources
+zip -ur ../lambda_resources/orderbook_features_lambda.zip orderbook_features.py

@@ -30,7 +30,14 @@ def main(event, context):
 
 def get_orderbook_message(coin_pair):
     unix_timestamp = int(time.time())
-    order_book = bnb.get_order_book(symbol=coin_pair, limit=1000)
+    api_tries = 0
+    while api_tries < 2:
+        try:
+            order_book = bnb.get_order_book(symbol=coin_pair, limit=1000)
+            break
+        except:
+            api_tries += 1
+            time.sleep(5)
     # Bids
     orderbook_bids = order_book['bids']
     # Asks
