@@ -60,3 +60,5 @@ CREATE TABLE orderbook.binance (
     , asks_cum_200000_weighted_std double precision
 );
 
+SELECT *
+FROM orderbook.cobinhood;

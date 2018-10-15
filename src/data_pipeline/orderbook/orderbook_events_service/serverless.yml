@@ -1,0 +1,42 @@
+service: orderbook_events_service 
+
+provider:
+  name: aws
+  runtime: python3.6
+  profile: loidsig
+  region: us-east-1
+
+package:
+  include:
+    - binance_orderbook_events.py
+    - cobinhood_orderbook_events.py
+  exclude:
+    - requirements.txt
+    - serverless.yml
+    - package.json
+    - package-lock.json
+    - node_modules/**
+
+functions:
+  cobinhood_orderbook_events:
+    handler: cobinhood_orderbook_events.main
+    events:
+      - schedule: rate(1 minutes)
+  binance_orderbook_events:
+    handler: binance_orderbook_events.main
+    events:
+      - schedule: rate(1 minutes)
+  orderbook_features:
+    handler: orderbook_features.main
+    reservedConcurrency: 400
+    events:
+      - sqs:
+          arn: arn:aws:sqs:us-east-1:309597787617:raw_orderbook_events
+          batchSize: 1
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true

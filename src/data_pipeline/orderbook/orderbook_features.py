@@ -3,9 +3,10 @@ import pandas as pd
 import math
 from io import StringIO
 import ast
+import re
 import boto3
 import json
-import sqlalchemy 
+import psycopg2 
 
 # Instantiate resources
 try:
@@ -130,11 +131,140 @@ def df_to_rds(bids_df, asks_df, exchange):
     df = pd.merge(bids_df, asks_df, on=['unix_timestamp','coin_pair'], how='inner')
     df['trade_minute'] = int(df['unix_timestamp'] / 60)
     df.drop('unix_timestamp', axis=1, inplace=True)
-    print('f')
-    #df.to_sql(exchange, logic_db_engine(), schema='orderbook', if_exists='append', index=False)
+
+    pk_column = 'trade_minute'
+    column_list_string = """
+            trade_minute
+            , coin_pair
+            , bids_top_price
+            , bids_cum_5000_weighted_avg 
+            , bids_cum_10000_weighted_avg 
+            , bids_cum_20000_weighted_avg 
+            , bids_cum_50000_weighted_avg 
+            , bids_cum_100000_weighted_avg 
+            , bids_cum_200000_weighted_avg 
+            , bids_cum_5000_weighted_std 
+            , bids_cum_10000_weighted_std 
+            , bids_cum_20000_weighted_std 
+            , bids_cum_50000_weighted_std 
+            , bids_cum_100000_weighted_std 
+            , bids_cum_200000_weighted_std 
+            , asks_top_price 
+            , asks_cum_5000_weighted_avg 
+            , asks_cum_10000_weighted_avg 
+            , asks_cum_20000_weighted_avg 
+            , asks_cum_50000_weighted_avg 
+            , asks_cum_100000_weighted_avg 
+            , asks_cum_200000_weighted_avg 
+            , asks_cum_5000_weighted_std 
+            , asks_cum_10000_weighted_std 
+            , asks_cum_20000_weighted_std 
+            , asks_cum_50000_weighted_std 
+            , asks_cum_100000_weighted_std 
+            , asks_cum_200000_weighted_std 
+            """
+
+    value_list_string = f"""
+            '{df.trade_minute.iloc[0]}'
+            , '{df.coin_pair.iloc[0]}'
+            , '{df.bids_top_price.iloc[0]}'
+            , '{df.bids_cum_5000_weighted_avg.iloc[0]}' 
+            , '{df.bids_cum_10000_weighted_avg.iloc[0]}' 
+            , '{df.bids_cum_20000_weighted_avg.iloc[0]}' 
+            , '{df.bids_cum_50000_weighted_avg.iloc[0]}' 
+            , '{df.bids_cum_100000_weighted_avg.iloc[0]}' 
+            , '{df.bids_cum_200000_weighted_avg.iloc[0]}' 
+            , '{df.bids_cum_5000_weighted_std.iloc[0]}' 
+            , '{df.bids_cum_10000_weighted_std.iloc[0]}' 
+            , '{df.bids_cum_20000_weighted_std.iloc[0]}' 
+            , '{df.bids_cum_50000_weighted_std.iloc[0]}' 
+            , '{df.bids_cum_100000_weighted_std.iloc[0]}' 
+            , '{df.bids_cum_200000_weighted_std.iloc[0]}' 
+            , '{df.asks_top_price.iloc[0]}' 
+            , '{df.asks_cum_5000_weighted_avg.iloc[0]}' 
+            , '{df.asks_cum_10000_weighted_avg.iloc[0]}' 
+            , '{df.asks_cum_20000_weighted_avg.iloc[0]}' 
+            , '{df.asks_cum_50000_weighted_avg.iloc[0]}' 
+            , '{df.asks_cum_100000_weighted_avg.iloc[0]}' 
+            , '{df.asks_cum_200000_weighted_avg.iloc[0]}' 
+            , '{df.asks_cum_5000_weighted_std.iloc[0]}' 
+            , '{df.asks_cum_10000_weighted_std.iloc[0]}' 
+            , '{df.asks_cum_20000_weighted_std.iloc[0]}' 
+            , '{df.asks_cum_50000_weighted_std.iloc[0]}' 
+            , '{df.asks_cum_100000_weighted_std.iloc[0]}' 
+            , '{df.asks_cum_200000_weighted_std.iloc[0]}' 
+            """
+    try:
+        insert_into_postgres('orderbook', exchange, column_list_string, value_list_string)
+    except psycopg2.IntegrityError:
+        # Update row where PK already exists
+        # Combine column value assignment
+        column_list = column_list_string.replace('\n','').split(',')
+        value_list = value_list_string.replace('\n','').split(',')
+        pk_column_ix = [i for i, item in enumerate(column_list) if pk_column in item][0]
+        pk_value = value_list.pop(pk_column_ix)
+        column_list.pop(pk_column_ix)
+        column_value_list = []
+        for col in list(zip(column_list, value_list)):
+            column_value_list.append(f"{col[0]} = {col[1]}")
+        column_value_list_string = ','.join(column_value_list)
+        # Where clause
+        where_clause = f"{pk_column} = {pk_value}"
+        print(f"PK already exists. Updating {pk_value}")
+        update_postgres('orderbook', exchange, column_value_list_string, where_clause)
     
 
-def logic_db_engine():
+def insert_into_postgres(schema, table, column_list_string, values):
+        """Inserts scoring results into Postgres db table
+
+        Args:
+            schema (str): A schema name
+            table (str): A table name
+            column_list_string (str): A comma delimited string of column names
+            values (str): comma seperated values to insert
+        """
+        conn = logic_db_connection()
+        try:
+            cur = conn.cursor()
+            insert_dml = """INSERT INTO {0}.{1}
+                    ({2})
+                    VALUES ({3}) 
+                    ;""".format(schema, table, column_list_string, values)
+            cur.execute(insert_dml)
+            conn.commit()
+        except Exception as e:
+            print(f'Unable to insert into Postgres table {table}. DML: {insert_dml} Error: {e}')
+            raise
+        finally:
+            conn.close()
+        return
+
+def update_postgres(schema, table, values, where_clause):
+        """Inserts scoring results into Postgres db table
+
+        Args:
+            schema (str): A schema name
+            table (str): A table name
+            column_list_string (str): A comma delimited string of column names
+            values (str): comma seperated 'column = value' to insert
+        """
+        conn = logic_db_connection()
+        try:
+            cur = conn.cursor()
+            insert_dml = """UPDATE {0}.{1}
+                    SET {2}
+                    WHERE {3}
+                    ;""".format(schema, table, values, where_clause)
+            cur.execute(insert_dml)
+            conn.commit()
+        except Exception as e:
+            print(f'Unable to update Postgres table {table}. DML: {insert_dml} Error: {e}')
+            raise
+        finally:
+            conn.close()
+        return
+
+def logic_db_connection():
     """Fetches Logic DB postgres connection object
 
     Returns:
@@ -153,14 +283,19 @@ def logic_db_engine():
     cred_dict = ast.literal_eval(get_secret_value_response['SecretString'])
     db_user, db_pass = cred_dict['username'], cred_dict['password']
     db_host, db_port, db_name = cred_dict['host'], cred_dict['port'], cred_dict['dbname']
-    print(db_user)
 
     try:
-        postgres_engine = sqlalchemy.create_engine(f'postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}')
+        conn = psycopg2.connect(
+            host=db_host,
+            port=db_port,
+            user=db_user,
+            password=db_pass,
+            database=db_name,
+        )
     except Exception as e:
         print("Unable to connect to postgres! Error: {}".format(e))
         raise
-    return postgres_engine
+    return conn
 
 
 if __name__ == '__main__':
