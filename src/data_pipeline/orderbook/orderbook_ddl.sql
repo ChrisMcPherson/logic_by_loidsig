@@ -62,3 +62,4 @@ CREATE TABLE orderbook.binance (
 
 SELECT *
 FROM orderbook.cobinhood;
+

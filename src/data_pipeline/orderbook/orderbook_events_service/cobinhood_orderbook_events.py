@@ -18,7 +18,7 @@ def main(event, context):
     for coin_pair in coins:
         json_message, unix_timestamp = get_orderbook_message(coin_pair)
         message_to_s3(json_message, coin_pair, unix_timestamp)
-        #message_to_queue(json_message)
+        message_to_queue(json_message)
 
 def get_orderbook_message(coin_pair):
     unix_timestamp = int(time.time())
@@ -58,7 +58,7 @@ def message_to_s3(json, coin_pair, timestamp):
 def message_to_queue(message):
     # Send message
     sqs_resource = boto_session.resource('sqs', region_name='us-east-1')
-    sqs_queue = sqs_resource.get_queue_by_name(QueueName='orderbook')
+    sqs_queue = sqs_resource.get_queue_by_name(QueueName='raw_orderbook_events')
     response = sqs_queue.send_message(MessageBody=message)
     print(response.get('MessageId'))
     print(response.get('MD5OfMessageBody'))
