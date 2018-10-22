@@ -2,3 +2,4 @@ numpy
 pandas
 python-binance
 psycopg2
+git+https://github.com/CliffLin/python-cobinhood

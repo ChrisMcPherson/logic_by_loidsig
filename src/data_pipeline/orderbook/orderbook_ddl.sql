@@ -1,5 +1,6 @@
-CREATE TABLE orderbook.cobinhood (
-	trade_minute int PRIMARY KEY
+
+CREATE TABLE cobinhood.orderbook (
+	trade_minute int 
     , coin_pair varchar(12)
     , bids_top_price double precision
     , bids_cum_5000_weighted_avg double precision
@@ -27,10 +28,11 @@ CREATE TABLE orderbook.cobinhood (
     , asks_cum_50000_weighted_std double precision
     , asks_cum_100000_weighted_std double precision
     , asks_cum_200000_weighted_std double precision
+    , PRIMARY KEY(coin_pair, trade_minute)
 );
 
-CREATE TABLE orderbook.binance (
-	trade_minute int PRIMARY KEY
+CREATE TABLE binance.orderbook (
+	trade_minute int 
     , coin_pair varchar(12)
     , bids_top_price double precision
     , bids_cum_5000_weighted_avg double precision
@@ -58,8 +60,7 @@ CREATE TABLE orderbook.binance (
     , asks_cum_50000_weighted_std double precision
     , asks_cum_100000_weighted_std double precision
     , asks_cum_200000_weighted_std double precision
+    , PRIMARY KEY(coin_pair, trade_minute)
 );
 
-SELECT *
-FROM orderbook.cobinhood;
 
