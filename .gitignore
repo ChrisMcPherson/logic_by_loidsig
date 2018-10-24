@@ -17,3 +17,9 @@ domino.log
 test_train_features.csv
 *.zip
 .DS_Store
+
+# Serverless
+node_modules/
+**node_modules/
+.serverless/
+**.serverless/

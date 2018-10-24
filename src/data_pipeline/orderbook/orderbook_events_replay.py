@@ -4,7 +4,7 @@ import itertools
 
 # Config
 s3_bucket = 'loidsig-crypto'
-s3_prefixes = ['binance/historic_orderbook_raw']#, 'cobinhood/historic_orderbook_raw']
+s3_prefixes = ['binance/historic_orderbook_raw', 'cobinhood/historic_orderbook_raw']
 sqs_queue_name = 'raw_orderbook_events'
 max_queue_inflight = 100000
 
@@ -14,82 +14,44 @@ try:
 except:
     boto_session = boto3.Session()
 s3_resource = boto_session.resource('s3')
-
+s3_client = boto_session.client('s3')
+sqs_resource = boto_session.resource('sqs', region_name='us-east-1')
+sqs_queue = sqs_resource.get_queue_by_name(QueueName='raw_orderbook_events')
 
 def main():
     processed_messages = 0
+    start = time.time()
     for s3_prefix in s3_prefixes:
-        s3_key_gen = get_s3_keys_from_prefix(s3_bucket, s3_prefix)
-        res = peek(s3_key_gen)
+        s3_key_list = get_s3_keys_from_prefix(s3_prefix)
         # Continue while generator is not empty
-        while res is not None:
+        while s3_key_list:
             # Continue until queue is full then slowly trickle new messages
-            while get_queue_num_inflight(sqs_queue_name) < max_queue_inflight:
-                first, s3_key_gen = res
-                s3_key = next(s3_key_gen)
+            empty_queue_spaces = max_queue_inflight - get_queue_num_inflight()
+            while empty_queue_spaces > 0:
+                try:
+                    s3_key = s3_key_list[0]
+                except IndexError:
+                    break
                 send_s3_object_to_queue(s3_key)
+                s3_key_list.pop(0)
                 processed_messages += 1
+                if processed_messages % 10000 == 0:
+                    print(f"Messages processed: {processed_messages} in {(time.time() - start) / 60} Minutes")
             time.sleep(5)
-            res = peek(s3_key_gen)
     print(f"Processed {processed_messages} messages.")
 
-def get_s3_objs_from_prefix(bucket, prefix='', suffix=''):
-    """
-    Generate objects in an S3 bucket.
+def get_s3_keys_from_prefix(s3_prefix):
+    paginator = s3_client.get_paginator('list_objects')
+    operation_parameters = {'Bucket': s3_bucket,
+                            'Prefix': s3_prefix}
+    page_iterator = paginator.paginate(**operation_parameters)
+    s3_keys = []
+    for page in page_iterator:
+        page_s3_keys = [key['Key'] for key in page['Contents']]
+        s3_keys.extend(page_s3_keys)
+    return s3_keys
 
-    :param bucket: Name of the S3 bucket.
-    :param prefix: Only fetch objects whose key starts with
-        this prefix (optional).
-    :param suffix: Only fetch objects whose keys end with
-        this suffix (optional).
-    """
-    s3 = boto_session.client('s3')
-    kwargs = {'Bucket': bucket}
-    # If the prefix is a single string (not a tuple of strings), we can
-    # do the filtering directly in the S3 API.
-    if isinstance(prefix, str):
-        kwargs['Prefix'] = prefix
-    while True:
-        # The S3 API response is a large blob of metadata.
-        # 'Contents' contains information about the listed objects.
-        resp = s3.list_objects_v2(**kwargs)
-        try:
-            contents = resp['Contents']
-        except KeyError:
-            return
-        for obj in contents:
-            key = obj['Key']
-            if key.startswith(prefix) and key.endswith(suffix):
-                yield obj
-        # The S3 API is paginated, returning up to 1000 keys at a time.
-        # Pass the continuation token into the next response, until we
-        # reach the final page (when this field is missing).
-        try:
-            kwargs['ContinuationToken'] = resp['NextContinuationToken']
-        except KeyError:
-            break
-
-def get_s3_keys_from_prefix(bucket, prefix='', suffix=''):
-    """
-    Generate the keys in an S3 bucket.
-
-    :param bucket: Name of the S3 bucket.
-    :param prefix: Only fetch keys that start with this prefix (optional).
-    :param suffix: Only fetch keys that end with this suffix (optional).
-    """
-    for obj in get_s3_objs_from_prefix(bucket, prefix, suffix):
-        yield obj['Key']
-
-def peek(iterable):
-    try:
-        first = next(iterable)
-    except StopIteration:
-        return None
-    return first, itertools.chain([first], iterable)
-
-def get_queue_num_inflight(queue):
-    sqs_resource = boto_session.resource('sqs', region_name='us-east-1')
-    sqs_queue = sqs_resource.get_queue_by_name(QueueName=queue)
+def get_queue_num_inflight():
     sqs_attributes = sqs_queue.attributes
     return int(sqs_attributes['ApproximateNumberOfMessages'])
 
@@ -97,10 +59,12 @@ def get_keys_already_processed():
     pass
 
 def send_s3_object_to_queue(s3_key):
-    pass
+    obj = get_s3_object(s3_key)
+    sqs_queue.send_message(MessageBody=obj)
 
 def get_s3_object(s3_key):
-    pass
+    obj = s3_resource.Object(s3_bucket, s3_key)
+    return obj.get()['Body'].read().decode('utf-8') 
 
 if __name__ == '__main__':
     main()

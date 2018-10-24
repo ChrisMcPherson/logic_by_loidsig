@@ -126,7 +126,7 @@ def engineer_features(df, order_type):
     return fea_df
 
 def orderbook_df_to_rds(df, exchange):
-    pk_column = 'trade_minute'
+    pk_column = ['trade_minute','coin_pair']
     column_list_string = """
             trade_minute
             , coin_pair
@@ -195,15 +195,19 @@ def orderbook_df_to_rds(df, exchange):
         # Combine column value assignment
         column_list = column_list_string.replace('\n','').split(',')
         value_list = value_list_string.replace('\n','').split(',')
-        pk_column_ix = [i for i, item in enumerate(column_list) if pk_column in item][0]
+        pk_column_ix = [i for i, item in enumerate(column_list) if pk_column[0] in item][0]
         pk_value = value_list.pop(pk_column_ix)
+        pk_column_ix_2 = [i for i, item in enumerate(column_list) if pk_column[1] in item][0]
+        pk_value_2 = value_list.pop(pk_column_ix_2)
+        # Where clause
+        where_clause = f"{pk_column[0]} = {pk_value} AND {pk_column[1]} = {pk_value_2}"
+        # Values to update
         column_list.pop(pk_column_ix)
+        column_list.pop(pk_column_ix_2)
         column_value_list = []
         for col in list(zip(column_list, value_list)):
             column_value_list.append(f"{col[0]} = {col[1]}")
         column_value_list_string = ','.join(column_value_list)
-        # Where clause
-        where_clause = f"{pk_column} = {pk_value}"
         print(f"PK already exists. Updating {pk_value}")
         update_postgres(exchange, 'orderbook', column_value_list_string, where_clause)
     
