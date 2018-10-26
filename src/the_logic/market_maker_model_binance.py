@@ -18,9 +18,9 @@ from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
 # Config
-coin_pair_dict = {'btcusdt':'target',
-                  'ethusdt':'alt',
-                  'trxeth':'through'}
+coin_pair_dict = {'target':'btcusdt',
+                  'alt':'ethusdt',
+                  'through':'trxeth'}
                   
 feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
 trade_window_list = [25]

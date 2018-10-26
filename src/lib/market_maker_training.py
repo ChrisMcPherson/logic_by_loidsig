@@ -108,7 +108,7 @@ class BinanceTraining(MarketMakerTraining):
         
 
     def construct_training_data_query(self):
-        """Return training data Athena query from dynamic template"""
+        """Return training data query from dynamic template"""
         if self.feature_minutes_list == None or self.trade_window_list == None:
             raise Exception("To construct training data query, the optional feature_minutes_list and trade_window_list attributes must be set!")
         
@@ -125,8 +125,8 @@ class BinanceTraining(MarketMakerTraining):
             # Raw base features
             raw_features_list.append(f"""{pair_type}_{coin_pair} AS (
                                     SELECT coin_partition AS {coin_pair}_coin_partition
-                                        , from_unixtime(cast(close_timestamp AS BIGINT) / 1000) AS {coin_pair}_trade_datetime
-                                        , DATE(from_unixtime(cast(close_timestamp AS BIGINT) / 1000)) AS {coin_pair}_trade_date
+                                        , to_timestamp(cast(close_timestamp AS BIGINT) / 1000) AS {coin_pair}_trade_datetime
+                                        , DATE(to_timestamp(cast(close_timestamp AS BIGINT) / 1000)) AS {coin_pair}_trade_date
                                         , (CAST(close_timestamp AS BIGINT) / 1000 / 60) AS {coin_pair}_trade_minute
                                         , CAST(open AS DOUBLE) AS {coin_pair}_open, CAST(high AS DOUBLE) AS {coin_pair}_high, CAST(low AS DOUBLE) AS {coin_pair}_low
                                         , CAST(close AS DOUBLE) AS {coin_pair}_close, CAST(volume AS DOUBLE) AS {coin_pair}_volume
@@ -134,7 +134,7 @@ class BinanceTraining(MarketMakerTraining):
                                         , CAST(taker_buy_base_asset_volume AS DOUBLE) AS {coin_pair}_tbbav, CAST(taker_buy_quote_asset_volume AS DOUBLE) AS {coin_pair}_tbqav
                                     FROM binance.historic_candlesticks 
                                     WHERE coin_partition = '{coin_pair}'
-                                    AND DATE(from_unixtime(cast(open_timestamp AS BIGINT) / 1000)) > DATE('2018-03-01')
+                                    AND DATE(to_timestamp(cast(open_timestamp AS BIGINT) / 1000)) > DATE('2018-03-01')
                                     )""")
             # Base features
             if pair_type == 'target':

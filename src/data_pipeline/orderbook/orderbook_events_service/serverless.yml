@@ -31,7 +31,7 @@ functions:
           rate: rate(1 minute)
           enabled: true
     onError: arn:aws:sns:us-east-1:309597787617:orderbook_pipeline_notifications
-    timeout: 20
+    timeout: 60
   binance-events:
     role: arn:aws:iam::309597787617:role/lambda_basic_execution
     handler: binance_orderbook_events.main
@@ -42,7 +42,7 @@ functions:
           rate: rate(1 minute)
           enabled: true
     onError: arn:aws:sns:us-east-1:309597787617:orderbook_pipeline_notifications
-    timeout: 20
+    timeout: 60
   orderbook-features:
     role: arn:aws:iam::309597787617:role/lambda_basic_execution
     handler: orderbook_features.main
@@ -52,7 +52,7 @@ functions:
           arn: arn:aws:sqs:us-east-1:309597787617:raw_orderbook_events
           batchSize: 1
     onError: arn:aws:sns:us-east-1:309597787617:orderbook_pipeline_notifications
-    timeout: 20
+    timeout: 60
 
 plugins:
   - serverless-python-requirements

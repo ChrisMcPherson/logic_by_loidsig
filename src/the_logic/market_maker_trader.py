@@ -34,7 +34,7 @@ def logic(iter_):
     """Control scoring against a market maker model"""
     start = time.time()
     
-    mm_scoring = market_maker_scoring.MarketMakerScoring()
+    mm_scoring = market_maker_scoring.BinanceScoring()
     # Get trained models
     model_object_dict = mm_scoring.get_model_objects()
     # Set scoring data and retrieve the most recent minutes features
