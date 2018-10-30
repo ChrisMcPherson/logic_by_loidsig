@@ -9,7 +9,7 @@ s3_bucket = 'loidsig-crypto'
 s3_prefixes = ['binance/historic_orderbook_raw', 'cobinhood/historic_orderbook_raw'] #BTCUSDT/153874
 sqs_queue_name = 'raw_orderbook_events'
 max_queue_inflight = 100000
-replay_specific_keys = True
+replay_specific_keys = False
 
 # AWS resources
 try:
@@ -74,7 +74,7 @@ def get_keys_to_replay(exchange):
     sql = f"""
             SELECT  array_agg(CONCAT(UPPER(coin_pair), '/', LEFT((trade_minute*60)::text, 8)))
             FROM {exchange}.orderbook
-            WHERE bids_cum_5000_weighted_avg = 0 OR bids_cum_5000_weighted_avg = 0
+            WHERE bids_cum_5000_weighted_avg = 0 OR asks_cum_5000_weighted_avg = 0
             ;"""
     cur.execute(sql)
     return cur.fetchall()[0][0]

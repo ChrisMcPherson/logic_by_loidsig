@@ -1,1 +1,61 @@
-167165 keys to replay
+381120 keys to replay
+Messages processed: 10000 in 50.336387292544046 Minutes
+Messages processed: 20000 in 48.322860431671145 Minutes
+Messages processed: 30000 in 47.45362494389216 Minutes
+Messages processed: 40000 in 47.54553687572479 Minutes
+Messages processed: 50000 in 55.90919290781021 Minutes
+Messages processed: 60000 in 55.81744168202082 Minutes
+Messages processed: 70000 in 56.46767202615738 Minutes
+Messages processed: 80000 in 54.51840306917826 Minutes
+Messages processed: 90000 in 49.945067433516186 Minutes
+Messages processed: 100000 in 49.52163443962733 Minutes
+Messages processed: 110000 in 48.9798873146375 Minutes
+Messages processed: 120000 in 48.31629366874695 Minutes
+Messages processed: 130000 in 51.833921452363334 Minutes
+Messages processed: 140000 in 54.455205380916595 Minutes
+Messages processed: 150000 in 55.5538668791453 Minutes
+Messages processed: 160000 in 55.395465528965 Minutes
+Messages processed: 170000 in 53.28412721157074 Minutes
+Messages processed: 180000 in 46.84841951926549 Minutes
+Messages processed: 190000 in 46.049208935101824 Minutes
+Messages processed: 200000 in 47.21895090738932 Minutes
+Messages processed: 210000 in 50.50895049571991 Minutes
+Messages processed: 220000 in 47.9124352812767 Minutes
+Messages processed: 230000 in 48.20517964760462 Minutes
+Messages processed: 240000 in 47.78468348582586 Minutes
+Messages processed: 250000 in 49.36423993110657 Minutes
+Messages processed: 260000 in 53.33626705408096 Minutes
+Traceback (most recent call last):
+  File "/usr/local/anaconda/lib/python3.6/site-packages/botocore/vendored/requests/packages/urllib3/response.py", line 239, in read
+    data = self._fp.read()
+  File "/usr/local/anaconda/lib/python3.6/http/client.py", line 462, in read
+    s = self._safe_read(self.length)
+  File "/usr/local/anaconda/lib/python3.6/http/client.py", line 612, in _safe_read
+    chunk = self.fp.read(min(amt, MAXAMOUNT))
+  File "/usr/local/anaconda/lib/python3.6/socket.py", line 586, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/local/anaconda/lib/python3.6/ssl.py", line 1009, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/local/anaconda/lib/python3.6/ssl.py", line 871, in read
+    return self._sslobj.read(len, buffer)
+  File "/usr/local/anaconda/lib/python3.6/ssl.py", line 631, in read
+    v = self._sslobj.read(len, buffer)
+socket.timeout: The read operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "src/data_pipeline/orderbook/orderbook_events_replay.py", line 120, in <module>
+    main()
+  File "src/data_pipeline/orderbook/orderbook_events_replay.py", line 43, in main
+    send_s3_object_to_queue(s3_key)
+  File "src/data_pipeline/orderbook/orderbook_events_replay.py", line 83, in send_s3_object_to_queue
+    obj = get_s3_object(s3_key)
+  File "src/data_pipeline/orderbook/orderbook_events_replay.py", line 88, in get_s3_object
+    return obj.get()['Body'].read().decode('utf-8') 
+  File "/usr/local/anaconda/lib/python3.6/site-packages/botocore/response.py", line 76, in read
+    chunk = self._raw_stream.read(amt)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/botocore/vendored/requests/packages/urllib3/response.py", line 258, in read
+    raise ReadTimeoutError(self._pool, None, 'Read timed out.')
+botocore.vendored.requests.packages.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='loidsig-crypto.s3.amazonaws.com', port=443): Read timed out.
+Failed with exit code: 1
