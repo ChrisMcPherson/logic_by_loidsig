@@ -12,9 +12,10 @@ from functools import reduce
 import time
 import datetime
 from datetime import timedelta
+from sqlalchemy import create_engine
 # local libraries
-sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
-import athena_connect
+#sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
+#import athena_connect
 
 class MarketMakerTraining():
     def __init__(self, coin_pair_dict, feature_minutes_list, trade_window_list, training_period=None):
@@ -42,8 +43,9 @@ class MarketMakerTraining():
         if not self.training_period == None:
             training_period_date = (datetime.datetime.utcnow() - timedelta(days=self.training_period)).strftime("%Y-%m-%d")
         # Extract queried data from Athena
-        athena = athena_connect.Athena()
-        features_df = athena.pandas_read_athena(self.training_data_sql)
+        #athena = athena_connect.Athena()
+        #features_df = athena.pandas_read_athena(self.training_data_sql)
+        features_df = pd.read_sql(self.training_data_sql, self.logic_db_engine())
         features_df.fillna(0, inplace=True)
         print(features_df.shape)
         features_df = features_df[max(self.feature_minutes_list):]
@@ -96,6 +98,32 @@ class MarketMakerTraining():
                     Body= part_json)
         return
 
+    def logic_db_engine(self):
+        """Fetches Logic DB postgres connection object
+
+        Returns:
+            A database connection object for Postgres
+        """
+        try:
+            boto_session = boto3.Session(profile_name='loidsig')
+        except:
+            boto_session = boto3.Session()
+        sm_client = boto_session.client(
+            service_name='secretsmanager',
+            region_name='us-east-1',
+            endpoint_url='https://secretsmanager.us-east-1.amazonaws.com'
+        )
+        get_secret_value_response = sm_client.get_secret_value(SecretId='Loidsig_DB')
+        cred_dict = ast.literal_eval(get_secret_value_response['SecretString'])
+        db_user, db_pass = cred_dict['username'], cred_dict['password']
+        db_host, db_port, db_name = cred_dict['host'], cred_dict['port'], cred_dict['dbname']
+        try:
+            postgres_engine = create_engine(f'postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}')
+        except Exception as e:
+            print("Unable to connect to postgres! Error: {}".format(e))
+            raise
+        return postgres_engine
+
 
 class BinanceTraining(MarketMakerTraining):
     """
@@ -124,73 +152,150 @@ class BinanceTraining(MarketMakerTraining):
         for pair_type, coin_pair in self.coin_pair_dict.items():
             # Raw base features
             raw_features_list.append(f"""{pair_type}_{coin_pair} AS (
-                                    SELECT coin_partition AS {coin_pair}_coin_partition
-                                        , to_timestamp(cast(close_timestamp AS BIGINT) / 1000) AS {coin_pair}_trade_datetime
-                                        , DATE(to_timestamp(cast(close_timestamp AS BIGINT) / 1000)) AS {coin_pair}_trade_date
-                                        , (CAST(close_timestamp AS BIGINT) / 1000 / 60) AS {coin_pair}_trade_minute
-                                        , CAST(open AS DOUBLE) AS {coin_pair}_open, CAST(high AS DOUBLE) AS {coin_pair}_high, CAST(low AS DOUBLE) AS {coin_pair}_low
-                                        , CAST(close AS DOUBLE) AS {coin_pair}_close, CAST(volume AS DOUBLE) AS {coin_pair}_volume
-                                        , CAST(quote_asset_volume AS DOUBLE) AS {coin_pair}_quote_asset_volume, CAST(trade_count AS DOUBLE) AS {coin_pair}_trade_count
-                                        , CAST(taker_buy_base_asset_volume AS DOUBLE) AS {coin_pair}_tbbav, CAST(taker_buy_quote_asset_volume AS DOUBLE) AS {coin_pair}_tbqav
-                                    FROM binance.historic_candlesticks 
-                                    WHERE coin_partition = '{coin_pair}'
-                                    AND DATE(to_timestamp(cast(open_timestamp AS BIGINT) / 1000)) > DATE('2018-03-01')
+                                    SELECT coin_pair AS {coin_pair}_coin_partition
+                                        , to_timestamp(trade_minute * 60) AS {coin_pair}_trade_datetime
+                                        , DATE(to_timestamp(trade_minute * 60)) AS {coin_pair}_trade_date
+                                        , trade_minute AS {coin_pair}_trade_minute
+                                        , bids_top_price AS {coin_pair}_bids_top_price
+                                        , (asks_top_price - bids_top_price) AS {coin_pair}_bid_ask_spread
+                                        , (asks_top_price + bids_top_price) / 2 AS {coin_pair}_bid_ask_average_price
+                                        , bids_cum_5000_weighted_avg AS {coin_pair}_bids_cum_5000_weighted_avg
+                                        , bids_cum_10000_weighted_avg AS {coin_pair}_bids_cum_10000_weighted_avg
+                                        , bids_cum_20000_weighted_avg AS {coin_pair}_bids_cum_20000_weighted_avg
+                                        , bids_cum_50000_weighted_avg AS {coin_pair}_bids_cum_50000_weighted_avg
+                                        , bids_cum_100000_weighted_avg AS {coin_pair}_bids_cum_100000_weighted_avg
+                                        , bids_cum_200000_weighted_avg AS {coin_pair}_bids_cum_200000_weighted_avg
+                                        , bids_cum_5000_weighted_std AS {coin_pair}_bids_cum_5000_weighted_std
+                                        , bids_cum_10000_weighted_std AS {coin_pair}_bids_cum_10000_weighted_std
+                                        , bids_cum_20000_weighted_std AS {coin_pair}_bids_cum_20000_weighted_std
+                                        , bids_cum_50000_weighted_std AS {coin_pair}_bids_cum_50000_weighted_std
+                                        , bids_cum_100000_weighted_std AS {coin_pair}_bids_cum_100000_weighted_std
+                                        , bids_cum_200000_weighted_std AS {coin_pair}_bids_cum_200000_weighted_std
+                                        , asks_top_price AS {coin_pair}_asks_top_price
+                                        , asks_cum_5000_weighted_avg AS {coin_pair}_asks_cum_5000_weighted_avg
+                                        , asks_cum_10000_weighted_avg AS {coin_pair}_asks_cum_10000_weighted_avg
+                                        , asks_cum_20000_weighted_avg AS {coin_pair}_asks_cum_20000_weighted_avg
+                                        , asks_cum_50000_weighted_avg AS {coin_pair}_asks_cum_50000_weighted_avg
+                                        , asks_cum_100000_weighted_avg AS {coin_pair}_asks_cum_100000_weighted_avg
+                                        , asks_cum_200000_weighted_avg AS {coin_pair}_asks_cum_200000_weighted_avg
+                                        , asks_cum_5000_weighted_std AS {coin_pair}_asks_cum_5000_weighted_std
+                                        , asks_cum_10000_weighted_std AS {coin_pair}_asks_cum_10000_weighted_std
+                                        , asks_cum_20000_weighted_std AS {coin_pair}_asks_cum_20000_weighted_std
+                                        , asks_cum_50000_weighted_std AS {coin_pair}_asks_cum_50000_weighted_std
+                                        , asks_cum_100000_weighted_std AS {coin_pair}_asks_cum_100000_weighted_std
+                                        , asks_cum_200000_weighted_std AS {coin_pair}_asks_cum_200000_weighted_std
+                                    FROM binance.orderbook 
+                                    WHERE coin_pair = '{coin_pair}'
                                     )""")
             # Base features
             if pair_type == 'target':
                 base_features_list.append(f"""{coin_pair}_trade_datetime, {coin_pair}_trade_date, {coin_pair}_trade_minute
-                                        , CAST(day_of_week({coin_pair}_trade_datetime) AS SMALLINT) as trade_day_of_week
-                                        , CAST(hour({coin_pair}_trade_datetime) AS SMALLINT) as trade_hour""")
+                                        , extract(isodow from {coin_pair}_trade_datetime) as trade_day_of_week
+                                        , date_part('hour', {coin_pair}_trade_datetime) as trade_hour""")
                 feature_col_list.extend(['trade_day_of_week', 'trade_hour'])
-            base_features_list.append(f"""{coin_pair}_open, {coin_pair}_high, {coin_pair}_low, {coin_pair}_close, {coin_pair}_volume
-                                        , {coin_pair}_quote_asset_volume, {coin_pair}_trade_count, {coin_pair}_tbbav, {coin_pair}_tbqav""")
-            feature_col_list.extend([f'{coin_pair}_open', f'{coin_pair}_high', f'{coin_pair}_low', f'{coin_pair}_close', f'{coin_pair}_volume'
-                                        , f'{coin_pair}_quote_asset_volume', f'{coin_pair}_trade_count', f'{coin_pair}_tbbav', f'{coin_pair}_tbqav'])
+            base_features_list.append(f"""{coin_pair}_bid_ask_spread
+                                        , {coin_pair}_bid_ask_average_price
+                                        , {coin_pair}_bids_cum_5000_weighted_avg
+                                        , {coin_pair}_bids_cum_10000_weighted_avg
+                                        , {coin_pair}_bids_cum_20000_weighted_avg
+                                        , {coin_pair}_bids_cum_50000_weighted_avg
+                                        , {coin_pair}_bids_cum_100000_weighted_avg
+                                        , {coin_pair}_bids_cum_200000_weighted_avg
+                                        , {coin_pair}_bids_cum_5000_weighted_std
+                                        , {coin_pair}_bids_cum_10000_weighted_std
+                                        , {coin_pair}_bids_cum_20000_weighted_std
+                                        , {coin_pair}_bids_cum_50000_weighted_std
+                                        , {coin_pair}_bids_cum_100000_weighted_std
+                                        , {coin_pair}_bids_cum_200000_weighted_std
+                                        , {coin_pair}_asks_cum_5000_weighted_avg
+                                        , {coin_pair}_asks_cum_10000_weighted_avg
+                                        , {coin_pair}_asks_cum_20000_weighted_avg
+                                        , {coin_pair}_asks_cum_50000_weighted_avg
+                                        , {coin_pair}_asks_cum_100000_weighted_avg
+                                        , {coin_pair}_asks_cum_200000_weighted_avg
+                                        , {coin_pair}_asks_cum_5000_weighted_std
+                                        , {coin_pair}_asks_cum_10000_weighted_std
+                                        , {coin_pair}_asks_cum_20000_weighted_std
+                                        , {coin_pair}_asks_cum_50000_weighted_std
+                                        , {coin_pair}_asks_cum_100000_weighted_std
+                                        , {coin_pair}_asks_cum_200000_weighted_std""")
+            feature_col_list.extend([f'{coin_pair}_bid_ask_spread'
+                                    , f'{coin_pair}_bid_ask_average_price'
+                                    , f'{coin_pair}_bids_cum_5000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_10000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_20000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_50000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_100000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_200000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_5000_weighted_std'
+                                    , f'{coin_pair}_bids_cum_10000_weighted_std'
+                                    , f'{coin_pair}_bids_cum_20000_weighted_std'
+                                    , f'{coin_pair}_bids_cum_50000_weighted_std'
+                                    , f'{coin_pair}_bids_cum_100000_weighted_std'
+                                    , f'{coin_pair}_bids_cum_200000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_5000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_10000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_20000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_50000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_100000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_200000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_5000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_10000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_20000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_50000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_100000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_200000_weighted_std'])
             # Interaction features for alt coins (base usdt)
             if pair_type == 'alt':
-                interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 5 PRECEDING) 
-                                                    - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_5_{coin_pair}_close_interaction""")
-                interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 10 PRECEDING) 
-                                                    - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_10_{coin_pair}_close_interaction""")
-                interaction_features_list.append(f"""AVG(({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 20 PRECEDING) 
-                                                    - (({self.target_coin}_close-{coin_pair}_close)/{self.target_coin}_close) AS avg_20_{coin_pair}_close_interaction""")
-                feature_col_list.extend([f'avg_5_{coin_pair}_close_interaction',f'avg_10_{coin_pair}_close_interaction',f'avg_20_{coin_pair}_close_interaction'])
+                interaction_features_list.append(f"""AVG(({self.target_coin}_bid_ask_average_price-{coin_pair}_bid_ask_average_price)/{self.target_coin}_bid_ask_average_price) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 5 PRECEDING) 
+                                                    - (({self.target_coin}_bid_ask_average_price-{coin_pair}_bid_ask_average_price)/{self.target_coin}_bid_ask_average_price) AS avg_5_{coin_pair}_bid_ask_average_price_interaction""")
+                interaction_features_list.append(f"""AVG(({self.target_coin}_bid_ask_average_price-{coin_pair}_bid_ask_average_price)/{self.target_coin}_bid_ask_average_price) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 10 PRECEDING) 
+                                                    - (({self.target_coin}_bid_ask_average_price-{coin_pair}_bid_ask_average_price)/{self.target_coin}_bid_ask_average_price) AS avg_10_{coin_pair}_bid_ask_average_price_interaction""")
+                interaction_features_list.append(f"""AVG(({self.target_coin}_bid_ask_average_price-{coin_pair}_bid_ask_average_price)/{self.target_coin}_bid_ask_average_price) OVER (PARTITION BY {self.target_coin}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC ROWS 20 PRECEDING) 
+                                                    - (({self.target_coin}_bid_ask_average_price-{coin_pair}_bid_ask_average_price)/{self.target_coin}_bid_ask_average_price) AS avg_20_{coin_pair}_bid_ask_average_price_interaction""")
+                feature_col_list.extend([f'avg_5_{coin_pair}_bid_ask_average_price_interaction',f'avg_10_{coin_pair}_bid_ask_average_price_interaction',f'avg_20_{coin_pair}_bid_ask_average_price_interaction'])
             # Lag features for every interval configured at runtime
             for interval in self.feature_minutes_list:
                 interval_list = []
-                interval_list.append(f"""(({coin_pair}_close - LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_close_perc_chg
-                                        ,((({coin_pair}_close - LEAD({coin_pair}_close, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_close, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC))
-                                           - (({coin_pair}_close - LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC))) * 100 AS prev_{interval}_{coin_pair}_close_rate_chg
-                                        ,(({coin_pair}_high - LEAD({coin_pair}_high, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_high, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_high_perc_chg
-                                        ,(({coin_pair}_low - LEAD({coin_pair}_low, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_low, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_low_perc_chg
-                                        ,COALESCE(TRY((({coin_pair}_volume - LEAD({coin_pair}_volume, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_volume, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_volume_perc_chg
-                                        ,(({coin_pair}_close - LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 * {coin_pair}_volume AS prev_{interval}_{coin_pair}_volume_direction
-                                        ,COALESCE(TRY((({coin_pair}_quote_asset_volume - LEAD({coin_pair}_quote_asset_volume, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_quote_asset_volume, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_qav_perc_chg
-                                        ,COALESCE(TRY((({coin_pair}_trade_count - LEAD({coin_pair}_trade_count, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_trade_count, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_trade_count_perc_chg
-                                        ,(({coin_pair}_close - LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_close, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 * {coin_pair}_trade_count AS prev_{interval}_{coin_pair}_trade_count_direction
-                                        ,COALESCE(TRY((({coin_pair}_tbbav - LEAD({coin_pair}_tbbav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_tbbav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_tbbav_perc_chg
-                                        ,COALESCE(TRY((({coin_pair}_tbqav - LEAD({coin_pair}_tbqav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
-                                            / LEAD({coin_pair}_tbqav, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100),0) AS prev_{interval}_{coin_pair}_tbqav_perc_chg""")  
+                interval_list.append(f"""(({coin_pair}_bid_ask_average_price - LEAD({coin_pair}_bid_ask_average_price, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_bid_ask_average_price, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_bid_ask_average_price_perc_chg
+                                        ,((({coin_pair}_bid_ask_average_price - LEAD({coin_pair}_bid_ask_average_price, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_bid_ask_average_price, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC))
+                                           - (({coin_pair}_bid_ask_average_price - LEAD({coin_pair}_bid_ask_average_price, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_bid_ask_average_price, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC))) * 100 AS prev_{interval}_{coin_pair}_bid_ask_average_price_rate_chg
+                                        ,(({coin_pair}_bids_cum_5000_weighted_avg - LEAD({coin_pair}_bids_cum_5000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_bids_cum_5000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_bids_cum_5000_weighted_avg_perc_chg
+                                        ,(({coin_pair}_bids_cum_50000_weighted_avg - LEAD({coin_pair}_bids_cum_50000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_bids_cum_50000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_bids_cum_50000_weighted_avg_perc_chg
+                                        ,(({coin_pair}_bids_cum_100000_weighted_avg - LEAD({coin_pair}_bids_cum_100000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_bids_cum_100000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_bids_cum_100000_weighted_avg_perc_chg
+                                        ,(({coin_pair}_bids_cum_200000_weighted_avg - LEAD({coin_pair}_bids_cum_200000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_bids_cum_200000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_bids_cum_200000_weighted_avg_perc_chg
+                                        ,(({coin_pair}_asks_cum_5000_weighted_avg - LEAD({coin_pair}_asks_cum_5000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_asks_cum_5000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_asks_cum_5000_weighted_avg_perc_chg
+                                        ,(({coin_pair}_asks_cum_50000_weighted_avg - LEAD({coin_pair}_asks_cum_50000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_asks_cum_50000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_asks_cum_50000_weighted_avg_perc_chg
+                                        ,(({coin_pair}_asks_cum_100000_weighted_avg - LEAD({coin_pair}_asks_cum_100000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_asks_cum_100000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_asks_cum_100000_weighted_avg_perc_chg
+                                        ,(({coin_pair}_asks_cum_200000_weighted_avg - LEAD({coin_pair}_asks_cum_200000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
+                                            / LEAD({coin_pair}_asks_cum_200000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_asks_cum_200000_weighted_avg_perc_chg
+                                        """)  
                 lag_features_list.append(','.join(interval_list))  
-                feature_col_list.extend([f'prev_{interval}_{coin_pair}_close_perc_chg',f'prev_{interval}_{coin_pair}_close_rate_chg',f'prev_{interval}_{coin_pair}_high_perc_chg',
-                                        f'prev_{interval}_{coin_pair}_low_perc_chg',f'prev_{interval}_{coin_pair}_volume_perc_chg',f'prev_{interval}_{coin_pair}_volume_direction',f'prev_{interval}_{coin_pair}_qav_perc_chg',
-                                        f'prev_{interval}_{coin_pair}_trade_count_perc_chg',f'prev_{interval}_{coin_pair}_trade_count_direction',f'prev_{interval}_{coin_pair}_tbbav_perc_chg',f'prev_{interval}_{coin_pair}_tbqav_perc_chg'])
+                feature_col_list.extend([f'prev_{interval}_{coin_pair}_bid_ask_average_price_perc_chg'
+                                        ,f'prev_{interval}_{coin_pair}_bid_ask_average_price_rate_chg'
+                                        ,f'prev_{interval}_{coin_pair}_bids_cum_5000_weighted_avg_perc_chg'
+                                        ,f'prev_{interval}_{coin_pair}_bids_cum_50000_weighted_avg_perc_chg'
+                                        ,f'prev_{interval}_{coin_pair}_bids_cum_100000_weighted_avg_perc_chg'
+                                        ,f'prev_{interval}_{coin_pair}_bids_cum_200000_weighted_avg_perc_chg'
+                                        ,f'prev_{interval}_{coin_pair}_asks_cum_5000_weighted_avg_perc_chg'
+                                        ,f'prev_{interval}_{coin_pair}_asks_cum_50000_weighted_avg_perc_chg'
+                                        ,f'prev_{interval}_{coin_pair}_asks_cum_100000_weighted_avg_perc_chg'
+                                        ,f'prev_{interval}_{coin_pair}_asks_cum_200000_weighted_avg_perc_chg'])
             # Target variables for every interval configured at runtime
             if pair_type == 'target':
                 for target in self.trade_window_list:
-                    target_variables_list.append(f"""((LAG({self.target_coin}_close, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {self.target_coin}_close) / {self.target_coin}_close) * 100 AS futr_{target}_close_perc_chg""")
-                    target_col_list.append(f'futr_{target}_close_perc_chg')
+                    target_variables_list.append(f"""((LAG({self.target_coin}_asks_cum_5000_weighted_avg, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {self.target_coin}_bids_cum_5000_weighted_avg) / {self.target_coin}_bids_cum_5000_weighted_avg) * 100 AS futr_{target}_askbid_cum_5000_weighted_avg_perc_chg""")
+                    target_col_list.append(f'futr_{target}_askbid_cum_5000_weighted_avg_perc_chg')
                 # Join conditions
                 join_conditions_list.append(f"""{pair_type}_{coin_pair}""")      
             else:

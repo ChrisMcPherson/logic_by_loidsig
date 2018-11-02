@@ -14,7 +14,7 @@ from joblib import Parallel, delayed
 import multiprocessing
 # local libraries
 sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
-import athena_connect
+#import athena_connect
 import market_maker_training
 # modeling
 from sklearn import linear_model
