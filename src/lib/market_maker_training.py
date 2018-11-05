@@ -137,6 +137,7 @@ class BinanceTraining(MarketMakerTraining):
 
     def construct_training_data_query(self):
         """Return training data query from dynamic template"""
+        # FUTURE: make dollar return target/features dynamic
         if self.feature_minutes_list == None or self.trade_window_list == None:
             raise Exception("To construct training data query, the optional feature_minutes_list and trade_window_list attributes must be set!")
         
@@ -279,6 +280,8 @@ class BinanceTraining(MarketMakerTraining):
                                             / LEAD({coin_pair}_asks_cum_100000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_asks_cum_100000_weighted_avg_perc_chg
                                         ,(({coin_pair}_asks_cum_200000_weighted_avg - LEAD({coin_pair}_asks_cum_200000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
                                             / LEAD({coin_pair}_asks_cum_200000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD({coin_pair}_asks_cum_5000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {coin_pair}_bids_cum_5000_weighted_avg) 
+                                            / {coin_pair}_bids_cum_5000_weighted_avg) * 100 AS futr_{coin_pair}_{interval}_askbid_cum_5000_weighted_avg_perc_chg
                                         """)  
                 lag_features_list.append(','.join(interval_list))  
                 feature_col_list.extend([f'prev_{interval}_{coin_pair}_bid_ask_average_price_perc_chg'
@@ -311,7 +314,6 @@ class BinanceTraining(MarketMakerTraining):
         query_template = f"""WITH {raw_features}
                             SELECT {base_features}
                                 ,{interaction_features}
-                                ,{target_variables}
                                 ,{lag_features}
                                 ,{target_variables}
                             FROM {join_conditions}

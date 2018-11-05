@@ -9,6 +9,7 @@ import ast
 import time
 import datetime
 import json
+import re
 import collections
 from joblib import Parallel, delayed
 import multiprocessing
@@ -32,11 +33,11 @@ def main():
     print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
     
     # Default configuration
-    start = 175
-    target_coin_list = ['ethusdt']
+    start = 15
+    target_coin_list = ['btcusdt']
     feature_minutes_list = [1,5,10]
-    target_col_list = [2,5,10,20]
-    training_min_list = [10000]
+    target_col_list = [5,10,20]
+    training_min_list = ['none']
     test_min_list = [1440]
     model_list = ['linear']
     poly_list = [3]
@@ -108,7 +109,7 @@ def main():
                             results_df_list = []
                             days_to_test = features_df.loc[start_ix:,f'{target_coin}_trade_date'].nunique()
                             test_intervals = days_to_test * 1440 / test_min
-                            trade_duration = int(''.join(filter(str.isdigit, target_col)))
+                            trade_duration = [int(s) for s in re.findall(r'-?\d+\.?\d*', target_col)][0]
                             print(f"trade_duration={trade_duration}, training_mins={training_min}, test_mins={test_min}")
                             print(f"Number of days to iterate: {days_to_test}")
                             # results_df_list = Parallel(n_jobs=multiprocessing.cpu_count())(delayed(simulate_return)(model, features_df, feature_col, 
@@ -130,8 +131,7 @@ def main():
 def features(feature_minutes_list, trade_window_list):
     #TODO: move this config to simulation argument 
     coin_pair_dict = {'target':'btcusdt',
-                  'alt':'ethusdt',
-                  'through':'eoseth'}
+                  'alt':'ethusdt'}
     print(f"Coin feature configuration: {coin_pair_dict}")
 
     mm_training = market_maker_training.BinanceTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
@@ -244,7 +244,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
     y_act = test_df.loc[:,target_col]
     # 
     test_df.loc[:,'before_fees_return'] = test_df[target_col]
-    test_df.loc[:,'return'] = test_df[target_col] - .2 # .1 each way bid/ask
+    test_df.loc[:,'return'] = test_df[target_col] - .3 # .15 each way bid/ask
     test_df.loc[:,'predicted'] = y_sim
     return test_df
         
