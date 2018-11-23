@@ -95,7 +95,7 @@ def main():
     # Simulate!
     for target_coin in target_coin_list:
         # Get features for target coin
-        features_df, feature_col, target_col_list = features(feature_minutes_list, target_col_list)
+        features_df, feature_col, target_col_list = features(feature_minutes_list, target_col_list, target_coin)
         # Iterate over all simulation configurations
         sim_daily_trades_list = []
         for model in model_list:
@@ -128,10 +128,11 @@ def main():
     finish_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
     sim_daily_trades.to_csv(f"notebooks/sim_results/sim_daily_trades_{finish_time}.csv", index = False)
                     
-def features(feature_minutes_list, trade_window_list):
+def features(feature_minutes_list, trade_window_list, target_coin):
     #TODO: move this config to simulation argument 
-    coin_pair_dict = {'target':'btcusdt',
-                  'alt':'ethusdt'}
+    coin_pair_dict = {'target':target_coin,
+                  'alt':'btcusdt',
+                  'through':'trxeth'}
     print(f"Coin feature configuration: {coin_pair_dict}")
 
     mm_training = market_maker_training.BinanceTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
@@ -219,10 +220,10 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         X_sim = test_df.loc[:,feature_cols]
         y_sim = ridge.predict(X_sim)
     elif model == 'xgb':
-        xgb = xgb.XGBRegressor()
-        xgb.fit(X, y)
+        xgbm = xgb.XGBRegressor()
+        xgbm.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
-        y_sim = xgb.predict(X_sim)
+        y_sim = xgbm.predict(X_sim)
     elif model == 'xgblinear':
         model = xgb.XGBRegressor()
         model.fit(X, y)
@@ -244,7 +245,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
     y_act = test_df.loc[:,target_col]
     # 
     test_df.loc[:,'before_fees_return'] = test_df[target_col]
-    test_df.loc[:,'return'] = test_df[target_col] - .3 # .15 each way bid/ask
+    test_df.loc[:,'return'] = test_df[target_col] - .15  # .1 - 25% each way bid/ask
     test_df.loc[:,'predicted'] = y_sim
     return test_df
         
@@ -254,10 +255,10 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, trad
     optimal_buy_threshold = None
     best_return = 0
     num_trades = 0
-    for thresh in list(np.arange(0, 2.1, 0.1)):
+    for thresh in list(np.arange(0, 0.7, 0.1)):
         # Output results of every threshold
         return_df = results_df.loc[results_df['predicted'] >= thresh]
-        print(f"Return at {thresh}: {return_df['return'].sum()}% with {len(return_df.index)} trades; Return before bnb fees: {return_df['before_fees_return'].sum()}%")
+        print(f"{trade_duration} trade duration, {thresh} threshold:")
         # Output total possible return for sequential trading
         return_dict = dict(zip(return_df[f'{coin}_trade_minute'], return_df['return']))
         return_dict = collections.OrderedDict(sorted(return_dict.items()))
@@ -272,7 +273,54 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, trad
                 continue
             previous_trade_min = trade_min
             realistic_returns.append(act_return)
-        print(f"    -- Total possible sequential return: {sum(realistic_returns)}% with {len(realistic_returns)} trades")
+        print(f"Actual with fees: {sum(realistic_returns)}% with {len(realistic_returns)} trades")
+        # Output no fee return with no fees for sequential trading
+        return_dict = dict(zip(return_df[f'{coin}_trade_minute'], return_df[target_col]))
+        return_dict = collections.OrderedDict(sorted(return_dict.items()))
+        no_fee_returns = []
+        previous_trade_min = 0 
+        for trade_min, act_return in return_dict.items():
+            if previous_trade_min == 0:
+                previous_trade_min = trade_min
+                no_fee_returns.append(act_return)
+                continue
+            if trade_min <= previous_trade_min + trade_duration:
+                continue
+            previous_trade_min = trade_min
+            no_fee_returns.append(act_return)
+        print(f"    -- Predicted with no fee: {sum(no_fee_returns)}% with {len(no_fee_returns)} trades")
+        # Output total possible return for sequential trading for perfect model
+        perfect_return_df = results_df.loc[results_df['return'] >= thresh]
+        return_dict = dict(zip(perfect_return_df[f'{coin}_trade_minute'], perfect_return_df['return']))
+        return_dict = collections.OrderedDict(sorted(return_dict.items()))
+        perfect_returns = []
+        previous_trade_min = 0 
+        for trade_min, act_return in return_dict.items():
+            if previous_trade_min == 0:
+                previous_trade_min = trade_min
+                perfect_returns.append(act_return)
+                continue
+            if trade_min <= previous_trade_min + trade_duration:
+                continue
+            previous_trade_min = trade_min
+            perfect_returns.append(act_return)
+        print(f"    -- Perfect model with fees: {sum(perfect_returns)}% with {len(perfect_returns)} trades")
+        # Output perfect model no fee return with no fees for sequential trading
+        perfect_return_df = results_df.loc[results_df[target_col] >= thresh]
+        return_dict = dict(zip(perfect_return_df[f'{coin}_trade_minute'], perfect_return_df[target_col]))
+        return_dict = collections.OrderedDict(sorted(return_dict.items()))
+        no_fee_returns = []
+        previous_trade_min = 0 
+        for trade_min, act_return in return_dict.items():
+            if previous_trade_min == 0:
+                previous_trade_min = trade_min
+                no_fee_returns.append(act_return)
+                continue
+            if trade_min <= previous_trade_min + trade_duration:
+                continue
+            previous_trade_min = trade_min
+            no_fee_returns.append(act_return)
+        print(f"    -- Perfect model with NO fee: {sum(no_fee_returns)}% with {len(no_fee_returns)} trades")
         # Retain optimal threshold
         if (sum(realistic_returns) > best_return) or (optimal_buy_threshold == None):
             optimal_buy_threshold = thresh
@@ -280,9 +328,12 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, trad
             ind_best_returns_df = return_df[[f'{coin}_trade_datetime',f'{coin}_trade_minute','predicted', 'return']]
             ind_best_returns_df['trade_threshold'] = thresh
             ind_best_returns_df['trade_mins'] = trade_duration
+            # add flag for possible return
+            # where return in realistic_returns == return add boolean flag
+            ind_best_returns_df['trade_flag'] = ind_best_returns_df['return'].isin(realistic_returns)
     # Save trades for specified target threshold
     finish_time = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H-%M-%S')
-    ind_best_returns_df.to_csv(f"notebooks/sim_results/sim_{optimal_buy_threshold}_thresh_trades_{finish_time}.csv", index = False)
+    ind_best_returns_df.to_csv(f"notebooks/sim_results/sim_{trade_duration}_thresh_trades_{finish_time}.csv", index = False)
             
     # print/return
     results_df.loc[results_df['predicted'] >= optimal_buy_threshold, 'buy'] = 1 # reset buy threshold with optimum
@@ -302,7 +353,8 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, trad
     daily_trades['optimal_buy_threshold'] = optimal_buy_threshold
     daily_trades['best_return'] = best_return
     print(f"Best return {best_return} at {optimal_buy_threshold} threshold")
-    print(f"Total return if every minute we had made a trade: {results_df['return'].sum()}%")
+    print(f"Total return if every minute we had made a trade with fees: {results_df['return'].sum()}% with {len(results_df.index)} trades")
+    print(f"Total return if every minute we had made a trade without fees: {results_df['before_fees_return'].sum()}% with {len(results_df.index)} trades")
     return daily_trades
 
 

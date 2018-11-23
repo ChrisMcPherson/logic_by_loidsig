@@ -1,19 +1,29 @@
-2018-11-05 12:59:24
-Model(s): ['linear', 'rf']
-Sim Start Day: 15
-Training feature minutes: [1, 5, 10, 20, 30, 40, 50, 60, 120, 240, 480, 960]
-Training Min(s): ['none']
-Test Min(s): [1440]
-Poly(s): [3]
-Coin feature configuration: {'target': 'btcusdt', 'alt': 'ethusdt'}
-(44609, 304)
-(43649, 304)
-Model: linear
-2018-11-05 13:00:07
-Traceback (most recent call last):
-  File "src/the_sim/return_simulation.py", line 310, in <module>
-    main()
-  File "src/the_sim/return_simulation.py", line 112, in main
-    trade_duration = [int(s) for s in re.findall(r'-?\d+\.?\d*', target)][0]
-NameError: name 'target' is not defined
-Failed with exit code: 1
+2018-11-23 06:01:01
+ETHUSDT: 1 unprocessed days between 1 Jan. 2018 UTC and the day before today
+2018-11-23 06:01:44: Beginning S3 load for 2018-11-22 with 107464 rows
+BNBUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-11-23 06:01:53: Beginning S3 load for 2018-11-22 with 11973 rows
+TRXETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-11-23 06:02:01: Beginning S3 load for 2018-11-22 with 14752 rows
+BTCUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-11-23 06:02:49: Beginning S3 load for 2018-11-22 with 170024 rows
+LTCUSDT: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-11-23 06:03:01: Beginning S3 load for 2018-11-22 with 15859 rows
+ETHBTC: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-11-23 06:03:35: Beginning S3 load for 2018-11-22 with 116249 rows
+XRPETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-11-23 06:03:47: Beginning S3 load for 2018-11-22 with 17124 rows
+NEOETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-11-23 06:03:51: Beginning S3 load for 2018-11-22 with 4173 rows
+ENJETH: 2 unprocessed days between 1 Jan. 2018 UTC and the day before today
+Failed to get agg trade list for 2018-02-09. list index out of range
+2018-11-23 06:03:54: Beginning S3 load for 2018-11-22 with 853 rows
+**Time 23:56:59.894000 is not end of day for 2018-11-22 23:56:59.894000...
+2018-11-23 06:03:54
