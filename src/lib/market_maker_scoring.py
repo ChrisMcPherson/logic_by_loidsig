@@ -21,8 +21,10 @@ from joblib import Parallel, delayed
 from binance.client import Client
 from cobinhood_api import Cobinhood
 # local libraries
-sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
-import athena_connect
+#sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
+#import athena_connect
+import market_maker_training
+
 
 class MarketMakerScoring():
     def __init__(self):
@@ -213,11 +215,28 @@ class BinanceScoring(MarketMakerScoring):
 
     def __init__(self):
         super().__init__()
-        self.bnb_client = BinanceScoring.binance_client()
+        self.bnb_client = None # BinanceScoring.binance_client()
 
 
-    def set_scoring_data(self, in_parallel=True):
-        """Set data for model scoring from latest candlestick metrics features"""
+    def set_scoring_data(self):
+        """Set data for model scoring"""
+        mm_data = market_maker_training.BinanceTraining(self.coin_pair_dict, self.feature_minutes_list, self.trade_window_list, operation='scoring')
+
+        if self.feature_minutes_list == None or self.trade_window_list == None:
+            raise Exception("To construct scoring dataframe, the optional feature_minutes_list and trade_window_list attributes must be set!")
+        # Get recent trade data for both target coin pair and through coin pair
+        recent_trades_interval = max(self.feature_minutes_list) + 10
+        try:
+            scoring_features_df = pd.read_sql(mm_data.training_data_sql, mm_data.logic_db_engine())
+        except Exception as e:
+            print(f"Unable to get recent data for scoring: {e}")
+            return
+        scoring_features_df.fillna(0, inplace=True)
+        scoring_features_df.replace([np.inf, -np.inf], 0, inplace=True)
+        self.scoring_features_df = scoring_features_df
+
+    def set_candlestick_scoring_data(self, in_parallel=True):
+        """Set data for model scoring"""
         if self.feature_minutes_list == None or self.trade_window_list == None:
             raise Exception("To construct scoring dataframe, the optional feature_minutes_list and trade_window_list attributes must be set!")
         # Get recent trade data for both target coin pair and through coin pair

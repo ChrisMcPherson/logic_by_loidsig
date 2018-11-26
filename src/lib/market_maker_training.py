@@ -130,12 +130,12 @@ class BinanceTraining(MarketMakerTraining):
     Train a model with data from the Binance exchange
     """
 
-    def __init__(self, coin_pair_dict, feature_minutes_list, trade_window_list, training_period=None):
+    def __init__(self, coin_pair_dict, feature_minutes_list, trade_window_list, training_period=None, operation='training'):
         super().__init__(coin_pair_dict, feature_minutes_list, trade_window_list, training_period=None)
-        self.training_data_sql, self.feature_column_list, self.target_column_list = self.construct_training_data_query()
+        self.training_data_sql, self.feature_column_list, self.target_column_list = self.construct_training_data_query(operation)
         
 
-    def construct_training_data_query(self):
+    def construct_training_data_query(self, operation='training'):
         """Return training data query from dynamic template"""
         # FUTURE: make dollar return target/features dynamic
         if self.feature_minutes_list == None or self.trade_window_list == None:
@@ -185,7 +185,7 @@ class BinanceTraining(MarketMakerTraining):
                                         , asks_cum_50000_weighted_std AS {coin_pair}_asks_cum_50000_weighted_std
                                         , asks_cum_100000_weighted_std AS {coin_pair}_asks_cum_100000_weighted_std
                                         , asks_cum_200000_weighted_std AS {coin_pair}_asks_cum_200000_weighted_std
-                                    FROM cobinhood.orderbook 
+                                    FROM binance.orderbook 
                                     WHERE coin_pair = '{coin_pair}'
                                     )""")
             # Base features
@@ -317,7 +317,8 @@ class BinanceTraining(MarketMakerTraining):
                                 ,{lag_features}
                                 ,{target_variables}
                             FROM {join_conditions}
-                            ORDER BY {self.target_coin}_trade_minute ASC"""
+                            ORDER BY {self.target_coin}_trade_minute {'DESC' if operation == 'scoring' else 'ASC'}
+                            {'LIMIT 1' if operation == 'scoring' else ''}"""
 
         return query_template, feature_col_list, target_col_list
 

@@ -4,6 +4,7 @@ import numpy as np
 import io
 import sys
 import os
+import re
 import time
 # local libraries
 sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
@@ -23,8 +24,8 @@ coin_pair_dict = {'target':'ethusdt',
                   'through':'trxeth'}
 
                   
-feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
-trade_window_list = [25]
+feature_minutes_list = [1, 3, 5, 8, 11, 14, 18, 22, 30, 40, 50, 60, 120, 240, 480, 960]
+trade_window_list = [18,22]
 
 def main():
     """Control the training and persistance of a market maker model"""
@@ -52,7 +53,9 @@ def main():
         model.fit(X, y)
         # Persist model and standardizer
         print(f"{target_column} r2: {r2_score(y, model.predict(X))}")
-        mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column))))
+        #mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column))))
+        trade_duration = [int(s) for s in re.findall(r'-?\d+\.?\d*', target_column)][0]
+        mm_training.persist_model(model, trade_duration)
         mm_training.persist_standardizer(scaler)
     # Persist configuration
     mm_training.persist_model_config()

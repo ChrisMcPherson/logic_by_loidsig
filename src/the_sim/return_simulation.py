@@ -213,7 +213,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         X_sim_ = scaler.transform(X_sim)
         lr.fit(X_, y)
         X_sim = test_df.loc[:,feature_cols]
-        y_sim = lr.predict(X_sim)
+        y_sim = lr.predict(X_sim_)
     elif model == 'ridge':
         ridge = linear_model.RidgeCV(alphas=(.0001,.001,.01,.1,1,10), normalize=True)
         ridge.fit(X, y)

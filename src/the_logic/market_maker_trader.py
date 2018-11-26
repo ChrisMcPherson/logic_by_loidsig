@@ -20,8 +20,8 @@ from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
 # Config
-predicted_return_threshold = .6
-model_version = 1.3
+predicted_return_threshold = .5
+model_version = 2.0
 
 def main():
     iter_ = 1
@@ -38,13 +38,10 @@ def logic(iter_):
     # Get trained models
     model_object_dict = mm_scoring.get_model_objects()
     # Set scoring data and retrieve the most recent minutes features
-    mm_scoring.set_scoring_data(in_parallel=True)
-    try:
-        recent_df = mm_scoring.scoring_features_df.sort_values('open_time')
-    except:
-        return
+    mm_scoring.set_scoring_data()
+    recent_df = mm_scoring.scoring_features_df.sort_values(f'{mm_scoring.target_coin}_trade_minute')
     X_scoring = recent_df[mm_scoring.feature_column_list]
-    X_scoring = X_scoring.iloc[-2]
+    X_scoring = X_scoring.iloc[-1]
     X_scoring = X_scoring.values.reshape(1, -1)
     
     # get standardize object    
@@ -71,17 +68,15 @@ def logic(iter_):
         i += 1
 
     end = time.time()
-    latest_timestamp = recent_df.iloc[-2]['close_time'].item() / 1000
+    latest_minute = recent_df.iloc[-1][f'{mm_scoring.target_coin}_trade_minute'].item()
     scoring_timestamp = time.time()
-    data_latency_seconds = scoring_timestamp - latest_timestamp
-
-    latest_minute = recent_df.iloc[-2]['minute'].item()
+    data_latency_seconds = scoring_timestamp - (latest_minute * 60 + 30)
 
     # Print important time latency information on first iteration
     if iter_ == 1:
         print(f"From data collection to prediction, {int(end - start)} seconds have elapsed")
         # Validate amount of time passage
-        print(f"Last timestamp in scoring data: {latest_timestamp} compared to current timestamp: {time.time()} with {data_latency_seconds} diff")
+        print(f"Last timestamp in scoring data: {latest_minute * 60} compared to current timestamp: {time.time()} with {data_latency_seconds} diff")
     
     # Buy/Sell
     scoring_datetime = datetime.datetime.fromtimestamp(scoring_timestamp).strftime('%Y-%m-%d %H:%M:%S')
