@@ -2,7 +2,9 @@
   "name": "orderbook_events_service",
   "description": "",
   "version": "0.1.0",
-  "dependencies": {},
+  "dependencies": {
+    "serverless": "^1.33.2"
+  },
   "devDependencies": {
     "serverless-python-requirements": "^4.2.4"
   }

@@ -15,13 +15,21 @@ except:
 s3_resource = boto_session.resource('s3')
 s3_bucket = 'loidsig-crypto'
 
-# Standardized price targets
+# Standardized price targets - for non usdt base pairs, do we update the conversion to usd value instead of static set? Implications of either?
 std_price_target_dict = {
     'btcusdt':[5000,10000,20000,50000,100000,200000],
     'bnbusdt':[5000,10000,20000,50000,100000,200000],
     'ethusdt':[5000,10000,20000,50000,100000,200000],
     'ltcusdt':[5000,10000,20000,50000,100000,200000],
     'cobusdt':[5000,10000,20000,50000,100000,200000],
+    'bchabcusdt':[5000,10000,20000,50000,100000,200000],
+    'bchsvusdt':[5000,10000,20000,50000,100000,200000],
+    'neousdt':[5000,10000,20000,50000,100000,200000],
+    'etcusdt':[5000,10000,20000,50000,100000,200000],
+    'eosusdt':[5000,10000,20000,50000,100000,200000],
+    'trxusdt':[5000,10000,20000,50000,100000,200000],
+    'qtumusdt':[5000,10000,20000,50000,100000,200000],
+    'xrpusdt':[5000,10000,20000,50000,100000,200000],
     'tusdbtc':[.77, 1.54, 3.08, 7.7, 15.4, 30.8],
     'ethbtc':[.77, 1.54, 3.08, 7.7, 15.4, 30.8],
     'tusdeth':[24,49,98,245,490,980],

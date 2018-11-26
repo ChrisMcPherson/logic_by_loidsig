@@ -22,7 +22,27 @@ key, value = ast.literal_eval(get_secret_value_response['SecretString']).popitem
 bnb = Client(key, value)
 
 def main(event, context):
-    coins = ('ETHUSDT','BNBUSDT','BTCUSDT','LTCUSDT','ETHBTC','TRXETH','XRPETH','NEOETH', 'TUSDBNB', 'TUSDBTC', 'TUSDETH')
+    coins = (
+        'ETHUSDT',
+        'BNBUSDT',
+        'BTCUSDT',
+        'LTCUSDT',
+        'BCHABCUSDT',
+        'BCHSVUSDT',
+        'NEOUSDT',
+        'ETCUSDT',
+        'EOSUSDT',
+        'TRXUSDT',
+        'QTUMUSDT',
+        'XRPUSDT',
+        'ETHBTC',
+        'TRXETH',
+        'XRPETH',
+        'NEOETH',
+        'TUSDBNB',
+        'TUSDBTC',
+        'TUSDETH'
+    )
     for coin_pair in coins:
         json_message, unix_timestamp = get_orderbook_message(coin_pair)
         message_to_s3(json_message, coin_pair, unix_timestamp)
@@ -35,7 +55,8 @@ def get_orderbook_message(coin_pair):
         try:
             order_book = bnb.get_order_book(symbol=coin_pair, limit=1000)
             break
-        except:
+        except Exception as e:
+            print(f"Error! {e}")
             api_tries += 1
             time.sleep(5)
     # Bids
