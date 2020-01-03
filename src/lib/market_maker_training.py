@@ -45,6 +45,8 @@ class MarketMakerTraining():
         # Extract queried data from Athena
         #athena = athena_connect.Athena()
         #features_df = athena.pandas_read_athena(self.training_data_sql)
+        with open('feature_sql.txt', 'w') as f:
+            print(self.training_data_sql, file=f) 
         features_df = pd.read_sql(self.training_data_sql, self.logic_db_engine())
         features_df.fillna(0, inplace=True)
         print(features_df.shape)
@@ -74,7 +76,9 @@ class MarketMakerTraining():
         return
 
     def persist_model(self, model, trade_window):
-        """Persist model object as pkl to S3"""
+        """Persist model object as pkl to S3
+        pickle.dump(model, open('xgb_model.pkl','wb'))
+        """
         object_path = 'model_objects/'
         file_name = f'market_maker_model_{self.target_coin}_{trade_window}.pkl'
         self.s3_client.put_object(Bucket=self.s3_bucket,
@@ -130,12 +134,12 @@ class BinanceTraining(MarketMakerTraining):
     Train a model with data from the Binance exchange
     """
 
-    def __init__(self, coin_pair_dict, feature_minutes_list, trade_window_list, training_period=None, operation='training'):
+    def __init__(self, coin_pair_dict, feature_minutes_list, trade_window_list, training_period=None, operation='training', limit_minutes=None):
         super().__init__(coin_pair_dict, feature_minutes_list, trade_window_list, training_period=None)
-        self.training_data_sql, self.feature_column_list, self.target_column_list = self.construct_training_data_query(operation)
+        self.training_data_sql, self.feature_column_list, self.target_column_list = self.construct_training_data_query(operation, limit_minutes)
         
 
-    def construct_training_data_query(self, operation='training'):
+    def construct_training_data_query(self, operation='training', limit_minutes=None):
         """Return training data query from dynamic template"""
         # FUTURE: make dollar return target/features dynamic
         if self.feature_minutes_list == None or self.trade_window_list == None:
@@ -149,6 +153,12 @@ class BinanceTraining(MarketMakerTraining):
         lag_features_list = []
         join_conditions_list = []
         target_variables_list = []
+
+        # Limit rows returned when pulling scoring features
+        scoring_where_clause = ''
+        if operation == 'scoring':
+            limit_trade_minute = (time.time() / 60) - limit_minutes - (5*60)
+            scoring_where_clause = f'AND trade_minute > {limit_trade_minute}'
 
         for pair_type, coin_pair in self.coin_pair_dict.items():
             # Raw base features
@@ -187,6 +197,7 @@ class BinanceTraining(MarketMakerTraining):
                                         , asks_cum_200000_weighted_std AS {coin_pair}_asks_cum_200000_weighted_std
                                     FROM binance.orderbook 
                                     WHERE coin_pair = '{coin_pair}'
+                                    {scoring_where_clause}
                                     )""")
             # Base features
             if pair_type == 'target':
@@ -222,28 +233,28 @@ class BinanceTraining(MarketMakerTraining):
                                         , {coin_pair}_asks_cum_200000_weighted_std""")
             feature_col_list.extend([f'{coin_pair}_bid_ask_spread'
                                     , f'{coin_pair}_bid_ask_average_price'
-                                    # , f'{coin_pair}_bids_cum_5000_weighted_avg'
-                                    # , f'{coin_pair}_bids_cum_10000_weighted_avg'
-                                    # , f'{coin_pair}_bids_cum_20000_weighted_avg'
-                                    # , f'{coin_pair}_bids_cum_50000_weighted_avg'
-                                    # , f'{coin_pair}_bids_cum_100000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_5000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_10000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_20000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_50000_weighted_avg'
+                                    , f'{coin_pair}_bids_cum_100000_weighted_avg'
                                     , f'{coin_pair}_bids_cum_200000_weighted_avg'
-                                    #, f'{coin_pair}_bids_cum_5000_weighted_std'
-                                    #, f'{coin_pair}_bids_cum_10000_weighted_std'
+                                    , f'{coin_pair}_bids_cum_5000_weighted_std'
+                                    , f'{coin_pair}_bids_cum_10000_weighted_std'
                                     , f'{coin_pair}_bids_cum_20000_weighted_std'
-                                    #, f'{coin_pair}_bids_cum_50000_weighted_std'
+                                    , f'{coin_pair}_bids_cum_50000_weighted_std'
                                     , f'{coin_pair}_bids_cum_100000_weighted_std'
                                     , f'{coin_pair}_bids_cum_200000_weighted_std'
-                                    # , f'{coin_pair}_asks_cum_5000_weighted_avg'
-                                    # , f'{coin_pair}_asks_cum_10000_weighted_avg'
-                                    # , f'{coin_pair}_asks_cum_20000_weighted_avg'
-                                    # , f'{coin_pair}_asks_cum_50000_weighted_avg'
-                                    # , f'{coin_pair}_asks_cum_100000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_5000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_10000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_20000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_50000_weighted_avg'
+                                    , f'{coin_pair}_asks_cum_100000_weighted_avg'
                                     , f'{coin_pair}_asks_cum_200000_weighted_avg'
-                                    #, f'{coin_pair}_asks_cum_5000_weighted_std'
-                                    #, f'{coin_pair}_asks_cum_10000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_5000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_10000_weighted_std'
                                     , f'{coin_pair}_asks_cum_20000_weighted_std'
-                                    #, f'{coin_pair}_asks_cum_50000_weighted_std'
+                                    , f'{coin_pair}_asks_cum_50000_weighted_std'
                                     , f'{coin_pair}_asks_cum_100000_weighted_std'
                                     , f'{coin_pair}_asks_cum_200000_weighted_std'])
             # Interaction features for alt coins (base usdt)
@@ -281,23 +292,43 @@ class BinanceTraining(MarketMakerTraining):
                                         ,(({coin_pair}_asks_cum_200000_weighted_avg - LEAD({coin_pair}_asks_cum_200000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) 
                                             / LEAD({coin_pair}_asks_cum_200000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_asks_cum_200000_weighted_avg_perc_chg
                                         , ((LEAD({coin_pair}_asks_cum_5000_weighted_avg, {interval}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {coin_pair}_bids_cum_5000_weighted_avg) 
-                                            / {coin_pair}_bids_cum_5000_weighted_avg) * 100 AS prev_{coin_pair}_{interval}_askbid_cum_5000_weighted_avg_perc_chg
-                                        """)  
+                                            / {coin_pair}_bids_cum_5000_weighted_avg) * 100 AS prev_{coin_pair}_{interval}_askbid_cum_5000_weighted_avg_perc_chg """)  
+                                        # ,AVG({coin_pair}_bids_cum_5000_weighted_std) OVER (PARTITION BY {coin_pair}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC rows between {interval} preceding and current row) AS prev_{interval}_{coin_pair}_bids_cum_5000_weighted_std_avg
+                                        # ,AVG({coin_pair}_bids_cum_50000_weighted_std) OVER (PARTITION BY {coin_pair}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC rows between {interval} preceding and current row) AS prev_{interval}_{coin_pair}_bids_cum_50000_weighted_std_avg 
+                                        # ,AVG({coin_pair}_bids_cum_100000_weighted_std) OVER (PARTITION BY {coin_pair}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC rows between {interval} preceding and current row) AS prev_{interval}_{coin_pair}_bids_cum_100000_weighted_std_avg 
+                                        # ,AVG({coin_pair}_bids_cum_200000_weighted_std) OVER (PARTITION BY {coin_pair}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC rows between {interval} preceding and current row) AS prev_{interval}_{coin_pair}_bids_cum_200000_weighted_std_avg 
+                                        # ,AVG({coin_pair}_asks_cum_5000_weighted_std) OVER (PARTITION BY {coin_pair}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC rows between {interval} preceding and current row) AS prev_{interval}_{coin_pair}_asks_cum_5000_weighted_std_avg 
+                                        # ,AVG({coin_pair}_asks_cum_50000_weighted_std) OVER (PARTITION BY {coin_pair}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC rows between {interval} preceding and current row) AS prev_{interval}_{coin_pair}_asks_cum_50000_weighted_std_avg 
+                                        # ,AVG({coin_pair}_asks_cum_100000_weighted_std) OVER (PARTITION BY {coin_pair}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC rows between {interval} preceding and current row) AS prev_{interval}_{coin_pair}_asks_cum_100000_weighted_std_avg 
+                                        # ,AVG({coin_pair}_asks_cum_200000_weighted_std) OVER (PARTITION BY {coin_pair}_coin_partition ORDER BY {self.target_coin}_trade_minute ASC rows between {interval} preceding and current row) AS prev_{interval}_{coin_pair}_asks_cum_200000_weighted_std_avg 
+                #""")  
                 lag_features_list.append(','.join(interval_list))  
-                feature_col_list.extend([f'prev_{interval}_{coin_pair}_bid_ask_average_price_perc_chg'
-                                        ,f'prev_{interval}_{coin_pair}_bid_ask_average_price_rate_chg'
-                                        #,f'prev_{interval}_{coin_pair}_bids_cum_5000_weighted_avg_perc_chg'
-                                        #,f'prev_{interval}_{coin_pair}_bids_cum_50000_weighted_avg_perc_chg'
-                                        #,f'prev_{interval}_{coin_pair}_bids_cum_100000_weighted_avg_perc_chg'
-                                        ,f'prev_{interval}_{coin_pair}_bids_cum_200000_weighted_avg_perc_chg'
-                                        #,f'prev_{interval}_{coin_pair}_asks_cum_5000_weighted_avg_perc_chg'
-                                        #,f'prev_{interval}_{coin_pair}_asks_cum_50000_weighted_avg_perc_chg'
-                                        #,f'prev_{interval}_{coin_pair}_asks_cum_100000_weighted_avg_perc_chg'
-                                        ,f'prev_{interval}_{coin_pair}_asks_cum_200000_weighted_avg_perc_chg'])
+                feature_col_list.extend([
+                    f'prev_{interval}_{coin_pair}_bid_ask_average_price_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_bid_ask_average_price_rate_chg'
+                    ,f'prev_{interval}_{coin_pair}_bids_cum_5000_weighted_avg_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_bids_cum_50000_weighted_avg_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_bids_cum_100000_weighted_avg_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_bids_cum_200000_weighted_avg_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_asks_cum_5000_weighted_avg_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_asks_cum_50000_weighted_avg_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_asks_cum_100000_weighted_avg_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_asks_cum_200000_weighted_avg_perc_chg'
+                    # ,f'prev_{interval}_{coin_pair}_bids_cum_5000_weighted_std_avg'
+                    # ,f'prev_{interval}_{coin_pair}_bids_cum_50000_weighted_std_avg'
+                    # ,f'prev_{interval}_{coin_pair}_bids_cum_100000_weighted_std_avg'
+                    # ,f'prev_{interval}_{coin_pair}_bids_cum_200000_weighted_std_avg'
+                    # ,f'prev_{interval}_{coin_pair}_asks_cum_5000_weighted_std_avg'
+                    # ,f'prev_{interval}_{coin_pair}_asks_cum_50000_weighted_std_avg'
+                    # ,f'prev_{interval}_{coin_pair}_asks_cum_100000_weighted_std_avg'
+                    # ,f'prev_{interval}_{coin_pair}_asks_cum_200000_weighted_std_avg'
+                ])
             # Target variables for every interval configured at runtime
             if pair_type == 'target':
                 for target in self.trade_window_list:
                     target_variables_list.append(f"""((LAG({self.target_coin}_bids_cum_5000_weighted_avg, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {self.target_coin}_asks_cum_5000_weighted_avg) / {self.target_coin}_asks_cum_5000_weighted_avg * 100) AS futr_{target}_askbid_cum_5000_weighted_avg_perc_chg""")
+                    # experiment with predicting return starting at minute 1 instead of minute 0 to account for our scoring->trade delay.
+                    #target_variables_list.append(f"""((LAG({self.target_coin}_bids_cum_5000_weighted_avg, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - LAG({self.target_coin}_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) / LAG({self.target_coin}_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC) * 100) AS futr_{target}_askbid_cum_5000_weighted_avg_perc_chg""")
                     target_col_list.append(f'futr_{target}_askbid_cum_5000_weighted_avg_perc_chg')
                 # Join conditions
                 join_conditions_list.append(f"""{pair_type}_{coin_pair}""")      
@@ -318,7 +349,7 @@ class BinanceTraining(MarketMakerTraining):
                                 ,{target_variables}
                             FROM {join_conditions}
                             ORDER BY {self.target_coin}_trade_minute {'DESC' if operation == 'scoring' else 'ASC'}
-                            {'LIMIT 1' if operation == 'scoring' else ''}"""
+                            {'LIMIT 1' if operation == 'scoring' else ''}""" # LIMIT SCORING DATA - NOT ALL DATA IS RELEVANT TO CURRENT
 
         return query_template, feature_col_list, target_col_list
 

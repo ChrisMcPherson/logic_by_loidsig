@@ -215,17 +215,18 @@ class BinanceScoring(MarketMakerScoring):
 
     def __init__(self):
         super().__init__()
-        self.bnb_client = None # BinanceScoring.binance_client()
+        self.bnb_client = BinanceScoring.binance_client()
 
 
     def set_scoring_data(self):
         """Set data for model scoring"""
-        mm_data = market_maker_training.BinanceTraining(self.coin_pair_dict, self.feature_minutes_list, self.trade_window_list, operation='scoring')
+        max_feature_interval = max(self.feature_minutes_list) + 10
+        mm_data = market_maker_training.BinanceTraining(self.coin_pair_dict, self.feature_minutes_list, self.trade_window_list, operation='scoring', limit_minutes=max_feature_interval)
+        #print(mm_data.training_data_sql)
 
         if self.feature_minutes_list == None or self.trade_window_list == None:
             raise Exception("To construct scoring dataframe, the optional feature_minutes_list and trade_window_list attributes must be set!")
         # Get recent trade data for both target coin pair and through coin pair
-        recent_trades_interval = max(self.feature_minutes_list) + 10
         try:
             scoring_features_df = pd.read_sql(mm_data.training_data_sql, mm_data.logic_db_engine())
         except Exception as e:
@@ -408,7 +409,7 @@ class BinanceScoring(MarketMakerScoring):
         all_tickers_df = pd.DataFrame(self.bnb_client.get_all_tickers())
         target_price = float(all_tickers_df.loc[all_tickers_df['symbol'] == target_coin, 'price'].item())
         quantity_to_trade = (usdt_balance / target_price) * percent_funds_trading
-        quantity_to_trade = round(quantity_to_trade, 6)
+        quantity_to_trade = round(quantity_to_trade, 5)
         return quantity_to_trade
 
     def persist_scoring_results(self, scoring_result_dict, optimal_hold_minutes, predicted_return_threshold, data_latency_seconds, latest_minute, scoring_datetime, model_version, buy_order=None, sell_order=None):

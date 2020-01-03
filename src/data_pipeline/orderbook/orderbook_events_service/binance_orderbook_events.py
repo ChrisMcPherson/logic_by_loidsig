@@ -28,7 +28,6 @@ def main(event, context):
         'BTCUSDT',
         'LTCUSDT',
         'BCHABCUSDT',
-        'BCHSVUSDT',
         'NEOUSDT',
         'ETCUSDT',
         'EOSUSDT',

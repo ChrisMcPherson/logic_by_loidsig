@@ -19,13 +19,13 @@ from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
 # Config
-coin_pair_dict = {'target':'ethusdt',
-                  'alt':'btcusdt',
-                  'through':'trxeth'}
+coin_pair_dict = {'target':'btcusdt',
+                  'alt':'ethusdt',
+                  'through':'btceth'}
 
                   
-feature_minutes_list = [1, 3, 5, 8, 11, 14, 18, 22, 30, 40, 50, 60, 120, 240, 480, 960]
-trade_window_list = [18,22]
+feature_minutes_list = [1, 3, 5, 8, 11, 14, 18, 22, 30, 40, 50, 60, 120, 240, 480, 960, 2000]
+trade_window_list = [6,8,10,12]
 
 def main():
     """Control the training and persistance of a market maker model"""
@@ -44,11 +44,13 @@ def main():
     for target_column in mm_training.target_column_list:
         X = mm_training.training_df.loc[:,mm_training.feature_column_list]
         y = mm_training.training_df.loc[:,target_column]
-        model = linear_model.LinearRegression()
+        #model = linear_model.LinearRegression()
+        #model = xgb.XGBRegressor()
+        model = ensemble.RandomForestRegressor(n_estimators=500)
         # Standardize features (specific for sgd and other sensitive models)
-        scaler = StandardScaler()
-        scaler.fit(X)
-        X = scaler.transform(X)
+        #scaler = StandardScaler()
+        #scaler.fit(X)
+        #X = scaler.transform(X)
         # Fit model
         model.fit(X, y)
         # Persist model and standardizer
@@ -56,7 +58,7 @@ def main():
         #mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column))))
         trade_duration = [int(s) for s in re.findall(r'-?\d+\.?\d*', target_column)][0]
         mm_training.persist_model(model, trade_duration)
-        mm_training.persist_standardizer(scaler)
+        #mm_training.persist_standardizer(scaler)
     # Persist configuration
     mm_training.persist_model_config()
 

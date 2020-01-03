@@ -14,8 +14,17 @@ s3_resource = boto_session.resource('s3')
 s3_bucket = 'loidsig-crypto'
 
 def main(event, context):
-    coins = ('BTC-USDT','ETH-USDT','COB-USDT','LTC-USDT','ETH-BTC','TRX-ETH','EOS-ETH','NEO-ETH')
+    coins = ('BTC-USDT',
+             'ETH-USDT',
+             #'COB-USDT',
+             'LTC-USDT',
+             'ETH-BTC',
+             #'TRX-ETH',
+             #'EOS-ETH',
+             #'NEO-ETH'
+              )
     for coin_pair in coins:
+        print(f"Processing coin pair: {coin_pair}")
         json_message, unix_timestamp = get_orderbook_message(coin_pair)
         message_to_s3(json_message, coin_pair, unix_timestamp)
         message_to_queue(json_message)

@@ -13,6 +13,7 @@ import market_maker_scoring
 # modeling
 from sklearn import linear_model
 from sklearn import ensemble
+import xgboost as xgb
 from sklearn.utils import resample
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PolynomialFeatures
@@ -20,8 +21,8 @@ from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
 # Config
-predicted_return_threshold = .5
-model_version = 2.0
+predicted_return_threshold = .8
+model_version = 3.02
 
 def main():
     iter_ = 1
@@ -41,12 +42,14 @@ def logic(iter_):
     mm_scoring.set_scoring_data()
     recent_df = mm_scoring.scoring_features_df.sort_values(f'{mm_scoring.target_coin}_trade_minute')
     X_scoring = recent_df[mm_scoring.feature_column_list]
-    X_scoring = X_scoring.iloc[-1]
-    X_scoring = X_scoring.values.reshape(1, -1)
+    X_scoring = X_scoring.iloc[[-1]] # list ensures returning df not series so column names retain (for xgboost)
+
+    # Used with sklearn models?
+    #X_scoring = X_scoring.values.reshape((1, -1))
     
     # get standardize object    
-    scaler = mm_scoring.get_model_standardizer()
-    X_scoring = scaler.transform(X_scoring)
+    #scaler = mm_scoring.get_model_standardizer()
+    #X_scoring = scaler.transform(X_scoring)
     
     # Iterate over each trained model and save predicted results to dict
     scoring_result_dict = {}
@@ -55,7 +58,7 @@ def logic(iter_):
     optimal_hold_minutes = 0
     for model_path, model in model_object_dict.items():
         trade_hold_minutes = int(''.join(filter(str.isdigit, model_path)))
-        predicted_growth = model.predict(X_scoring)
+        predicted_growth = model.predict(X_scoring) # xgboost can't just take a plain numpy array?
         predicted_growth_rate = predicted_growth / trade_hold_minutes
         # Set optimal growth rate and associated trade holding minutes
         if i == 0:
@@ -70,7 +73,7 @@ def logic(iter_):
     end = time.time()
     latest_minute = recent_df.iloc[-1][f'{mm_scoring.target_coin}_trade_minute'].item()
     scoring_timestamp = time.time()
-    data_latency_seconds = scoring_timestamp - (latest_minute * 60 + 30)
+    data_latency_seconds = scoring_timestamp - (latest_minute * 60)# + 30)
 
     # Print important time latency information on first iteration
     if iter_ == 1:
@@ -84,7 +87,7 @@ def logic(iter_):
         # TODO: Add the exchange and percent_funds_trading to config
         trade_qty = mm_scoring.get_trade_qty(target_coin=mm_scoring.target_coin.upper(), percent_funds_trading=.9)
         print(scoring_datetime)
-        print(f'Buying with predicted {optimal_hold_minutes} min return of: {scoring_result_dict[optimal_hold_minutes][0][0]}')
+        print(f'Buying {trade_qty} {mm_scoring.target_coin} with predicted {optimal_hold_minutes} min return of: {scoring_result_dict[optimal_hold_minutes][0][0]}')
         # Trade for specified time
         # TODO: the quantity will need to be standardized for different coin evaluations
         buy_order = mm_scoring.bnb_client.order_market_buy(symbol=mm_scoring.target_coin.upper(), quantity=trade_qty, newOrderRespType='FULL')

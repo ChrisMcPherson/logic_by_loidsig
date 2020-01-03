@@ -2,7 +2,7 @@ service: orderbook-events-service
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.7
   profile: loidsig
   region: us-east-1
   stage: prod
@@ -46,7 +46,7 @@ functions:
   orderbook-features:
     role: arn:aws:iam::309597787617:role/lambda_basic_execution
     handler: orderbook_features.main
-    reservedConcurrency: 400
+    #reservedConcurrency: 400
     events:
       - sqs:
           arn: arn:aws:sqs:us-east-1:309597787617:raw_orderbook_events

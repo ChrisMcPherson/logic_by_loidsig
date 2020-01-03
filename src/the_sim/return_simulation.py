@@ -33,13 +33,13 @@ def main():
     print(datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S'))
     
     # Default configuration
-    start = 15
+    start = 442
     target_coin_list = ['btcusdt']
-    feature_minutes_list = [1,5,10]
-    target_col_list = [5,10,20]
-    training_min_list = ['none']
-    test_min_list = [1440]
-    model_list = ['linear']
+    feature_minutes_list = [1, 3, 5, 8, 11, 14, 18, 22, 30,60,120,1440]
+    target_col_list = [5,7,10]
+    training_min_list = [400000]
+    test_min_list = [7200]
+    model_list = ['rf']
     poly_list = [3]
     
     # Get argument configurations
@@ -129,10 +129,10 @@ def main():
     sim_daily_trades.to_csv(f"notebooks/sim_results/sim_daily_trades_{finish_time}.csv", index = False)
                     
 def features(feature_minutes_list, trade_window_list, target_coin):
-    #TODO: move this config to simulation argument 
+    #TODO: move this config to simulation argument btcusdt
     coin_pair_dict = {'target':target_coin,
-                  'alt':'btcusdt',
-                  'through':'trxeth'}
+                  'alt':'ethusdt',
+                  'through':'btceth'}
     print(f"Coin feature configuration: {coin_pair_dict}")
 
     mm_training = market_maker_training.BinanceTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
@@ -189,11 +189,11 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         X_sim_ = scaler.transform(X_sim)
         sgd.fit(X_, y)
         X['sgd_pred'] = sgd.predict(X_)
-        X_sim['sgd_pred'] = sgd.predict(X_sim)
+        X_sim['sgd_pred'] = sgd.predict(X_sim_)
         # Linear
         lr = linear_model.LinearRegression()
-        lr.fit(X, y)
-        y_sim = lr.predict(X_sim)
+        lr.fit(X_, y)
+        y_sim = lr.predict(X_sim_)
     elif model == 'gb':
         gb = ensemble.GradientBoostingRegressor(n_estimators=500, learning_rate=.01, max_depth=6, 
                                                         max_features=.1, min_samples_leaf=1)
@@ -255,7 +255,7 @@ def identify_best_return(model, results_df, feature_cols, target_col, coin, trad
     optimal_buy_threshold = None
     best_return = 0
     num_trades = 0
-    for thresh in list(np.arange(0, 0.7, 0.1)):
+    for thresh in list(np.arange(0, 1.0, 0.1)):
         # Output results of every threshold
         return_df = results_df.loc[results_df['predicted'] >= thresh]
         print(f"{trade_duration} trade duration, {thresh} threshold:")

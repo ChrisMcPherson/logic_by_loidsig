@@ -5,8 +5,7 @@ import io
 import sys
 import os
 # local libraries
-sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'src', 'lib')))
-import athena_connect
+sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
 import market_maker_training
 
 from sklearn import ensemble
@@ -25,14 +24,15 @@ from tpot import TPOTRegressor
 pd.options.mode.chained_assignment = None
 
 # Extract queried data from Athena
-def features(feature_minutes_list, trade_window_list=[10]):
+def features(feature_minutes_list, trade_window_list=[14]):
     #TODO: move this config to simulation argument 
-    coin_pair_dict = {'ethusdt':'target',
-                  'btcusdt':'alt',
-                  'trxeth':'through'}
+    coin_pair_dict = {'target':'ethusdt',
+                  'alt':'btcusdt',
+                  'through':'trxeth'}
+
     print(f"Coin feature configuration: {coin_pair_dict}")
 
-    mm_training = market_maker_training.MarketMakerTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
+    mm_training = market_maker_training.BinanceTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
     try:
         mm_training.set_training_data()
     except Exception as e:
@@ -40,10 +40,10 @@ def features(feature_minutes_list, trade_window_list=[10]):
         return
     return mm_training.training_df, mm_training.feature_column_list, mm_training.target_column_list
 
-feature_minutes_list = [1,3,5,10,20,30,40,50,60,120,240,480,960]
+feature_minutes_list = [1, 3, 5, 8, 11, 14, 18, 22, 30, 40, 50, 60, 120, 240, 480, 960]
 features_df, feature_cols, target_col_list = features(feature_minutes_list)
 
-features_df = features_df[:-10]
+features_df = features_df[:-14]
 
 # Split for last 4.5 hours training and adjust for look ahead 
 #X_train, y_train = features_df[-300:-20][feature_cols], features_df[-300:-20][target_col] 
@@ -52,7 +52,7 @@ features_df = features_df[:-10]
 # Split for last x days training and adjust for look ahead 
 days_training = 30 * -1440
 hours_test = 8 * -60
-X_train, y_train = features_df[days_training:(hours_test-10)][feature_cols], features_df[days_training:(hours_test-10)][target_col_list[0]] 
+X_train, y_train = features_df[days_training:(hours_test-14)][feature_cols], features_df[days_training:(hours_test-14)][target_col_list[0]] 
 X_test, y_test = features_df[hours_test:][feature_cols], features_df[hours_test:][target_col_list[0]]
 
 tpot = TPOTRegressor(generations=15, population_size=100, verbosity=2)

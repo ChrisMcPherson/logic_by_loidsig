@@ -1,0 +1,1024 @@
+WITH target_btcusdt AS (
+                                    SELECT coin_pair AS btcusdt_coin_partition
+                                        , to_timestamp(trade_minute * 60) AS btcusdt_trade_datetime
+                                        , DATE(to_timestamp(trade_minute * 60)) AS btcusdt_trade_date
+                                        , trade_minute AS btcusdt_trade_minute
+                                        , bids_top_price AS btcusdt_bids_top_price
+                                        , (asks_top_price - bids_top_price) AS btcusdt_bid_ask_spread
+                                        , (asks_top_price + bids_top_price) / 2 AS btcusdt_bid_ask_average_price
+                                        , bids_cum_5000_weighted_avg AS btcusdt_bids_cum_5000_weighted_avg
+                                        , bids_cum_10000_weighted_avg AS btcusdt_bids_cum_10000_weighted_avg
+                                        , bids_cum_20000_weighted_avg AS btcusdt_bids_cum_20000_weighted_avg
+                                        , bids_cum_50000_weighted_avg AS btcusdt_bids_cum_50000_weighted_avg
+                                        , bids_cum_100000_weighted_avg AS btcusdt_bids_cum_100000_weighted_avg
+                                        , bids_cum_200000_weighted_avg AS btcusdt_bids_cum_200000_weighted_avg
+                                        , bids_cum_5000_weighted_std AS btcusdt_bids_cum_5000_weighted_std
+                                        , bids_cum_10000_weighted_std AS btcusdt_bids_cum_10000_weighted_std
+                                        , bids_cum_20000_weighted_std AS btcusdt_bids_cum_20000_weighted_std
+                                        , bids_cum_50000_weighted_std AS btcusdt_bids_cum_50000_weighted_std
+                                        , bids_cum_100000_weighted_std AS btcusdt_bids_cum_100000_weighted_std
+                                        , bids_cum_200000_weighted_std AS btcusdt_bids_cum_200000_weighted_std
+                                        , asks_top_price AS btcusdt_asks_top_price
+                                        , asks_cum_5000_weighted_avg AS btcusdt_asks_cum_5000_weighted_avg
+                                        , asks_cum_10000_weighted_avg AS btcusdt_asks_cum_10000_weighted_avg
+                                        , asks_cum_20000_weighted_avg AS btcusdt_asks_cum_20000_weighted_avg
+                                        , asks_cum_50000_weighted_avg AS btcusdt_asks_cum_50000_weighted_avg
+                                        , asks_cum_100000_weighted_avg AS btcusdt_asks_cum_100000_weighted_avg
+                                        , asks_cum_200000_weighted_avg AS btcusdt_asks_cum_200000_weighted_avg
+                                        , asks_cum_5000_weighted_std AS btcusdt_asks_cum_5000_weighted_std
+                                        , asks_cum_10000_weighted_std AS btcusdt_asks_cum_10000_weighted_std
+                                        , asks_cum_20000_weighted_std AS btcusdt_asks_cum_20000_weighted_std
+                                        , asks_cum_50000_weighted_std AS btcusdt_asks_cum_50000_weighted_std
+                                        , asks_cum_100000_weighted_std AS btcusdt_asks_cum_100000_weighted_std
+                                        , asks_cum_200000_weighted_std AS btcusdt_asks_cum_200000_weighted_std
+                                    FROM binance.orderbook 
+                                    WHERE coin_pair = 'btcusdt'
+                                    
+                                    ),alt_ethusdt AS (
+                                    SELECT coin_pair AS ethusdt_coin_partition
+                                        , to_timestamp(trade_minute * 60) AS ethusdt_trade_datetime
+                                        , DATE(to_timestamp(trade_minute * 60)) AS ethusdt_trade_date
+                                        , trade_minute AS ethusdt_trade_minute
+                                        , bids_top_price AS ethusdt_bids_top_price
+                                        , (asks_top_price - bids_top_price) AS ethusdt_bid_ask_spread
+                                        , (asks_top_price + bids_top_price) / 2 AS ethusdt_bid_ask_average_price
+                                        , bids_cum_5000_weighted_avg AS ethusdt_bids_cum_5000_weighted_avg
+                                        , bids_cum_10000_weighted_avg AS ethusdt_bids_cum_10000_weighted_avg
+                                        , bids_cum_20000_weighted_avg AS ethusdt_bids_cum_20000_weighted_avg
+                                        , bids_cum_50000_weighted_avg AS ethusdt_bids_cum_50000_weighted_avg
+                                        , bids_cum_100000_weighted_avg AS ethusdt_bids_cum_100000_weighted_avg
+                                        , bids_cum_200000_weighted_avg AS ethusdt_bids_cum_200000_weighted_avg
+                                        , bids_cum_5000_weighted_std AS ethusdt_bids_cum_5000_weighted_std
+                                        , bids_cum_10000_weighted_std AS ethusdt_bids_cum_10000_weighted_std
+                                        , bids_cum_20000_weighted_std AS ethusdt_bids_cum_20000_weighted_std
+                                        , bids_cum_50000_weighted_std AS ethusdt_bids_cum_50000_weighted_std
+                                        , bids_cum_100000_weighted_std AS ethusdt_bids_cum_100000_weighted_std
+                                        , bids_cum_200000_weighted_std AS ethusdt_bids_cum_200000_weighted_std
+                                        , asks_top_price AS ethusdt_asks_top_price
+                                        , asks_cum_5000_weighted_avg AS ethusdt_asks_cum_5000_weighted_avg
+                                        , asks_cum_10000_weighted_avg AS ethusdt_asks_cum_10000_weighted_avg
+                                        , asks_cum_20000_weighted_avg AS ethusdt_asks_cum_20000_weighted_avg
+                                        , asks_cum_50000_weighted_avg AS ethusdt_asks_cum_50000_weighted_avg
+                                        , asks_cum_100000_weighted_avg AS ethusdt_asks_cum_100000_weighted_avg
+                                        , asks_cum_200000_weighted_avg AS ethusdt_asks_cum_200000_weighted_avg
+                                        , asks_cum_5000_weighted_std AS ethusdt_asks_cum_5000_weighted_std
+                                        , asks_cum_10000_weighted_std AS ethusdt_asks_cum_10000_weighted_std
+                                        , asks_cum_20000_weighted_std AS ethusdt_asks_cum_20000_weighted_std
+                                        , asks_cum_50000_weighted_std AS ethusdt_asks_cum_50000_weighted_std
+                                        , asks_cum_100000_weighted_std AS ethusdt_asks_cum_100000_weighted_std
+                                        , asks_cum_200000_weighted_std AS ethusdt_asks_cum_200000_weighted_std
+                                    FROM binance.orderbook 
+                                    WHERE coin_pair = 'ethusdt'
+                                    
+                                    ),through_btceth AS (
+                                    SELECT coin_pair AS btceth_coin_partition
+                                        , to_timestamp(trade_minute * 60) AS btceth_trade_datetime
+                                        , DATE(to_timestamp(trade_minute * 60)) AS btceth_trade_date
+                                        , trade_minute AS btceth_trade_minute
+                                        , bids_top_price AS btceth_bids_top_price
+                                        , (asks_top_price - bids_top_price) AS btceth_bid_ask_spread
+                                        , (asks_top_price + bids_top_price) / 2 AS btceth_bid_ask_average_price
+                                        , bids_cum_5000_weighted_avg AS btceth_bids_cum_5000_weighted_avg
+                                        , bids_cum_10000_weighted_avg AS btceth_bids_cum_10000_weighted_avg
+                                        , bids_cum_20000_weighted_avg AS btceth_bids_cum_20000_weighted_avg
+                                        , bids_cum_50000_weighted_avg AS btceth_bids_cum_50000_weighted_avg
+                                        , bids_cum_100000_weighted_avg AS btceth_bids_cum_100000_weighted_avg
+                                        , bids_cum_200000_weighted_avg AS btceth_bids_cum_200000_weighted_avg
+                                        , bids_cum_5000_weighted_std AS btceth_bids_cum_5000_weighted_std
+                                        , bids_cum_10000_weighted_std AS btceth_bids_cum_10000_weighted_std
+                                        , bids_cum_20000_weighted_std AS btceth_bids_cum_20000_weighted_std
+                                        , bids_cum_50000_weighted_std AS btceth_bids_cum_50000_weighted_std
+                                        , bids_cum_100000_weighted_std AS btceth_bids_cum_100000_weighted_std
+                                        , bids_cum_200000_weighted_std AS btceth_bids_cum_200000_weighted_std
+                                        , asks_top_price AS btceth_asks_top_price
+                                        , asks_cum_5000_weighted_avg AS btceth_asks_cum_5000_weighted_avg
+                                        , asks_cum_10000_weighted_avg AS btceth_asks_cum_10000_weighted_avg
+                                        , asks_cum_20000_weighted_avg AS btceth_asks_cum_20000_weighted_avg
+                                        , asks_cum_50000_weighted_avg AS btceth_asks_cum_50000_weighted_avg
+                                        , asks_cum_100000_weighted_avg AS btceth_asks_cum_100000_weighted_avg
+                                        , asks_cum_200000_weighted_avg AS btceth_asks_cum_200000_weighted_avg
+                                        , asks_cum_5000_weighted_std AS btceth_asks_cum_5000_weighted_std
+                                        , asks_cum_10000_weighted_std AS btceth_asks_cum_10000_weighted_std
+                                        , asks_cum_20000_weighted_std AS btceth_asks_cum_20000_weighted_std
+                                        , asks_cum_50000_weighted_std AS btceth_asks_cum_50000_weighted_std
+                                        , asks_cum_100000_weighted_std AS btceth_asks_cum_100000_weighted_std
+                                        , asks_cum_200000_weighted_std AS btceth_asks_cum_200000_weighted_std
+                                    FROM binance.orderbook 
+                                    WHERE coin_pair = 'btceth'
+                                    
+                                    )
+                            SELECT btcusdt_trade_datetime, btcusdt_trade_date, btcusdt_trade_minute
+                                        , extract(isodow from btcusdt_trade_datetime) as trade_day_of_week
+                                        , date_part('hour', btcusdt_trade_datetime) as trade_hour,btcusdt_bid_ask_spread
+                                        , btcusdt_bid_ask_average_price
+                                        , btcusdt_bids_cum_5000_weighted_avg
+                                        , btcusdt_bids_cum_10000_weighted_avg
+                                        , btcusdt_bids_cum_20000_weighted_avg
+                                        , btcusdt_bids_cum_50000_weighted_avg
+                                        , btcusdt_bids_cum_100000_weighted_avg
+                                        , btcusdt_bids_cum_200000_weighted_avg
+                                        , btcusdt_bids_cum_5000_weighted_std
+                                        , btcusdt_bids_cum_10000_weighted_std
+                                        , btcusdt_bids_cum_20000_weighted_std
+                                        , btcusdt_bids_cum_50000_weighted_std
+                                        , btcusdt_bids_cum_100000_weighted_std
+                                        , btcusdt_bids_cum_200000_weighted_std
+                                        , btcusdt_asks_cum_5000_weighted_avg
+                                        , btcusdt_asks_cum_10000_weighted_avg
+                                        , btcusdt_asks_cum_20000_weighted_avg
+                                        , btcusdt_asks_cum_50000_weighted_avg
+                                        , btcusdt_asks_cum_100000_weighted_avg
+                                        , btcusdt_asks_cum_200000_weighted_avg
+                                        , btcusdt_asks_cum_5000_weighted_std
+                                        , btcusdt_asks_cum_10000_weighted_std
+                                        , btcusdt_asks_cum_20000_weighted_std
+                                        , btcusdt_asks_cum_50000_weighted_std
+                                        , btcusdt_asks_cum_100000_weighted_std
+                                        , btcusdt_asks_cum_200000_weighted_std,ethusdt_bid_ask_spread
+                                        , ethusdt_bid_ask_average_price
+                                        , ethusdt_bids_cum_5000_weighted_avg
+                                        , ethusdt_bids_cum_10000_weighted_avg
+                                        , ethusdt_bids_cum_20000_weighted_avg
+                                        , ethusdt_bids_cum_50000_weighted_avg
+                                        , ethusdt_bids_cum_100000_weighted_avg
+                                        , ethusdt_bids_cum_200000_weighted_avg
+                                        , ethusdt_bids_cum_5000_weighted_std
+                                        , ethusdt_bids_cum_10000_weighted_std
+                                        , ethusdt_bids_cum_20000_weighted_std
+                                        , ethusdt_bids_cum_50000_weighted_std
+                                        , ethusdt_bids_cum_100000_weighted_std
+                                        , ethusdt_bids_cum_200000_weighted_std
+                                        , ethusdt_asks_cum_5000_weighted_avg
+                                        , ethusdt_asks_cum_10000_weighted_avg
+                                        , ethusdt_asks_cum_20000_weighted_avg
+                                        , ethusdt_asks_cum_50000_weighted_avg
+                                        , ethusdt_asks_cum_100000_weighted_avg
+                                        , ethusdt_asks_cum_200000_weighted_avg
+                                        , ethusdt_asks_cum_5000_weighted_std
+                                        , ethusdt_asks_cum_10000_weighted_std
+                                        , ethusdt_asks_cum_20000_weighted_std
+                                        , ethusdt_asks_cum_50000_weighted_std
+                                        , ethusdt_asks_cum_100000_weighted_std
+                                        , ethusdt_asks_cum_200000_weighted_std,btceth_bid_ask_spread
+                                        , btceth_bid_ask_average_price
+                                        , btceth_bids_cum_5000_weighted_avg
+                                        , btceth_bids_cum_10000_weighted_avg
+                                        , btceth_bids_cum_20000_weighted_avg
+                                        , btceth_bids_cum_50000_weighted_avg
+                                        , btceth_bids_cum_100000_weighted_avg
+                                        , btceth_bids_cum_200000_weighted_avg
+                                        , btceth_bids_cum_5000_weighted_std
+                                        , btceth_bids_cum_10000_weighted_std
+                                        , btceth_bids_cum_20000_weighted_std
+                                        , btceth_bids_cum_50000_weighted_std
+                                        , btceth_bids_cum_100000_weighted_std
+                                        , btceth_bids_cum_200000_weighted_std
+                                        , btceth_asks_cum_5000_weighted_avg
+                                        , btceth_asks_cum_10000_weighted_avg
+                                        , btceth_asks_cum_20000_weighted_avg
+                                        , btceth_asks_cum_50000_weighted_avg
+                                        , btceth_asks_cum_100000_weighted_avg
+                                        , btceth_asks_cum_200000_weighted_avg
+                                        , btceth_asks_cum_5000_weighted_std
+                                        , btceth_asks_cum_10000_weighted_std
+                                        , btceth_asks_cum_20000_weighted_std
+                                        , btceth_asks_cum_50000_weighted_std
+                                        , btceth_asks_cum_100000_weighted_std
+                                        , btceth_asks_cum_200000_weighted_std
+                                ,AVG((btcusdt_bid_ask_average_price-ethusdt_bid_ask_average_price)/btcusdt_bid_ask_average_price) OVER (PARTITION BY btcusdt_coin_partition ORDER BY btcusdt_trade_minute ASC ROWS 5 PRECEDING) 
+                                                    - ((btcusdt_bid_ask_average_price-ethusdt_bid_ask_average_price)/btcusdt_bid_ask_average_price) AS avg_5_ethusdt_bid_ask_average_price_interaction,AVG((btcusdt_bid_ask_average_price-ethusdt_bid_ask_average_price)/btcusdt_bid_ask_average_price) OVER (PARTITION BY btcusdt_coin_partition ORDER BY btcusdt_trade_minute ASC ROWS 10 PRECEDING) 
+                                                    - ((btcusdt_bid_ask_average_price-ethusdt_bid_ask_average_price)/btcusdt_bid_ask_average_price) AS avg_10_ethusdt_bid_ask_average_price_interaction,AVG((btcusdt_bid_ask_average_price-ethusdt_bid_ask_average_price)/btcusdt_bid_ask_average_price) OVER (PARTITION BY btcusdt_coin_partition ORDER BY btcusdt_trade_minute ASC ROWS 20 PRECEDING) 
+                                                    - ((btcusdt_bid_ask_average_price-ethusdt_bid_ask_average_price)/btcusdt_bid_ask_average_price) AS avg_20_ethusdt_bid_ask_average_price_interaction
+                                ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_1_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_1_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_3_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_3_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_5_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_5_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_8_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_8_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_11_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_11_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_14_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_14_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_18_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_18_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_22_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_22_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_30_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_30_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_60_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_60_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_120_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_120_askbid_cum_5000_weighted_avg_perc_chg ,((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_bid_ask_average_price_perc_chg
+                                        ,(((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btcusdt_bid_ask_average_price - LEAD(btcusdt_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_1440_btcusdt_bid_ask_average_price_rate_chg
+                                        ,((btcusdt_bids_cum_5000_weighted_avg - LEAD(btcusdt_bids_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_50000_weighted_avg - LEAD(btcusdt_bids_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_100000_weighted_avg - LEAD(btcusdt_bids_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_bids_cum_200000_weighted_avg - LEAD(btcusdt_bids_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_bids_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_5000_weighted_avg - LEAD(btcusdt_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_50000_weighted_avg - LEAD(btcusdt_asks_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_100000_weighted_avg - LEAD(btcusdt_asks_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btcusdt_asks_cum_200000_weighted_avg - LEAD(btcusdt_asks_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btcusdt_asks_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btcusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btcusdt_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_bids_cum_5000_weighted_avg) 
+                                            / btcusdt_bids_cum_5000_weighted_avg) * 100 AS prev_btcusdt_1440_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_1_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_1_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_3_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_3_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_5_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_5_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_8_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_8_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_11_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_11_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_14_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_14_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_18_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_18_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_22_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_22_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_30_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_30_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_60_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_60_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_120_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_120_askbid_cum_5000_weighted_avg_perc_chg ,((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_bid_ask_average_price_perc_chg
+                                        ,(((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((ethusdt_bid_ask_average_price - LEAD(ethusdt_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_1440_ethusdt_bid_ask_average_price_rate_chg
+                                        ,((ethusdt_bids_cum_5000_weighted_avg - LEAD(ethusdt_bids_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_50000_weighted_avg - LEAD(ethusdt_bids_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_100000_weighted_avg - LEAD(ethusdt_bids_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_bids_cum_200000_weighted_avg - LEAD(ethusdt_bids_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_bids_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_5000_weighted_avg - LEAD(ethusdt_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_50000_weighted_avg - LEAD(ethusdt_asks_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_100000_weighted_avg - LEAD(ethusdt_asks_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((ethusdt_asks_cum_200000_weighted_avg - LEAD(ethusdt_asks_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(ethusdt_asks_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_ethusdt_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(ethusdt_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC) - ethusdt_bids_cum_5000_weighted_avg) 
+                                            / ethusdt_bids_cum_5000_weighted_avg) * 100 AS prev_ethusdt_1440_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_1_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_1_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 3) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_3_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_3_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 3) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_3_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 5) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_5_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_5_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_5_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 8) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_8_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_8_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 8) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_8_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 11) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_11_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_11_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 11) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_11_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 14) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_14_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_14_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 14) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_14_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 18) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_18_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_18_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 18) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_18_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 22) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_22_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_22_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 22) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_22_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 30) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_30_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_30_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 30) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_30_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 60) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_60_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_60_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 60) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_60_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 120) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_120_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_120_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 120) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_120_askbid_cum_5000_weighted_avg_perc_chg ,((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_bid_ask_average_price_perc_chg
+                                        ,(((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1) OVER (ORDER BY btcusdt_trade_minute DESC))
+                                           - ((btceth_bid_ask_average_price - LEAD(btceth_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bid_ask_average_price, 1440) OVER (ORDER BY btcusdt_trade_minute DESC))) * 100 AS prev_1440_btceth_bid_ask_average_price_rate_chg
+                                        ,((btceth_bids_cum_5000_weighted_avg - LEAD(btceth_bids_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_bids_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_50000_weighted_avg - LEAD(btceth_bids_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_bids_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_100000_weighted_avg - LEAD(btceth_bids_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_bids_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_bids_cum_200000_weighted_avg - LEAD(btceth_bids_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_bids_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_bids_cum_200000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_5000_weighted_avg - LEAD(btceth_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_asks_cum_5000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_50000_weighted_avg - LEAD(btceth_asks_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_50000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_asks_cum_50000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_100000_weighted_avg - LEAD(btceth_asks_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_100000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_asks_cum_100000_weighted_avg_perc_chg
+                                        ,((btceth_asks_cum_200000_weighted_avg - LEAD(btceth_asks_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) 
+                                            / LEAD(btceth_asks_cum_200000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC)) * 100 AS prev_1440_btceth_asks_cum_200000_weighted_avg_perc_chg
+                                        , ((LEAD(btceth_asks_cum_5000_weighted_avg, 1440) OVER (ORDER BY btcusdt_trade_minute DESC) - btceth_bids_cum_5000_weighted_avg) 
+                                            / btceth_bids_cum_5000_weighted_avg) * 100 AS prev_btceth_1440_askbid_cum_5000_weighted_avg_perc_chg 
+                                ,((LAG(btcusdt_bids_cum_5000_weighted_avg, 5) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_asks_cum_5000_weighted_avg) / btcusdt_asks_cum_5000_weighted_avg * 100) AS futr_5_askbid_cum_5000_weighted_avg_perc_chg,((LAG(btcusdt_bids_cum_5000_weighted_avg, 7) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_asks_cum_5000_weighted_avg) / btcusdt_asks_cum_5000_weighted_avg * 100) AS futr_7_askbid_cum_5000_weighted_avg_perc_chg,((LAG(btcusdt_bids_cum_5000_weighted_avg, 10) OVER (ORDER BY btcusdt_trade_minute DESC) - btcusdt_asks_cum_5000_weighted_avg) / btcusdt_asks_cum_5000_weighted_avg * 100) AS futr_10_askbid_cum_5000_weighted_avg_perc_chg
+                            FROM target_btcusdt LEFT JOIN alt_ethusdt ON target_btcusdt.btcusdt_trade_minute = alt_ethusdt.ethusdt_trade_minute LEFT JOIN through_btceth ON target_btcusdt.btcusdt_trade_minute = through_btceth.btceth_trade_minute
+                            ORDER BY btcusdt_trade_minute ASC
+                            
