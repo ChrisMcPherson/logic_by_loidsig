@@ -39,7 +39,7 @@ def main():
     target_col_list = [5,7,10]
     training_min_list = [400000]
     test_min_list = [7200]
-    model_list = ['rf']
+    model_list = ['linear']
     poly_list = [3]
     
     # Get argument configurations
