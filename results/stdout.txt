@@ -1,8 +1,190 @@
-2020-01-04 17:28:02
-Model(s): ['linear']
-Sim Start Day: 443
-Training feature minutes: [1, 3, 5, 8, 11, 14, 18, 22, 30, 40, 50, 60, 120, 240, 480, 960, 2000]
-Training Min(s): [400000]
-Test Min(s): [7200]
-Poly(s): [3]
-Coin feature configuration: {'target': 'btcusdt', 'alt': 'ethusdt', 'through': 'btceth'}
+[I 00:50:02.204 LabApp] Writing notebook server cookie secret to /home/ubuntu/.local/share/jupyter/runtime/notebook_cookie_secret
+[W 00:50:03.257 LabApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
+/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:541: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:542: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:543: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:544: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:545: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:550: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:528: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:529: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:530: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
+/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:535: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
+  np_resource = np.dtype([("resource", np.ubyte, 1)])
+[I 00:50:05.584 LabApp] jupyter_tensorboard extension loaded.
+[I 00:50:05.588 LabApp] JupyterLab extension loaded from /usr/local/anaconda/lib/python3.6/site-packages/jupyterlab
+[I 00:50:05.588 LabApp] JupyterLab application directory is /usr/local/anaconda/share/jupyter/lab
+[W 00:50:05.591 LabApp] JupyterLab server extension not enabled, manually loading...
+[I 00:50:05.593 LabApp] JupyterLab extension loaded from /usr/local/anaconda/lib/python3.6/site-packages/jupyterlab
+[I 00:50:05.593 LabApp] JupyterLab application directory is /usr/local/anaconda/share/jupyter/lab
+[I 00:50:05.594 LabApp] Serving notebooks from local directory: /
+[I 00:50:05.594 LabApp] The Jupyter Notebook is running at:
+[I 00:50:05.594 LabApp] http://(domino-run-5e2cdf4e46e0fb0008a94aee or 127.0.0.1):8888/
+[I 00:50:05.594 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 00:50:05.600 LabApp] 302 GET / (10.0.194.105) 0.61ms
+[I 00:50:08.411 LabApp] 302 GET / (10.0.254.176) 0.51ms
+[I 00:50:08.419 LabApp] 302 GET / (10.0.254.176) 0.41ms
+[I 00:50:08.541 LabApp] 302 GET / (10.0.254.176) 0.43ms
+[I 00:50:08.820 LabApp] 302 GET / (10.0.194.105) 0.57ms
+[I 00:50:09.726 LabApp] 302 GET / (10.0.194.105) 0.49ms
+[W 00:50:14.070 LabApp] The extension "jupyterlab-server-proxy" is outdated.
+    
+[I 00:50:14.403 LabApp] Build is up to date
+[I 00:50:14.685 LabApp] 302 GET / (10.0.40.19) 0.50ms
+[I 00:50:27.592 LabApp] Writing notebook-signing key to /home/ubuntu/.local/share/jupyter/notebook_secret
+[W 00:50:27.593 LabApp] Notebook mnt/notebooks/feature_evaluation.ipynb is not trusted
+[I 00:50:28.438 LabApp] Kernel started: b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 00:50:31.428 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 00:50:31.744 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 00:52:28.461 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 00:57:38.761 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 03:20:19.197 LabApp] 302 GET / (10.0.194.105) 0.53ms
+[I 03:20:19.207 LabApp] 302 GET / (10.0.40.19) 0.33ms
+[I 03:20:19.218 LabApp] 302 GET / (10.0.254.176) 0.38ms
+[I 04:14:35.781 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 04:16:38.111 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 04:43:18.200 LabApp] 302 GET / (10.0.40.19) 0.50ms
+[I 05:00:55.271 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 05:16:57.799 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 05:27:00.087 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 05:55:03.609 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:13:06.008 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:15:07.270 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:17:09.347 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:19:11.130 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:21:12.717 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:23:16.137 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:25:17.492 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:39:19.881 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:41:21.176 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:45:23.528 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:49:26.728 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:51:28.553 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 06:53:31.766 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[W 07:12:50.066 LabApp] Notebook mnt/notebooks/market_maker_model_dev.ipynb is not trusted
+[I 07:13:04.833 LabApp] Kernel started: 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 07:13:06.114 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 07:13:34.433 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:15:21.362 LabApp] Saving file at /mnt/notebooks/market_maker_model_dev.ipynb
+[W 07:15:21.364 LabApp] Notebook mnt/notebooks/market_maker_model_dev.ipynb is not trusted
+[I 07:17:25.354 LabApp] Kernel interrupted: b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 07:17:36.023 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:19:37.483 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:21:40.928 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:23:24.260 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:25:27.201 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:27:29.542 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:29:31.545 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:35:32.515 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:37:34.808 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 07:41:44.345 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 07:41:44.345 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 07:41:46.613 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 07:41:46.613 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 07:41:46.936 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 07:41:46.936 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[W 07:44:16.614 LabApp] WebSocket ping timeout after 119529 ms.
+[W 07:44:16.937 LabApp] WebSocket ping timeout after 119844 ms.
+[I 07:44:21.618 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 07:44:21.939 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 07:52:58.278 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 07:52:58.279 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 07:52:58.967 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 07:52:58.968 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[W 07:54:28.282 LabApp] WebSocket ping timeout after 90003 ms.
+[W 07:54:28.969 LabApp] WebSocket ping timeout after 90001 ms.
+[I 07:54:33.285 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 07:54:33.971 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 08:12:40.449 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 08:12:40.450 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 08:12:40.993 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 08:12:40.994 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[W 08:14:10.451 LabApp] WebSocket ping timeout after 90000 ms.
+[W 08:14:10.995 LabApp] WebSocket ping timeout after 90000 ms.
+[I 08:14:15.454 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 08:14:15.996 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 08:46:10.596 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 08:46:10.597 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 08:46:10.597 LabApp] Replaying 2 buffered messages
+[I 08:46:11.447 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 08:46:11.448 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 08:47:06.167 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 08:55:12.169 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 09:33:31.255 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 10:11:48.746 LabApp] 302 GET / (10.0.40.19) 0.51ms
+[I 10:11:50.232 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 10:15:52.652 LabApp] 302 GET / (10.0.254.176) 0.49ms
+[I 10:15:54.960 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 10:19:58.878 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 10:22:03.676 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 10:26:07.687 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 12:39:00.407 LabApp] 302 GET / (10.0.194.105) 0.49ms
+[I 12:39:02.531 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 14:45:06.704 LabApp] 302 GET / (10.0.194.105) 0.50ms
+[I 14:47:36.456 LabApp] 302 GET / (10.0.40.19) 0.48ms
+[I 14:47:54.059 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 14:53:55.540 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 14:54:34.038 LabApp] 302 GET / (10.0.254.176) 0.50ms
+[I 14:54:44.482 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[I 14:55:23.104 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+[W 15:01:20.571 LabApp] Notebook mnt/notebooks/eda_notebooks/binance_data_exploration.ipynb is not trusted
+[I 15:01:24.703 LabApp] Kernel started: f949002a-966b-4e7f-80b8-1440a2fb438d
+[I 15:01:26.024 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
+[I 15:03:26.199 LabApp] Saving file at /mnt/notebooks/eda_notebooks/binance_data_exploration.ipynb
+[W 15:03:26.201 LabApp] Notebook mnt/notebooks/eda_notebooks/binance_data_exploration.ipynb is not trusted
+[I 19:42:16.697 LabApp] 302 GET / (10.0.40.19) 0.50ms
+[I 19:42:17.048 LabApp] 302 GET / (10.0.254.176) 0.47ms
+[I 19:42:17.419 LabApp] 302 GET / (10.0.194.105) 0.48ms
+[I 19:49:27.768 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 19:49:27.768 LabApp] Starting buffering for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
+[I 19:49:27.768 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 19:49:30.043 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
+[I 19:49:30.043 LabApp] Restoring connection for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
+[I 19:49:30.403 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 19:49:30.404 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 19:49:30.764 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 19:49:30.765 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[W 19:52:00.045 LabApp] WebSocket ping timeout after 119897 ms.
+[W 19:52:00.404 LabApp] WebSocket ping timeout after 119898 ms.
+[W 19:52:00.766 LabApp] WebSocket ping timeout after 119899 ms.
+[I 19:52:05.047 LabApp] Starting buffering for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
+[I 19:52:05.406 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 19:52:05.768 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 01:21:35.292 LabApp] 302 GET / (10.0.254.176) 0.50ms
+[I 01:21:35.301 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
+[I 01:21:35.302 LabApp] Restoring connection for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
+[I 01:21:38.145 LabApp] 302 GET / (10.0.194.105) 0.51ms
+[I 01:21:38.154 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 01:21:38.155 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 01:21:40.353 LabApp] 302 GET / (10.0.40.19) 0.50ms
+[I 01:21:40.361 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 01:21:40.362 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[I 01:21:40.362 LabApp] Replaying 6 buffered messages
+[I 01:24:32.922 LabApp] 302 GET / (10.0.194.105) 0.52ms
+[I 01:24:33.159 LabApp] 302 GET / (10.0.194.105) 0.51ms
+[I 01:24:35.266 LabApp] Starting buffering for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
+[I 01:24:35.266 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
+[I 01:24:35.267 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
+[W 01:24:40.012 LabApp] The extension "jupyterlab-server-proxy" is outdated.
+    
+[I 01:24:40.205 LabApp] Build is up to date
+[W 01:24:40.835 LabApp] Notebook mnt/notebooks/market_maker_model_dev.ipynb is not trusted
+[W 01:24:41.011 LabApp] Notebook mnt/notebooks/eda_notebooks/binance_data_exploration.ipynb is not trusted
+[I 01:24:43.875 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
+[I 01:24:44.210 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
+[I 01:24:44.530 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
+[I 01:24:49.901 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
+[I 01:25:09.452 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb

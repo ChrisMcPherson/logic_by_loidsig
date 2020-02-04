@@ -10,3 +10,4 @@ nohup python -u return_simulation.py &
 #### Get running processes and memory
 ps aux
 cat /proc/meminfo
+

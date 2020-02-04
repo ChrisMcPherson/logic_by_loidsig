@@ -221,13 +221,15 @@ class BinanceScoring(MarketMakerScoring):
     def set_scoring_data(self):
         """Set data for model scoring"""
         max_feature_interval = max(self.feature_minutes_list) + 10
-        mm_data = market_maker_training.BinanceTraining(self.coin_pair_dict, self.feature_minutes_list, self.trade_window_list, operation='scoring', limit_minutes=max_feature_interval)
+        mm_data = market_maker_training.BinanceTraining(self.coin_pair_dict, self.feature_minutes_list, self.trade_window_list, operation='scoring')
         #print(mm_data.training_data_sql)
 
         if self.feature_minutes_list == None or self.trade_window_list == None:
             raise Exception("To construct scoring dataframe, the optional feature_minutes_list and trade_window_list attributes must be set!")
         # Get recent trade data for both target coin pair and through coin pair
         try:
+            # with open('scoring_sql.txt', 'w') as f:
+            #     print(mm_data.training_data_sql, file=f) 
             scoring_features_df = pd.read_sql(mm_data.training_data_sql, mm_data.logic_db_engine())
         except Exception as e:
             print(f"Unable to get recent data for scoring: {e}")

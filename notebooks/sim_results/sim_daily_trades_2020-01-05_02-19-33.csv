@@ -1,0 +1,14 @@
+btcusdt_trade_date,daily_return,num_daily_trades,target_coin,model,target_col,start_days,training_mins,test_mins,optimal_buy_threshold,best_return
+2019-12-24,0.669477060975974,3,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2019-12-25,-0.06351033308877539,1,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2019-12-26,0.7070580051306512,8,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2019-12-27,0.39450710099681197,3,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2019-12-28,-0.3739899831828276,2,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2019-12-29,-1.1466186127608853,8,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2019-12-30,0.13266133998208998,1,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2019-12-31,-0.1441497730009176,2,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2020-01-03,2.4563513063868214,11,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2020-01-04,-0.25823527605878,1,btcusdt,linear,futr_6_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.2,2.2671914474991444
+2020-01-03,1.949386181253903,2,btcusdt,linear,futr_9_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.6000000000000001,1.949386181253903
+2020-01-03,1.6845342867855533,2,btcusdt,linear,futr_12_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.5,1.6845342867855533
+2020-01-03,1.5226753906484753,2,btcusdt,linear,futr_16_askbid_cum_5000_weighted_avg_perc_chg,443,400000,7200,0.5,1.5226753906484753

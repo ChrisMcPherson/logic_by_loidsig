@@ -1,0 +1,17 @@
+btcusdt_trade_date,daily_return,num_daily_trades,target_coin,model,target_col,start_days,training_mins,test_mins,optimal_buy_threshold,best_return
+2019-12-31,0.008794041199621017,1,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-03,2.3107055677802832,7,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-04,-0.500419104652388,1,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-05,-0.336476688131748,2,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-06,0.556154027414408,1,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-07,0.09773356555981902,1,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-08,1.2752188835494571,11,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-09,0.053563205730391,1,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-10,0.73038726686628,2,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-11,-0.056162717751621904,4,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-14,-1.121631367082935,2,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-15,-0.2617311822415654,2,btcusdt,sgd,futr_6_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.2,2.297423574638104
+2020-01-03,1.7357745981402881,2,btcusdt,sgd,futr_8_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.4,0.934085163362518
+2020-01-14,-0.80168943477777,2,btcusdt,sgd,futr_8_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.4,0.934085163362518
+2020-01-03,1.754578923136707,2,btcusdt,sgd,futr_10_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.5,1.4006037243810292
+2020-01-14,-0.35397519875567796,1,btcusdt,sgd,futr_10_askbid_cum_5000_weighted_avg_perc_chg,450,none,1440,0.5,1.4006037243810292

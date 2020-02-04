@@ -132,7 +132,8 @@ def features(feature_minutes_list, trade_window_list, target_coin):
     #TODO: move this config to simulation argument btcusdt
     coin_pair_dict = {'target':target_coin,
                   'alt':'ethusdt',
-                  'through':'btceth'}
+                  'through':'ethbtc'}
+
     print(f"Coin feature configuration: {coin_pair_dict}")
 
     mm_training = market_maker_training.BinanceTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
@@ -174,7 +175,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         clf.fit(X, y)
         y_sim = clf.predict(X_)
     elif model == 'sgd':
-        sgd = linear_model.SGDRegressor(loss='epsilon_insensitive', penalty='elasticnet', alpha=0.01, max_iter=2000)
+        sgd = linear_model.SGDRegressor(alpha=0.0007, loss='huber', epsilon=.1, max_iter=1500, penalty='elasticnet')
         scaler = StandardScaler()
         scaler.fit(X)
         X_ = scaler.transform(X)
@@ -234,7 +235,7 @@ def simulate_return(model, df, feature_cols, target_col, coin, interval, start_i
         model.fit(X, y)
         y_sim = model.predict(X_sim)
     elif model == 'rf':
-        rf = ensemble.RandomForestRegressor(n_estimators=50)
+        rf = ensemble.RandomForestRegressor(n_estimators=10, n_jobs=-1)
         rf.fit(X, y)
         X_sim = test_df.loc[:,feature_cols]
         y_sim = rf.predict(X_sim)

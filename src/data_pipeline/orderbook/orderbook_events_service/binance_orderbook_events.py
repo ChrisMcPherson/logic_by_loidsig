@@ -22,10 +22,12 @@ key, value = ast.literal_eval(get_secret_value_response['SecretString']).popitem
 bnb = Client(key, value)
 
 def main(event, context):
+    time.sleep(2) # eth seems to be collected too early. 
     coins = (
         'ETHUSDT',
-        'BNBUSDT',
         'BTCUSDT',
+        'ETHBTC',
+        'BNBUSDT',
         'LTCUSDT',
         'BCHABCUSDT',
         'NEOUSDT',
@@ -34,7 +36,6 @@ def main(event, context):
         'TRXUSDT',
         'QTUMUSDT',
         'XRPUSDT',
-        'ETHBTC',
         'TRXETH',
         'XRPETH',
         'NEOETH',

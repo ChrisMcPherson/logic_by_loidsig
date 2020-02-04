@@ -10,7 +10,7 @@ import dateparser
 import boto3
 from binance.client import Client
 # import module in relative path
-sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
+sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', '..', 'lib')))
 import athena_connect
 
 # Configs

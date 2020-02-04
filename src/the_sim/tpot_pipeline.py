@@ -24,11 +24,11 @@ from tpot import TPOTRegressor
 pd.options.mode.chained_assignment = None
 
 # Extract queried data from Athena
-def features(feature_minutes_list, trade_window_list=[14]):
+def features(feature_minutes_list, trade_window_list=[8]):
     #TODO: move this config to simulation argument 
-    coin_pair_dict = {'target':'ethusdt',
-                  'alt':'btcusdt',
-                  'through':'trxeth'}
+    coin_pair_dict = {'target':'btcusdt',
+                  'alt':'ethusdt',
+                  'through':'btceth'}
 
     print(f"Coin feature configuration: {coin_pair_dict}")
 
@@ -40,7 +40,7 @@ def features(feature_minutes_list, trade_window_list=[14]):
         return
     return mm_training.training_df, mm_training.feature_column_list, mm_training.target_column_list
 
-feature_minutes_list = [1, 3, 5, 8, 11, 14, 18, 22, 30, 40, 50, 60, 120, 240, 480, 960]
+feature_minutes_list = [1, 3, 5, 8, 11, 14, 18, 22, 30,60,120,1440]
 features_df, feature_cols, target_col_list = features(feature_minutes_list)
 
 features_df = features_df[:-14]
@@ -50,12 +50,12 @@ features_df = features_df[:-14]
 #X_test, y_test = features_df[-10:][feature_cols], features_df[-10:][target_col]
 
 # Split for last x days training and adjust for look ahead 
-days_training = 30 * -1440
-hours_test = 8 * -60
+days_training = 400 * -1440
+hours_test = 120 * -60
 X_train, y_train = features_df[days_training:(hours_test-14)][feature_cols], features_df[days_training:(hours_test-14)][target_col_list[0]] 
 X_test, y_test = features_df[hours_test:][feature_cols], features_df[hours_test:][target_col_list[0]]
 
-tpot = TPOTRegressor(generations=15, population_size=100, verbosity=2)
+tpot = TPOTRegressor(generations=5, population_size=10, verbosity=2, n_jobs=-1)
 tpot.fit(X_train, y_train)
 print(tpot.score(X_test, y_test))
 tpot.export(f'tpot_{days_training/-1440}days_train_{hours_test/-60}hour_test_pipeline.py')

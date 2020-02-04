@@ -21,11 +21,12 @@ pd.options.mode.chained_assignment = None
 # Config
 coin_pair_dict = {'target':'btcusdt',
                   'alt':'ethusdt',
-                  'through':'btceth'}
+                  'through':'ethbtc'}
 
                   
 feature_minutes_list = [1, 3, 5, 8, 11, 14, 18, 22, 30, 40, 50, 60, 120, 240, 480, 960, 2000]
-trade_window_list = [6,8,10,12]
+trade_window_list = [6,8,10]
+taining_min = 400000
 
 def main():
     """Control the training and persistance of a market maker model"""
@@ -33,8 +34,9 @@ def main():
     print(f"Coin pair config: {coin_pair_dict}")
     print(f"Feature minutes list: {feature_minutes_list}")
     print(f"Trade window list: {trade_window_list}")
-    # Get historic features and train model
-    mm_training = market_maker_training.BinanceTraining(coin_pair_dict, feature_minutes_list, trade_window_list)
+    # Get historic features and train model , , , =None, 
+    mm_training = market_maker_training.BinanceTraining(coin_pair_dict=coin_pair_dict, feature_minutes_list=feature_minutes_list, 
+        trade_window_list=trade_window_list, training_period=taining_min, operation='training')
     try:
         mm_training.set_training_data()
     except Exception as e:
@@ -46,19 +48,23 @@ def main():
         y = mm_training.training_df.loc[:,target_column]
         #model = linear_model.LinearRegression()
         #model = xgb.XGBRegressor()
-        model = ensemble.RandomForestRegressor(n_estimators=500)
+        #model = ensemble.RandomForestRegressor(n_estimators=100, n_jobs=-1)
+        
         # Standardize features (specific for sgd and other sensitive models)
-        #scaler = StandardScaler()
-        #scaler.fit(X)
-        #X = scaler.transform(X)
+        scaler = StandardScaler()
+        scaler.fit(X)
+        X = scaler.transform(X)
+        # SGD
+        model = linear_model.SGDRegressor(alpha=0.0007, loss='huber', epsilon=.1, max_iter=1500, penalty='elasticnet')
+
         # Fit model
         model.fit(X, y)
         # Persist model and standardizer
         print(f"{target_column} r2: {r2_score(y, model.predict(X))}")
-        #mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column))))
+        #mm_training.persist_model(model, int(''.join(filter(str.isdigit, target_column)))) # what is this? 
         trade_duration = [int(s) for s in re.findall(r'-?\d+\.?\d*', target_column)][0]
         mm_training.persist_model(model, trade_duration)
-        #mm_training.persist_standardizer(scaler)
+        mm_training.persist_standardizer(scaler)
     # Persist configuration
     mm_training.persist_model_config()
 

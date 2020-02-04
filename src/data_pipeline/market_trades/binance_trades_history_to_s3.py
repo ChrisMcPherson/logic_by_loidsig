@@ -10,7 +10,7 @@ import dateparser
 import boto3
 from binance.client import Client
 # import module in relative path
-sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', 'lib')))
+sys.path.append(os.path.abspath(os.path.join(sys.path[0], '..', '..', 'lib')))
 import athena_connect
 
 # Configs
@@ -44,8 +44,25 @@ def get_agg_trades():
     days_between_list = list(range(start_day_id, current_day_id))
 
     # Process coin pairs
-    coins = ('ETHUSDT','BNBUSDT','TRXETH','BTCUSDT','LTCUSDT','ETHBTC','XRPETH','NEOETH','ENJETH')
-    
+    coins = ('ETHUSDT',
+            'BTCUSDT',
+            'ETHBTC',
+            'BNBUSDT',
+            'LTCUSDT',
+            'BCHABCUSDT',
+            'NEOUSDT',
+            'ETCUSDT',
+            'EOSUSDT',
+            'TRXUSDT',
+            'QTUMUSDT',
+            'XRPUSDT',
+            'TRXETH',
+            'XRPETH',
+            'NEOETH',
+            'TUSDBNB',
+            'TUSDBTC',
+            'TUSDETH')
+            
     for coin in coins:
         # Get last processed date from Athena (if empty, process as new coin)
         processed_days_df = athena_functions.pandas_read_athena(f"""SELECT DISTINCT CAST(micro_timestamp as bigint)/1000/60/60/24 as day_id
