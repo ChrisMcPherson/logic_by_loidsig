@@ -21,6 +21,8 @@ except:
 s3_resource = boto_session.resource('s3')
 s3_client = boto_session.client('s3')
 
+loidsig_fs = s3fs.S3FileSystem(profile_name='loidsig')
+
 def main():
     processed_messages = 0
     start = time.time()
@@ -31,8 +33,13 @@ def main():
         # Continue while list is not empty
         while s3_key_list:
             s3_key = s3_key_list[0]
-            candlestick_df = pd.read_csv(s3_key)
+            # get from s3 into df
+            #s3://loidsig-crypto/binance/historic_candlesticks/bnbusdt/2018-01-01.csv
+            f = loidsig_fs.open(f's3://{s3_bucket}/{s3_key}', "r")
+            candlestick_df = pd.read_csv(f)
+            # insert into db
             idempotent_insert(candlestick_df)
+            # finish
             s3_key_list.pop(0)
             processed_messages += 1
             if processed_messages % 10000 == 0:
