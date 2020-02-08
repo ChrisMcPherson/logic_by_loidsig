@@ -19,7 +19,19 @@ test_train_features.csv
 .DS_Store
 
 # Serverless
+node_modules
 node_modules/
 **node_modules/
 .serverless/
 **.serverless/
+npm-debug.log
+
+#OS STUFF
+.DS_Store
+.tmp
+
+#SERVERLESS STUFF
+admin.env
+.env
+_meta
+.serverless
