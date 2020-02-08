@@ -14,14 +14,10 @@ s3_bucket = 'loidsig-crypto'
 s3_prefixes =  ['binance/historic_candlesticks']
 
 # AWS resources
-try:
-    boto_session = boto3.Session(profile_name='loidsig')
-except:
-    boto_session = boto3.Session()
+boto_session = boto3.Session()
 s3_resource = boto_session.resource('s3')
 s3_client = boto_session.client('s3')
-
-loidsig_fs = s3fs.S3FileSystem(profile_name='loidsig')
+loidsig_fs = s3fs.S3FileSystem()
 
 def main():
     processed_messages = 0
@@ -34,33 +30,27 @@ def main():
         while s3_key_list:
             s3_key = s3_key_list[0]
             # get from s3 into df
-            #s3://loidsig-crypto/binance/historic_candlesticks/bnbusdt/2018-01-01.csv
+            #s3://loidsig-crypto/binance/historic_candledicks/bnbusdt/2018-01-01.csv
             f = loidsig_fs.open(f's3://{s3_bucket}/{s3_key}', "r")
-            candlestick_df = pd.read_csv(f)
+            candledick_df = pd.read_csv(f)
+            # transforms
+            candledick_df['open_timestamp'] = candledick_df['open_timestamp'] / 1000
+            candledick_df['close_timestamp'] = candledick_df['close_timestamp'] / 1000
+            candledick_df['trade_minute'] = candledick_df['open_timestamp'] / 60
+            candledick_df['taker_sell_base_asset_volume'] = candledick_df['volume'] - candledick_df['taker_buy_base_asset_volume']
+            candledick_df['taker_sell_quote_asset_volume'] = candledick_df['quote_asset_volume'] - candledick_df['taker_buy_quote_asset_volume']
+            candledick_df['taker_sell_volume_percentage'] = candledick_df['taker_sell_base_asset_volume'] / candledick_df['volume']
+            candledick_df['taker_buy_volume_percentage'] = candledick_df['taker_buy_base_asset_volume'] / candledick_df['volume']
+
             # insert into db
-            idempotent_insert(candlestick_df)
+            df_to_rds(candledick_df, 'binance')
             # finish
             s3_key_list.pop(0)
             processed_messages += 1
             if processed_messages % 10000 == 0:
                 print(f"Messages processed: {processed_messages} in {(time.time() - start) / 60} Minutes")
                 start = time.time()
-    print(f"Processed {processed_messages} messages.")
-
-def idempotent_insert(df):
-    logic_db_conn = logic_db_connection()
-    cur = logic_db_conn.cursor()
-
-    sql = f"""
-            SELECT  array_agg(CONCAT(UPPER(coin_pair), '/', LEFT((trade_minute*60)::text, 8)))
-            FROM binance.orderbook
-            ;"""
-    cur.execute(sql)
-    return 
-
-def get_s3_object(s3_key):
-    obj = s3_resource.Object(s3_bucket, s3_key)
-    return obj.get()['Body'].read().decode('utf-8') 
+    print(f"Processed {processed_messages} messages.") 
 
 def get_s3_keys_from_prefix(s3_prefix):
     paginator = s3_client.get_paginator('list_objects')
@@ -73,12 +63,138 @@ def get_s3_keys_from_prefix(s3_prefix):
         s3_keys.extend(page_s3_keys)
     return s3_keys
 
+def df_to_rds(df, exchange):
+    pk_column = ['trade_minute','coin_pair']
+    column_list_string = """trade_minute
+                        , coin_pair
+                        , open_timestamp
+                        , close_timestamp
+                        , open
+                        , high
+                        , low
+                        , close	
+                        , volume
+                        , quote_asset_volume
+                        , trade_count
+                        , taker_buy_base_asset_volume
+                        , taker_buy_quote_asset_volume
+                        , taker_sell_base_asset_volume
+                        , taker_sell_quote_asset_volume
+                        , taker_sell_volume_percentage
+                        , taker_buy_volume_percentage
+                        , open_datetime
+                        , close_datetime
+                        , file_name
+                        """
+    for i in range(len(df)):
+        value_list_string = f"""
+                '{df.trade_minute.iloc[i:i+1]}'
+                , '{df.coin_pair.iloc[i:i+1]}'
+                , '{df.open_timestamp.iloc[i:i+1]}'
+                , '{df.open.iloc[i:i+1]}' 
+                , '{df.high.iloc[i:i+1]}' 
+                , '{df.low.iloc[i:i+1]}' 
+                , '{df.close.iloc[i:i+1]}' 
+                , '{df.volume.iloc[i:i+1]}' 
+                , '{df.quote_asset_volume.iloc[i:i+1]}' 
+                , '{df.trade_count.iloc[i:i+1]}' 
+                , '{df.taker_buy_base_asset_volume.iloc[i:i+1]}' 
+                , '{df.taker_buy_quote_asset_volume.iloc[i:i+1]}' 
+                , '{df.taker_sell_base_asset_volume.iloc[i:i+1]}' 
+                , '{df.taker_sell_quote_asset_volume.iloc[i:i+1]}' 
+                , '{df.taker_sell_volume_percentage.iloc[i:i+1]}' 
+                , '{df.taker_buy_volume_percentage.iloc[i:i+1]}' 
+                , '{df.open_datetime.iloc[i:i+1]}' 
+                , '{df.close_datetime.iloc[i:i+1]}' 
+                , '{df.file_name.iloc[i:i+1]}' 
+                """
+        try:
+            insert_into_postgres(exchange, 'candledicks', column_list_string, value_list_string)
+        except psycopg2.IntegrityError:
+            # Update row where PK already exists
+            # Combine column value assignment
+            column_list = column_list_string.replace('\n','').split(',')
+            value_list = value_list_string.replace('\n','').split(',')
+            # Get 1st pk value
+            pk_column_ix = [i for i, item in enumerate(column_list) if pk_column[0] in item][0]
+            pk_value = value_list.pop(pk_column_ix)
+            column_list.pop(pk_column_ix)
+            # Get 2nd pk value
+            pk_column_ix_2 = [i for i, item in enumerate(column_list) if pk_column[1] in item][0]
+            pk_value_2 = value_list.pop(pk_column_ix_2)
+            column_list.pop(pk_column_ix_2)
+            # Where clause
+            where_clause = f"{pk_column[0]} = {pk_value} AND {pk_column[1]} = {pk_value_2}"
+            # Values to update
+            column_value_list = []
+            for col in list(zip(column_list, value_list)):
+                column_value_list.append(f"{col[0]} = {col[1]}")
+            column_value_list_string = ','.join(column_value_list)
+            print(f"PK already exists. Updating {where_clause}")
+            update_postgres(exchange, 'candledicks', column_value_list_string, where_clause)
+    
+
+def insert_into_postgres(schema, table, column_list_string, values):
+        """Inserts scoring results into Postgres db table
+
+        Args:
+            schema (str): A schema name
+            table (str): A table name
+            column_list_string (str): A comma delimited string of column names
+            values (str): comma seperated values to insert
+        """
+        conn = logic_db_connection()
+        try:
+            cur = conn.cursor()
+            insert_dml = """INSERT INTO {0}.{1}
+                    ({2})
+                    VALUES ({3}) 
+                    ;""".format(schema, table, column_list_string, values)
+            cur.execute(insert_dml)
+            conn.commit()
+        except Exception as e:
+            if type(e) is not type(psycopg2.IntegrityError()):
+                print(f'Unable to insert into Postgres table {table}. DML: {insert_dml} Error: {e}')
+            raise
+        finally:
+            conn.close()
+        return
+
+def update_postgres(schema, table, values, where_clause):
+        """Inserts scoring results into Postgres db table
+
+        Args:
+            schema (str): A schema name
+            table (str): A table name
+            column_list_string (str): A comma delimited string of column names
+            values (str): comma seperated 'column = value' to insert
+        """
+        conn = logic_db_connection()
+        try:
+            cur = conn.cursor()
+            insert_dml = """UPDATE {0}.{1}
+                    SET {2}
+                    WHERE {3}
+                    ;""".format(schema, table, values, where_clause)
+            cur.execute(insert_dml)
+            conn.commit()
+        except Exception as e:
+            print(f'Unable to update Postgres table {table}. DML: {insert_dml} Error: {e}')
+            raise
+        finally:
+            conn.close()
+        return
+
 def logic_db_connection():
     """Fetches Logic DB postgres connection object
 
     Returns:
         A database connection object for Postgres
     """
+    try:
+        boto_session = boto3.Session(profile_name='loidsig')
+    except:
+        boto_session = boto3.Session()
     sm_client = boto_session.client(
         service_name='secretsmanager',
         region_name='us-east-1',

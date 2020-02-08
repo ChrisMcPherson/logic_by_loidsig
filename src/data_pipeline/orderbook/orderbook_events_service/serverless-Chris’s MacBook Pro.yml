@@ -6,7 +6,7 @@ provider:
   profile: loidsig
   region: us-east-1
   stage: prod
-  memorySize: 128
+  memorySize: 256
 
 package:
   include:
@@ -20,18 +20,7 @@ package:
     - package-lock.json
     - node_modules/**
 
-functions:
-  cobinhood-events:
-    role: arn:aws:iam::309597787617:role/lambda_basic_execution
-    handler: cobinhood_orderbook_events.main
-    events:
-      - schedule:
-          name: cobinhood-orderbook-scheduler
-          description: 'cobinhood raw events schedule'
-          rate: rate(1 minute)
-          enabled: true
-    onError: arn:aws:sns:us-east-1:309597787617:orderbook_pipeline_notifications
-    timeout: 60
+functions:         
   binance-events:
     role: arn:aws:iam::309597787617:role/lambda_basic_execution
     handler: binance_orderbook_events.main
@@ -57,6 +46,6 @@ functions:
 plugins:
   - serverless-python-requirements
 
-custom:
+custom:   
   pythonRequirements:
     dockerizePip: true
