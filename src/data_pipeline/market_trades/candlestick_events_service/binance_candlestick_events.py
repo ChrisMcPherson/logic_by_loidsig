@@ -5,10 +5,7 @@ import ast
 from binance.client import Client
 
 # Instantiate resources
-try:
-    boto_session = boto3.Session(profile_name='loidsig')
-except:
-    boto_session = boto3.Session()
+boto_session = boto3.Session()
 s3_resource = boto_session.resource('s3')
 s3_bucket = 'loidsig-crypto'
 

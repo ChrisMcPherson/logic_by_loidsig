@@ -8,6 +8,9 @@ import json
 import time
 import psycopg2 
 import s3fs
+import multiprocessing
+#multiprocessing.set_start_method('spawn', True)
+from joblib import Parallel, delayed
 
 # Configypt
 s3_bucket = 'loidsig-crypto'
@@ -45,16 +48,15 @@ def main():
             candledick_df['taker_sell_quote_asset_volume'] = candledick_df['quote_asset_volume'] - candledick_df['taker_buy_quote_asset_volume']
             candledick_df['taker_sell_volume_percentage'] = candledick_df['taker_sell_base_asset_volume'] / candledick_df['volume']
             candledick_df['taker_buy_volume_percentage'] = candledick_df['taker_buy_base_asset_volume'] / candledick_df['volume']
-
             # insert into db
-            df_to_rds(candledick_df, 'binance')
+            Parallel(n_jobs=multiprocessing.cpu_count())(delayed(row_to_rds)(candledick_df, i, 'binance') for i in range(len(candledick_df)))
             # finish
             s3_key_list.pop(0)
             processed_messages += 1
-            if processed_messages % 10000 == 0:
-                print(f"Messages processed: {processed_messages} in {(time.time() - start) / 60} Minutes")
+            if processed_messages % 10 == 0:
+                print(f"Files processed: {processed_messages} in {(time.time() - start) / 60} Minutes")
                 start = time.time()
-    print(f"Processed {processed_messages} messages.") 
+        print(f"Processed {processed_messages} messages.") 
 
 def get_s3_keys_from_prefix(s3_prefix):
     paginator = s3_client.get_paginator('list_objects')
@@ -67,7 +69,8 @@ def get_s3_keys_from_prefix(s3_prefix):
         s3_keys.extend(page_s3_keys)
     return s3_keys
 
-def df_to_rds(df, exchange):
+
+def row_to_rds(df, i, exchange):
     pk_column = ['trade_minute','coin_pair']
     column_list_string = """trade_minute
                         , coin_pair
@@ -90,53 +93,52 @@ def df_to_rds(df, exchange):
                         , close_datetime
                         , file_name
                         """
-    for i in range(len(df)):
-        value_list_string = f"""
-                '{df.trade_minute.iloc[i]}'
-                , '{df.coin_pair.iloc[i]}'
-                , '{df.open_timestamp.iloc[i]}'
-                , '{df.close_timestamp.iloc[i]}'
-                , '{df.open.iloc[i]}' 
-                , '{df.high.iloc[i]}' 
-                , '{df.low.iloc[i]}' 
-                , '{df.close.iloc[i]}' 
-                , '{df.volume.iloc[i]}' 
-                , '{df.quote_asset_volume.iloc[i]}' 
-                , '{df.trade_count.iloc[i]}' 
-                , '{df.taker_buy_base_asset_volume.iloc[i]}' 
-                , '{df.taker_buy_quote_asset_volume.iloc[i]}' 
-                , '{df.taker_sell_base_asset_volume.iloc[i]}' 
-                , '{df.taker_sell_quote_asset_volume.iloc[i]}' 
-                , '{df.taker_sell_volume_percentage.iloc[i]}' 
-                , '{df.taker_buy_volume_percentage.iloc[i]}' 
-                , '{df.open_datetime.iloc[i]}' 
-                , '{df.close_datetime.iloc[i]}' 
-                , '{df.file_name.iloc[i]}' 
-                """
-        try:
-            insert_into_postgres(exchange, 'candledicks', column_list_string, value_list_string)
-        except psycopg2.IntegrityError:
-            # Update row where PK already exists
-            # Combine column value assignment
-            column_list = column_list_string.replace('\n','').split(',')
-            value_list = value_list_string.replace('\n','').split(',')
-            # Get 1st pk value
-            pk_column_ix = [i for i, item in enumerate(column_list) if pk_column[0] in item][0]
-            pk_value = value_list.pop(pk_column_ix)
-            column_list.pop(pk_column_ix)
-            # Get 2nd pk value
-            pk_column_ix_2 = [i for i, item in enumerate(column_list) if pk_column[1] in item][0]
-            pk_value_2 = value_list.pop(pk_column_ix_2)
-            column_list.pop(pk_column_ix_2)
-            # Where clause
-            where_clause = f"{pk_column[0]} = {pk_value} AND {pk_column[1]} = {pk_value_2}"
-            # Values to update
-            column_value_list = []
-            for col in list(zip(column_list, value_list)):
-                column_value_list.append(f"{col[0]} = {col[1]}")
-            column_value_list_string = ','.join(column_value_list)
-            print(f"PK already exists. Updating {where_clause}")
-            update_postgres(exchange, 'candledicks', column_value_list_string, where_clause)
+    value_list_string = f"""
+            '{df.trade_minute.iloc[i]}'
+            , '{df.coin_pair.iloc[i]}'
+            , '{df.open_timestamp.iloc[i]}'
+            , '{df.close_timestamp.iloc[i]}'
+            , '{df.open.iloc[i]}' 
+            , '{df.high.iloc[i]}' 
+            , '{df.low.iloc[i]}' 
+            , '{df.close.iloc[i]}' 
+            , '{df.volume.iloc[i]}' 
+            , '{df.quote_asset_volume.iloc[i]}' 
+            , '{df.trade_count.iloc[i]}' 
+            , '{df.taker_buy_base_asset_volume.iloc[i]}' 
+            , '{df.taker_buy_quote_asset_volume.iloc[i]}' 
+            , '{df.taker_sell_base_asset_volume.iloc[i]}' 
+            , '{df.taker_sell_quote_asset_volume.iloc[i]}' 
+            , '{df.taker_sell_volume_percentage.iloc[i]}' 
+            , '{df.taker_buy_volume_percentage.iloc[i]}' 
+            , '{df.open_datetime.iloc[i]}' 
+            , '{df.close_datetime.iloc[i]}' 
+            , '{df.file_name.iloc[i]}' 
+            """
+    try:
+        insert_into_postgres(exchange, 'candledicks', column_list_string, value_list_string)
+    except psycopg2.IntegrityError:
+        # Update row where PK already exists
+        # Combine column value assignment
+        column_list = column_list_string.replace('\n','').split(',')
+        value_list = value_list_string.replace('\n','').split(',')
+        # Get 1st pk value
+        pk_column_ix = [i for i, item in enumerate(column_list) if pk_column[0] in item][0]
+        pk_value = value_list.pop(pk_column_ix)
+        column_list.pop(pk_column_ix)
+        # Get 2nd pk value
+        pk_column_ix_2 = [i for i, item in enumerate(column_list) if pk_column[1] in item][0]
+        pk_value_2 = value_list.pop(pk_column_ix_2)
+        column_list.pop(pk_column_ix_2)
+        # Where clause
+        where_clause = f"{pk_column[0]} = {pk_value} AND {pk_column[1]} = {pk_value_2}"
+        # Values to update
+        column_value_list = []
+        for col in list(zip(column_list, value_list)):
+            column_value_list.append(f"{col[0]} = {col[1]}")
+        column_value_list_string = ','.join(column_value_list)
+        #print(f"PK already exists. Updating {where_clause}")
+        update_postgres(exchange, 'candledicks', column_value_list_string, where_clause)
     
 
 def insert_into_postgres(schema, table, column_list_string, values):
@@ -158,8 +160,8 @@ def insert_into_postgres(schema, table, column_list_string, values):
             cur.execute(insert_dml)
             conn.commit()
         except Exception as e:
-            if type(e) is not type(psycopg2.IntegrityError()):
-                print(f'Unable to insert into Postgres table {table}. DML: {insert_dml} Error: {e}')
+            #if type(e) is not type(psycopg2.IntegrityError()): # doesn't work need to use pg error code catching
+            #    print(f'Unable to insert into Postgres table {table}. DML: {insert_dml} Error: {e}')
             raise
         finally:
             conn.close()
