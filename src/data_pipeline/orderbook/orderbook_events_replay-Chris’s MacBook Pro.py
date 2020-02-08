@@ -1,25 +1,25 @@
 import boto3
 import time
 import ast
+import re
 import itertools
 import psycopg2
 
-# Config
+# Configypt
 s3_bucket = 'loidsig-crypto'
-s3_prefixes = ['binance/historic_orderbook_raw/ETHBTC']
-# ['binance/historic_orderbook_raw/ETHUSDT',
-#                 'binance/historic_orderbook_raw/BNBUSDT',
-#                 'binance/historic_orderbook_raw/BTCUSDT',
-#                 'binance/historic_orderbook_raw/LTCUSDT',
-#                 'binance/historic_orderbook_raw/XRPUSDT',
-#                 'binance/historic_orderbook_raw/ETHBTC',
-#                 'binance/historic_orderbook_raw/TRXETH',
-#                 'binance/historic_orderbook_raw/XRPETH',
-#                 'binance/historic_orderbook_raw/NEOETH']#, 'cobinhood/historic_orderbook_raw'] #BTCUSDT/153874
+s3_prefixes =  ['binance/historic_orderbook_raw/ETHUSDT',
+                'binance/historic_orderbook_raw/BNBUSDT',
+                'binance/historic_orderbook_raw/BTCUSDT',
+                'binance/historic_orderbook_raw/LTCUSDT',
+                'binance/historic_orderbook_raw/XRPUSDT',
+                'binance/historic_orderbook_raw/ETHBTC',
+                'binance/historic_orderbook_raw/TRXETH',
+                'binance/historic_orderbook_raw/XRPETH',
+                'binance/historic_orderbook_raw/NEOETH']#, 'cobinhood/historic_orderbook_raw'] #BTCUSDT/153874
 
 sqs_queue_name = 'raw_orderbook_events'
 max_queue_inflight = 100000
-replay_specific_keys = False
+replay_specific_keys = True
 
 # AWS resources
 try:
@@ -37,9 +37,15 @@ def main():
     for s3_prefix in s3_prefixes:
         s3_key_list = get_s3_keys_from_prefix(s3_prefix)
         if replay_specific_keys:
-            exchange = s3_prefix.partition('/')[0]
-            prefix_to_skip_list = get_existing_keys(exchange)
-            s3_key_list = [s3_key for s3_key in s3_key_list if all(prefix not in s3_key for prefix in prefix_to_skip_list)]
+            # #prefix_to_skip_list = get_existing_keys()
+            # #s3_key_list = [s3_key for s3_key in s3_key_list if all(prefix not in s3_key for prefix in prefix_to_skip_list)]
+            # # Challenge here is that we are not storing the unix timestamp for the s3 file in database. So to compare we have to convert the unix timestamp found in the file prefix to the trade mintue
+            # #s3_key_list = list(set(s3_key_list).difference(prefix_to_skip_list))
+
+            # simplier method that only removes after a determined trade minute
+            print(len(s3_key_list))
+            s3_key_list = [s3_key for s3_key in s3_key_list if int(re.findall('\d+', s3_key)[0]) > 1573926580]
+            
         print(f"{len(s3_key_list)} keys to replay")
         # Continue while list is not empty
         while s3_key_list:
@@ -77,13 +83,13 @@ def get_queue_num_inflight():
 def get_keys_already_played():
     pass
 
-def get_existing_keys(exchange):
+def get_existing_keys():
     logic_db_conn = logic_db_connection()
     cur = logic_db_conn.cursor()
 
     sql = f"""
             SELECT  array_agg(CONCAT(UPPER(coin_pair), '/', LEFT((trade_minute*60)::text, 8)))
-            FROM {exchange}.orderbook
+            FROM binance.orderbook
             ;"""
     cur.execute(sql)
     return cur.fetchall()[0][0]

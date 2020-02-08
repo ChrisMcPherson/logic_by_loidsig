@@ -34,9 +34,13 @@ def main():
             f = loidsig_fs.open(f's3://{s3_bucket}/{s3_key}', "r")
             candledick_df = pd.read_csv(f)
             # transforms
+            candledick_df['coin_pair'] = candledick_df['coin'].str.lower()
             candledick_df['open_timestamp'] = candledick_df['open_timestamp'] / 1000
             candledick_df['close_timestamp'] = candledick_df['close_timestamp'] / 1000
             candledick_df['trade_minute'] = candledick_df['open_timestamp'] / 60
+            candledick_df['open_timestamp'] = candledick_df['open_timestamp'].astype(int)
+            candledick_df['close_timestamp'] = candledick_df['close_timestamp'].astype(int)
+            candledick_df['trade_minute'] = candledick_df['trade_minute'].astype(int)
             candledick_df['taker_sell_base_asset_volume'] = candledick_df['volume'] - candledick_df['taker_buy_base_asset_volume']
             candledick_df['taker_sell_quote_asset_volume'] = candledick_df['quote_asset_volume'] - candledick_df['taker_buy_quote_asset_volume']
             candledick_df['taker_sell_volume_percentage'] = candledick_df['taker_sell_base_asset_volume'] / candledick_df['volume']
@@ -88,25 +92,26 @@ def df_to_rds(df, exchange):
                         """
     for i in range(len(df)):
         value_list_string = f"""
-                '{df.trade_minute.iloc[i:i+1]}'
-                , '{df.coin_pair.iloc[i:i+1]}'
-                , '{df.open_timestamp.iloc[i:i+1]}'
-                , '{df.open.iloc[i:i+1]}' 
-                , '{df.high.iloc[i:i+1]}' 
-                , '{df.low.iloc[i:i+1]}' 
-                , '{df.close.iloc[i:i+1]}' 
-                , '{df.volume.iloc[i:i+1]}' 
-                , '{df.quote_asset_volume.iloc[i:i+1]}' 
-                , '{df.trade_count.iloc[i:i+1]}' 
-                , '{df.taker_buy_base_asset_volume.iloc[i:i+1]}' 
-                , '{df.taker_buy_quote_asset_volume.iloc[i:i+1]}' 
-                , '{df.taker_sell_base_asset_volume.iloc[i:i+1]}' 
-                , '{df.taker_sell_quote_asset_volume.iloc[i:i+1]}' 
-                , '{df.taker_sell_volume_percentage.iloc[i:i+1]}' 
-                , '{df.taker_buy_volume_percentage.iloc[i:i+1]}' 
-                , '{df.open_datetime.iloc[i:i+1]}' 
-                , '{df.close_datetime.iloc[i:i+1]}' 
-                , '{df.file_name.iloc[i:i+1]}' 
+                '{df.trade_minute.iloc[i]}'
+                , '{df.coin_pair.iloc[i]}'
+                , '{df.open_timestamp.iloc[i]}'
+                , '{df.close_timestamp.iloc[i]}'
+                , '{df.open.iloc[i]}' 
+                , '{df.high.iloc[i]}' 
+                , '{df.low.iloc[i]}' 
+                , '{df.close.iloc[i]}' 
+                , '{df.volume.iloc[i]}' 
+                , '{df.quote_asset_volume.iloc[i]}' 
+                , '{df.trade_count.iloc[i]}' 
+                , '{df.taker_buy_base_asset_volume.iloc[i]}' 
+                , '{df.taker_buy_quote_asset_volume.iloc[i]}' 
+                , '{df.taker_sell_base_asset_volume.iloc[i]}' 
+                , '{df.taker_sell_quote_asset_volume.iloc[i]}' 
+                , '{df.taker_sell_volume_percentage.iloc[i]}' 
+                , '{df.taker_buy_volume_percentage.iloc[i]}' 
+                , '{df.open_datetime.iloc[i]}' 
+                , '{df.close_datetime.iloc[i]}' 
+                , '{df.file_name.iloc[i]}' 
                 """
         try:
             insert_into_postgres(exchange, 'candledicks', column_list_string, value_list_string)

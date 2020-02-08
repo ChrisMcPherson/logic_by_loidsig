@@ -1,0 +1,5 @@
+numpy
+pandas
+python-binance
+psycopg2==2.7.7
+git+https://github.com/CliffLin/python-cobinhood
