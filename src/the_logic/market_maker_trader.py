@@ -21,8 +21,8 @@ from sklearn.metrics import r2_score, classification_report
 pd.options.mode.chained_assignment = None
 
 # Config
-predicted_return_threshold = .8
-model_version = 3.02
+predicted_return_threshold = .2
+model_version = 4.1
 
 def main():
     iter_ = 1
@@ -45,11 +45,11 @@ def logic(iter_):
     X_scoring = X_scoring.iloc[[-1]] # list ensures returning df not series so column names retain (for xgboost)
 
     # Used with sklearn models?
-    #X_scoring = X_scoring.values.reshape((1, -1))
+    X_scoring = X_scoring.values.reshape((1, -1))
     
     # get standardize object    
-    #scaler = mm_scoring.get_model_standardizer()
-    #X_scoring = scaler.transform(X_scoring)
+    scaler = mm_scoring.get_model_standardizer()
+    X_scoring = scaler.transform(X_scoring)
     
     # Iterate over each trained model and save predicted results to dict
     scoring_result_dict = {}
@@ -61,6 +61,7 @@ def logic(iter_):
         predicted_growth = model.predict(X_scoring) # xgboost can't just take a plain numpy array?
         predicted_growth_rate = predicted_growth / trade_hold_minutes
         # Set optimal growth rate and associated trade holding minutes
+        # TODO: consider confidence of prediction when determining the optimal hold minutes (e.g. longer interval models have more uncertainty)
         if i == 0:
             optimal_growth_rate = predicted_growth#predicted_growth_rate
             optimal_hold_minutes = trade_hold_minutes
@@ -75,8 +76,8 @@ def logic(iter_):
     scoring_timestamp = time.time()
     data_latency_seconds = scoring_timestamp - (latest_minute * 60)# + 30)
 
-    # Print important time latency information on first iteration
-    if iter_ == 1:
+    # Print important time latency information on first and every 30 iteration 
+    if iter_ == 1 or iter_ % 30 == 0:
         print(f"From data collection to prediction, {int(end - start)} seconds have elapsed")
         # Validate amount of time passage
         print(f"Last timestamp in scoring data: {latest_minute * 60} compared to current timestamp: {time.time()} with {data_latency_seconds} diff")
