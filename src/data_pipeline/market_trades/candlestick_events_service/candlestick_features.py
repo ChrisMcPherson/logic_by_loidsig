@@ -15,30 +15,6 @@ except:
 s3_resource = boto_session.resource('s3')
 s3_bucket = 'loidsig-crypto'
 
-# Standardized price targets - for non usdt base pairs, do we update the conversion to usd value instead of static set? Implications of either?
-std_price_target_dict = {
-    'btcusdt':[5000,10000,20000,50000,100000,200000],
-    'bnbusdt':[5000,10000,20000,50000,100000,200000],
-    'ethusdt':[5000,10000,20000,50000,100000,200000],
-    'ltcusdt':[5000,10000,20000,50000,100000,200000],
-    'cobusdt':[5000,10000,20000,50000,100000,200000],
-    'bchabcusdt':[5000,10000,20000,50000,100000,200000],
-    'bchsvusdt':[5000,10000,20000,50000,100000,200000],
-    'neousdt':[5000,10000,20000,50000,100000,200000],
-    'etcusdt':[5000,10000,20000,50000,100000,200000],
-    'eosusdt':[5000,10000,20000,50000,100000,200000],
-    'trxusdt':[5000,10000,20000,50000,100000,200000],
-    'qtumusdt':[5000,10000,20000,50000,100000,200000],
-    'xrpusdt':[5000,10000,20000,50000,100000,200000],
-    'tusdbtc':[.77, 1.54, 3.08, 7.7, 15.4, 30.8],
-    'ethbtc':[.77, 1.54, 3.08, 7.7, 15.4, 30.8],
-    'tusdeth':[24,49,98,245,490,980],
-    'trxeth':[24,49,98,245,490,980],
-    'xrpeth':[24,49,98,245,490,980],
-    'neoeth':[24,49,98,245,490,980],
-    'eoseth':[24,49,98,245,490,980],
-    'tusdbnb':[516,1032,2064,5160,10321,20643]
-}
 
 def main(event, context):
     orderbook_str = event['Records'][0]['body']
@@ -83,56 +59,6 @@ def build_orderbook_df(orderbook_json, order_type, coin_pair, unix_timestamp):
     orderbook_df.insert(0, 'order_position', range(1, 1 + len(orderbook_df.index)))
     orderbook_df['unix_timestamp'] = unix_timestamp
     return orderbook_df
-
-def weighted_avg(values, weights):
-    """
-    Return the weighted average.
-
-    values, weights -- Numpy ndarrays with the same shape.
-    """
-    try:
-        weighted_avg = np.average(values, weights=weights)
-    except ZeroDivisionError:
-        weighted_avg = 0
-        raise
-    return weighted_avg
-
-def weighted_std(values, weights):
-    """
-    Return the weighted standard deviation.
-
-    values, weights -- Numpy ndarrays with the same shape.
-    """
-    try:
-        average = weighted_avg(values, weights)
-        variance = np.average((values-average)**2, weights=weights)
-        weighted_std = math.sqrt(variance)
-    except ZeroDivisionError:
-        weighted_std = 0
-    return weighted_std
-
-def orders_taken_to_fill(df, target_volume):
-    remaining_volume = target_volume
-    price_list = []
-    volume_list = []
-    for price, dollar_volume in zip(df.price, df.dollar_volume):   
-        if (remaining_volume - dollar_volume) < 0.0:
-            price_list.append(price)
-            volume_list.append(remaining_volume)
-            break
-        else:
-            price_list.append(price)
-            volume_list.append(dollar_volume)
-        remaining_volume = remaining_volume - dollar_volume
-    return price_list, volume_list
-
-def weighted_avg_price(df, target_volume):
-    price_list, volume_list = orders_taken_to_fill(df, target_volume)
-    return weighted_avg(price_list, volume_list)
-
-def weighted_std_price(df, target_volume):
-    price_list, volume_list = orders_taken_to_fill(df, target_volume)
-    return weighted_std(price_list, volume_list)
      
 def engineer_features(df, order_type):
     df['dollar_volume'] = df['price'] * df['volume']

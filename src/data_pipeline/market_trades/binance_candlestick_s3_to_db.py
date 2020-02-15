@@ -27,7 +27,9 @@ def main():
     start = time.time()
     for s3_prefix in s3_prefixes:
         s3_key_list = get_s3_keys_from_prefix(s3_prefix)
-        
+        # Remove files already processed
+        previously_processed_list = get_processed_file_paths()
+        s3_key_list = list(set(s3_key_list).difference(previously_processed_list))
         print(f"{len(s3_key_list)} keys to replay")
         # Continue while list is not empty
         while s3_key_list:
@@ -69,6 +71,16 @@ def get_s3_keys_from_prefix(s3_prefix):
         s3_keys.extend(page_s3_keys)
     return s3_keys
 
+def get_processed_file_paths():
+    sql = """SELECT CONCAT('binance/historic_candlesticks/', file_name)
+            FROM binance.candledicks c 
+            GROUP BY file_name
+            HAVING count(*) = 1440
+            ;"""
+    logic_db_conn = logic_db_connection()
+    cur = logic_db_conn.cursor()
+    cur.execute(sql)
+    return [row[0] for row in cur.fetchall()]
 
 def row_to_rds(df, i, exchange):
     pk_column = ['trade_minute','coin_pair']

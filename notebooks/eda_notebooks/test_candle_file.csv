@@ -1,0 +1,2 @@
+open_timestamp,open,high,low,close,volume,close_timestamp,quote_asset_volume,trade_count,taker_buy_base_asset_volume,taker_buy_quote_asset_volume,ignore,open_timestamp_trim,close_timestamp_trim,open_datetime,close_datetime
+1581787800000,0.00248660,0.00248660,0.00242720,0.00242720,47741.08000000,1581789599999,117.25252883,5860,18889.63000000,46.36761661,0,1581787800.0,1581789599.999,2020-02-15 17:30:00.000000000,2020-02-15 17:59:59.999000072

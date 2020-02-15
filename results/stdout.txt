@@ -1,190 +1,228 @@
-[I 00:50:02.204 LabApp] Writing notebook server cookie secret to /home/ubuntu/.local/share/jupyter/runtime/notebook_cookie_secret
-[W 00:50:03.257 LabApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
-/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:541: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:542: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:543: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:544: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:545: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorboard/compat/tensorflow_stub/dtypes.py:550: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  np_resource = np.dtype([("resource", np.ubyte, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_qint8 = np.dtype([("qint8", np.int8, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:527: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_quint8 = np.dtype([("quint8", np.uint8, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:528: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_qint16 = np.dtype([("qint16", np.int16, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:529: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_quint16 = np.dtype([("quint16", np.uint16, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:530: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  _np_qint32 = np.dtype([("qint32", np.int32, 1)])
-/usr/local/anaconda/lib/python3.6/site-packages/tensorflow/python/framework/dtypes.py:535: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.
-  np_resource = np.dtype([("resource", np.ubyte, 1)])
-[I 00:50:05.584 LabApp] jupyter_tensorboard extension loaded.
-[I 00:50:05.588 LabApp] JupyterLab extension loaded from /usr/local/anaconda/lib/python3.6/site-packages/jupyterlab
-[I 00:50:05.588 LabApp] JupyterLab application directory is /usr/local/anaconda/share/jupyter/lab
-[W 00:50:05.591 LabApp] JupyterLab server extension not enabled, manually loading...
-[I 00:50:05.593 LabApp] JupyterLab extension loaded from /usr/local/anaconda/lib/python3.6/site-packages/jupyterlab
-[I 00:50:05.593 LabApp] JupyterLab application directory is /usr/local/anaconda/share/jupyter/lab
-[I 00:50:05.594 LabApp] Serving notebooks from local directory: /
-[I 00:50:05.594 LabApp] The Jupyter Notebook is running at:
-[I 00:50:05.594 LabApp] http://(domino-run-5e2cdf4e46e0fb0008a94aee or 127.0.0.1):8888/
-[I 00:50:05.594 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
-[I 00:50:05.600 LabApp] 302 GET / (10.0.194.105) 0.61ms
-[I 00:50:08.411 LabApp] 302 GET / (10.0.254.176) 0.51ms
-[I 00:50:08.419 LabApp] 302 GET / (10.0.254.176) 0.41ms
-[I 00:50:08.541 LabApp] 302 GET / (10.0.254.176) 0.43ms
-[I 00:50:08.820 LabApp] 302 GET / (10.0.194.105) 0.57ms
-[I 00:50:09.726 LabApp] 302 GET / (10.0.194.105) 0.49ms
-[W 00:50:14.070 LabApp] The extension "jupyterlab-server-proxy" is outdated.
-    
-[I 00:50:14.403 LabApp] Build is up to date
-[I 00:50:14.685 LabApp] 302 GET / (10.0.40.19) 0.50ms
-[I 00:50:27.592 LabApp] Writing notebook-signing key to /home/ubuntu/.local/share/jupyter/notebook_secret
-[W 00:50:27.593 LabApp] Notebook mnt/notebooks/feature_evaluation.ipynb is not trusted
-[I 00:50:28.438 LabApp] Kernel started: b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 00:50:31.428 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 00:50:31.744 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 00:52:28.461 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 00:57:38.761 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 03:20:19.197 LabApp] 302 GET / (10.0.194.105) 0.53ms
-[I 03:20:19.207 LabApp] 302 GET / (10.0.40.19) 0.33ms
-[I 03:20:19.218 LabApp] 302 GET / (10.0.254.176) 0.38ms
-[I 04:14:35.781 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 04:16:38.111 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 04:43:18.200 LabApp] 302 GET / (10.0.40.19) 0.50ms
-[I 05:00:55.271 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 05:16:57.799 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 05:27:00.087 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 05:55:03.609 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:13:06.008 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:15:07.270 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:17:09.347 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:19:11.130 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:21:12.717 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:23:16.137 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:25:17.492 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:39:19.881 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:41:21.176 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:45:23.528 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:49:26.728 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:51:28.553 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 06:53:31.766 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[W 07:12:50.066 LabApp] Notebook mnt/notebooks/market_maker_model_dev.ipynb is not trusted
-[I 07:13:04.833 LabApp] Kernel started: 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 07:13:06.114 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 07:13:34.433 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:15:21.362 LabApp] Saving file at /mnt/notebooks/market_maker_model_dev.ipynb
-[W 07:15:21.364 LabApp] Notebook mnt/notebooks/market_maker_model_dev.ipynb is not trusted
-[I 07:17:25.354 LabApp] Kernel interrupted: b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 07:17:36.023 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:19:37.483 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:21:40.928 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:23:24.260 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:25:27.201 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:27:29.542 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:29:31.545 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:35:32.515 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:37:34.808 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 07:41:44.345 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 07:41:44.345 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 07:41:46.613 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 07:41:46.613 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 07:41:46.936 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 07:41:46.936 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[W 07:44:16.614 LabApp] WebSocket ping timeout after 119529 ms.
-[W 07:44:16.937 LabApp] WebSocket ping timeout after 119844 ms.
-[I 07:44:21.618 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 07:44:21.939 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 07:52:58.278 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 07:52:58.279 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 07:52:58.967 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 07:52:58.968 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[W 07:54:28.282 LabApp] WebSocket ping timeout after 90003 ms.
-[W 07:54:28.969 LabApp] WebSocket ping timeout after 90001 ms.
-[I 07:54:33.285 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 07:54:33.971 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 08:12:40.449 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 08:12:40.450 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 08:12:40.993 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 08:12:40.994 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[W 08:14:10.451 LabApp] WebSocket ping timeout after 90000 ms.
-[W 08:14:10.995 LabApp] WebSocket ping timeout after 90000 ms.
-[I 08:14:15.454 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 08:14:15.996 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 08:46:10.596 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 08:46:10.597 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 08:46:10.597 LabApp] Replaying 2 buffered messages
-[I 08:46:11.447 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 08:46:11.448 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 08:47:06.167 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 08:55:12.169 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 09:33:31.255 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 10:11:48.746 LabApp] 302 GET / (10.0.40.19) 0.51ms
-[I 10:11:50.232 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 10:15:52.652 LabApp] 302 GET / (10.0.254.176) 0.49ms
-[I 10:15:54.960 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 10:19:58.878 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 10:22:03.676 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 10:26:07.687 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 12:39:00.407 LabApp] 302 GET / (10.0.194.105) 0.49ms
-[I 12:39:02.531 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 14:45:06.704 LabApp] 302 GET / (10.0.194.105) 0.50ms
-[I 14:47:36.456 LabApp] 302 GET / (10.0.40.19) 0.48ms
-[I 14:47:54.059 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 14:53:55.540 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 14:54:34.038 LabApp] 302 GET / (10.0.254.176) 0.50ms
-[I 14:54:44.482 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[I 14:55:23.104 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
-[W 15:01:20.571 LabApp] Notebook mnt/notebooks/eda_notebooks/binance_data_exploration.ipynb is not trusted
-[I 15:01:24.703 LabApp] Kernel started: f949002a-966b-4e7f-80b8-1440a2fb438d
-[I 15:01:26.024 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
-[I 15:03:26.199 LabApp] Saving file at /mnt/notebooks/eda_notebooks/binance_data_exploration.ipynb
-[W 15:03:26.201 LabApp] Notebook mnt/notebooks/eda_notebooks/binance_data_exploration.ipynb is not trusted
-[I 19:42:16.697 LabApp] 302 GET / (10.0.40.19) 0.50ms
-[I 19:42:17.048 LabApp] 302 GET / (10.0.254.176) 0.47ms
-[I 19:42:17.419 LabApp] 302 GET / (10.0.194.105) 0.48ms
-[I 19:49:27.768 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 19:49:27.768 LabApp] Starting buffering for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
-[I 19:49:27.768 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 19:49:30.043 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
-[I 19:49:30.043 LabApp] Restoring connection for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
-[I 19:49:30.403 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 19:49:30.404 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 19:49:30.764 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 19:49:30.765 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[W 19:52:00.045 LabApp] WebSocket ping timeout after 119897 ms.
-[W 19:52:00.404 LabApp] WebSocket ping timeout after 119898 ms.
-[W 19:52:00.766 LabApp] WebSocket ping timeout after 119899 ms.
-[I 19:52:05.047 LabApp] Starting buffering for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
-[I 19:52:05.406 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 19:52:05.768 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 01:21:35.292 LabApp] 302 GET / (10.0.254.176) 0.50ms
-[I 01:21:35.301 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
-[I 01:21:35.302 LabApp] Restoring connection for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
-[I 01:21:38.145 LabApp] 302 GET / (10.0.194.105) 0.51ms
-[I 01:21:38.154 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 01:21:38.155 LabApp] Restoring connection for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 01:21:40.353 LabApp] 302 GET / (10.0.40.19) 0.50ms
-[I 01:21:40.361 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 01:21:40.362 LabApp] Restoring connection for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[I 01:21:40.362 LabApp] Replaying 6 buffered messages
-[I 01:24:32.922 LabApp] 302 GET / (10.0.194.105) 0.52ms
-[I 01:24:33.159 LabApp] 302 GET / (10.0.194.105) 0.51ms
-[I 01:24:35.266 LabApp] Starting buffering for f949002a-966b-4e7f-80b8-1440a2fb438d:9827bd19-c945-4468-8407-e40ff6f35167
-[I 01:24:35.266 LabApp] Starting buffering for 32ee95c2-c93f-4a08-a5df-6917b6636e02:7d44d971-5c55-4725-b245-43df27d9bc28
-[I 01:24:35.267 LabApp] Starting buffering for b52ac76c-142e-4b81-948a-8718d769a5c6:e3bf8d9c-7f98-468e-9409-829a4a596f8c
-[W 01:24:40.012 LabApp] The extension "jupyterlab-server-proxy" is outdated.
-    
-[I 01:24:40.205 LabApp] Build is up to date
-[W 01:24:40.835 LabApp] Notebook mnt/notebooks/market_maker_model_dev.ipynb is not trusted
-[W 01:24:41.011 LabApp] Notebook mnt/notebooks/eda_notebooks/binance_data_exploration.ipynb is not trusted
-[I 01:24:43.875 LabApp] Adapting to protocol v5.1 for kernel b52ac76c-142e-4b81-948a-8718d769a5c6
-[I 01:24:44.210 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
-[I 01:24:44.530 LabApp] Adapting to protocol v5.1 for kernel 32ee95c2-c93f-4a08-a5df-6917b6636e02
-[I 01:24:49.901 LabApp] Adapting to protocol v5.1 for kernel f949002a-966b-4e7f-80b8-1440a2fb438d
-[I 01:25:09.452 LabApp] Saving file at /mnt/notebooks/feature_evaluation.ipynb
+From data collection to prediction, 75 seconds have elapsed
+Last timestamp in scoring data: 1581610620 compared to current timestamp: 1581610698.8478334 with 78.84779381752014 diff
+From data collection to prediction, 72 seconds have elapsed
+Last timestamp in scoring data: 1581613680 compared to current timestamp: 1581613787.7313669 with 107.73132967948914 diff
+From data collection to prediction, 71 seconds have elapsed
+Last timestamp in scoring data: 1581616860 compared to current timestamp: 1581616936.1980593 with 76.19802403450012 diff
+From data collection to prediction, 183 seconds have elapsed
+Last timestamp in scoring data: 1581621960 compared to current timestamp: 1581622200.877402 with 240.87735676765442 diff
+From data collection to prediction, 179 seconds have elapsed
+Last timestamp in scoring data: 1581628440 compared to current timestamp: 1581628678.4602814 with 238.4602439403534 diff
+From data collection to prediction, 33 seconds have elapsed
+Last timestamp in scoring data: 1581634200 compared to current timestamp: 1581634273.93861 with 73.93857336044312 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581635940 compared to current timestamp: 1581635993.726173 with 53.72613596916199 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581637620 compared to current timestamp: 1581637677.972153 with 57.97211766242981 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581639300 compared to current timestamp: 1581639351.0475488 with 51.0475127696991 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581640980 compared to current timestamp: 1581641025.4728587 with 45.472824811935425 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581642660 compared to current timestamp: 1581642705.2325513 with 45.23251271247864 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581644340 compared to current timestamp: 1581644379.886017 with 39.88597011566162 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581646020 compared to current timestamp: 1581646052.6867304 with 32.68669390678406 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581647640 compared to current timestamp: 1581647719.773569 with 79.77353405952454 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581649320 compared to current timestamp: 1581649386.3795333 with 66.37949514389038 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581651000 compared to current timestamp: 1581651052.2600052 with 52.259968757629395 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581652680 compared to current timestamp: 1581652714.9524472 with 34.9524130821228 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581654300 compared to current timestamp: 1581654378.6613343 with 78.66129851341248 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581655980 compared to current timestamp: 1581656041.4337258 with 61.433690309524536 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581657660 compared to current timestamp: 1581657704.2061207 with 44.20608377456665 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581659340 compared to current timestamp: 1581659364.8934724 with 24.893437385559082 diff
+From data collection to prediction, 23 seconds have elapsed
+Last timestamp in scoring data: 1581660960 compared to current timestamp: 1581661027.1527832 with 67.1527488231659 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581662640 compared to current timestamp: 1581662689.6143122 with 49.614277839660645 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581664320 compared to current timestamp: 1581664352.2833016 with 32.28326487541199 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581665940 compared to current timestamp: 1581666013.3455951 with 73.3455605506897 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581667620 compared to current timestamp: 1581667675.446473 with 55.446439266204834 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581669300 compared to current timestamp: 1581669337.4197755 with 37.419742822647095 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581670920 compared to current timestamp: 1581670998.3038259 with 78.30379295349121 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581672600 compared to current timestamp: 1581672659.8961554 with 59.89612174034119 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581674280 compared to current timestamp: 1581674323.4186406 with 43.41860747337341 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581675960 compared to current timestamp: 1581675990.2786636 with 30.278628826141357 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581677580 compared to current timestamp: 1581677657.2453785 with 77.2453465461731 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581679260 compared to current timestamp: 1581679320.7397647 with 60.73971891403198 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581680940 compared to current timestamp: 1581680987.6266143 with 47.626580238342285 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581682620 compared to current timestamp: 1581682652.4188142 with 32.4187798500061 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581684240 compared to current timestamp: 1581684320.3327324 with 80.3327009677887 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581685920 compared to current timestamp: 1581685991.6190035 with 71.61897134780884 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581687600 compared to current timestamp: 1581687660.8175287 with 60.8174946308136 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581689280 compared to current timestamp: 1581689333.86062 with 53.860570192337036 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581690960 compared to current timestamp: 1581691018.0503714 with 58.05033755302429 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581692640 compared to current timestamp: 1581692702.8730884 with 62.87305450439453 diff
+From data collection to prediction, 23 seconds have elapsed
+Last timestamp in scoring data: 1581694320 compared to current timestamp: 1581694393.4862099 with 73.48617506027222 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581696000 compared to current timestamp: 1581696074.5954082 with 74.59537434577942 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581697680 compared to current timestamp: 1581697750.4572158 with 70.45718145370483 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581699360 compared to current timestamp: 1581699424.2285788 with 64.22854399681091 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581701040 compared to current timestamp: 1581701092.7353165 with 52.73528242111206 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581702720 compared to current timestamp: 1581702759.9171615 with 39.91712808609009 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581704400 compared to current timestamp: 1581704431.1422052 with 31.142168045043945 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581706020 compared to current timestamp: 1581706101.5134459 with 81.51341152191162 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581707700 compared to current timestamp: 1581707780.6959486 with 80.69591307640076 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581709380 compared to current timestamp: 1581709458.5053554 with 78.50532150268555 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581711060 compared to current timestamp: 1581711125.5137541 with 65.51371884346008 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581712740 compared to current timestamp: 1581712793.7992423 with 53.799206495285034 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581714420 compared to current timestamp: 1581714457.2608566 with 37.260823011398315 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581716040 compared to current timestamp: 1581716119.2900114 with 79.28997468948364 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581717720 compared to current timestamp: 1581717780.6819706 with 60.68193793296814 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581719400 compared to current timestamp: 1581719433.5407214 with 33.5406858921051 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581721020 compared to current timestamp: 1581721085.84983 with 65.84979391098022 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581722700 compared to current timestamp: 1581722739.0420802 with 39.042043685913086 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581724320 compared to current timestamp: 1581724390.7859914 with 70.78595519065857 diff
+From data collection to prediction, 23 seconds have elapsed
+Last timestamp in scoring data: 1581726000 compared to current timestamp: 1581726044.4525204 with 44.45248460769653 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581727620 compared to current timestamp: 1581727697.8993993 with 77.89936327934265 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581729300 compared to current timestamp: 1581729348.946632 with 48.9465970993042 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581730920 compared to current timestamp: 1581730998.8471758 with 78.84714031219482 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581732600 compared to current timestamp: 1581732652.3765836 with 52.37654709815979 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581734280 compared to current timestamp: 1581734302.4652095 with 22.46517539024353 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581735900 compared to current timestamp: 1581735954.773355 with 54.773319721221924 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581737580 compared to current timestamp: 1581737602.183367 with 22.18333077430725 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581739200 compared to current timestamp: 1581739251.7555673 with 51.755531311035156 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581740880 compared to current timestamp: 1581740902.8507445 with 22.850708723068237 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581742500 compared to current timestamp: 1581742552.6725473 with 52.6725115776062 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581744180 compared to current timestamp: 1581744204.5112476 with 24.51121234893799 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581745800 compared to current timestamp: 1581745855.9716437 with 55.97160840034485 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581747480 compared to current timestamp: 1581747507.420539 with 27.420504570007324 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581749100 compared to current timestamp: 1581749162.6567442 with 62.65670990943909 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581750780 compared to current timestamp: 1581750812.3933034 with 32.39326739311218 diff
+From data collection to prediction, 23 seconds have elapsed
+Last timestamp in scoring data: 1581752400 compared to current timestamp: 1581752461.1212015 with 61.12116456031799 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581754080 compared to current timestamp: 1581754107.5310738 with 27.531038999557495 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581755700 compared to current timestamp: 1581755756.5482957 with 56.548261404037476 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581757380 compared to current timestamp: 1581757402.5583334 with 22.55829906463623 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581759000 compared to current timestamp: 1581759052.3355198 with 52.33548545837402 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581760680 compared to current timestamp: 1581760702.1773124 with 22.177279710769653 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581762300 compared to current timestamp: 1581762349.5380194 with 49.53798723220825 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581763920 compared to current timestamp: 1581763997.2620559 with 77.26202273368835 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581765600 compared to current timestamp: 1581765644.687977 with 44.68794250488281 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581767220 compared to current timestamp: 1581767292.2021122 with 72.20208048820496 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581768900 compared to current timestamp: 1581768944.3198369 with 44.31980276107788 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581770520 compared to current timestamp: 1581770592.5997927 with 72.59975838661194 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581772200 compared to current timestamp: 1581772242.6655529 with 42.6655216217041 diff
+From data collection to prediction, 22 seconds have elapsed
+Last timestamp in scoring data: 1581773820 compared to current timestamp: 1581773894.1771784 with 74.17714548110962 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581775500 compared to current timestamp: 1581775543.7220578 with 43.72202444076538 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581777120 compared to current timestamp: 1581777194.4053638 with 74.40532922744751 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581778800 compared to current timestamp: 1581778844.2290819 with 44.229048013687134 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581780420 compared to current timestamp: 1581780497.2337017 with 77.23365902900696 diff
+From data collection to prediction, 21 seconds have elapsed
+Last timestamp in scoring data: 1581782100 compared to current timestamp: 1581782152.0382469 with 52.038212060928345 diff
+/mnt/src/lib/market_maker_scoring.py:412: FutureWarning: `item` has been deprecated and will be removed in a future version
+  target_price = float(all_tickers_df.loc[all_tickers_df['symbol'] == target_coin, 'price'].item())
+2020-02-15 15:57:41
+Buying 0.17223 btcusdt with predicted 6 min return of: 0.21642045002800805
+Buy info: {'symbol': 'BTCUSDT', 'orderId': 1189532172, 'orderListId': -1, 'clientOrderId': 's9CH1eth4vI5FPdmbE0REk', 'transactTime': 1581782262275, 'price': '0.00000000', 'origQty': '0.17223000', 'executedQty': '0.17223000', 'cummulativeQuoteQty': '1717.45284874', 'status': 'FILLED', 'timeInForce': 'GTC', 'type': 'MARKET', 'side': 'BUY', 'fills': [{'price': '9970.91000000', 'qty': '0.08973900', 'commission': '0.02650011', 'commissionAsset': 'BNB', 'tradeId': 246372681}, {'price': '9972.88000000', 'qty': '0.03127400', 'commission': '0.00923399', 'commissionAsset': 'BNB', 'tradeId': 246372682}, {'price': '9972.89000000', 'qty': '0.05121700', 'commission': '0.01512520', 'commissionAsset': 'BNB', 'tradeId': 246372683}]}
+Sell info: {'symbol': 'BTCUSDT', 'orderId': 1189578044, 'orderListId': -1, 'clientOrderId': 'JwnIryZJhZJ24TXfiLOhwX', 'transactTime': 1581782580641, 'price': '0.00000000', 'origQty': '0.17223000', 'executedQty': '0.17223000', 'cummulativeQuoteQty': '1723.58828040', 'status': 'FILLED', 'timeInForce': 'GTC', 'type': 'MARKET', 'side': 'SELL', 'fills': [{'price': '10007.48000000', 'qty': '0.17223000', 'commission': '0.05092837', 'commissionAsset': 'BNB', 'tradeId': 246383414}]}
+Traceback (most recent call last):
+  File "src/the_logic/market_maker_trader.py", line 106, in <module>
+    main()
+  File "src/the_logic/market_maker_trader.py", line 31, in main
+    logic(iter_)
+  File "src/the_logic/market_maker_trader.py", line 38, in logic
+    mm_scoring = market_maker_scoring.BinanceScoring()
+  File "/mnt/src/lib/market_maker_scoring.py", line 218, in __init__
+    self.bnb_client = BinanceScoring.binance_client()
+  File "/mnt/src/lib/market_maker_scoring.py", line 544, in binance_client
+    return Client(key, value)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 97, in __init__
+    self.ping()
+  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 378, in ping
+    return self._get('ping')
+  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 222, in _get
+    return self._request_api('get', path, signed, version, **kwargs)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 191, in _request_api
+    return self._request(method, uri, signed, **kwargs)
+  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 186, in _request
+    return self._handle_response()
+  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 215, in _handle_response
+    raise BinanceAPIException(self.response)
+binance.exceptions.BinanceAPIException: APIError(code=0): Invalid JSON error message from Binance: <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+Failed with exit code: 1

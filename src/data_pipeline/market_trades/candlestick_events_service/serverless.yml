@@ -1,4 +1,4 @@
-service: orderbook-events-service 
+service: candlestick-events-service 
 
 provider:
   name: aws
@@ -10,9 +10,8 @@ provider:
 
 package:
   include:
-    - binance_orderbook_events.py
-    - cobinhood_orderbook_events.py
-    - orderbook_features.py
+    - binance_candlestick_events.py
+    - candlestick_features.py
   exclude:
     - requirements.txt
     - serverless.yml
@@ -21,26 +20,26 @@ package:
     - node_modules/**
 
 functions:         
-  binance-events:
+  binance-candlestick-events:
     role: arn:aws:iam::309597787617:role/lambda_basic_execution
-    handler: binance_orderbook_events.main
+    handler: binance_candlestick_events.main
     events:
       - schedule:
-          name: binance-orderbook-scheduler
+          name: binance-candlestick-scheduler
           description: 'binance raw events schedule'
           rate: rate(1 minute)
           enabled: true
-    onError: arn:aws:sns:us-east-1:309597787617:orderbook_pipeline_notifications
+    onError: arn:aws:sns:us-east-1:309597787617:candlestick_pipeline_notifications
     timeout: 60
-  orderbook-features:
+  candlestick-features:
     role: arn:aws:iam::309597787617:role/lambda_basic_execution
-    handler: orderbook_features.main
+    handler: candlestick_features.main
     #reservedConcurrency: 400
     events:
       - sqs:
-          arn: arn:aws:sqs:us-east-1:309597787617:raw_orderbook_events
+          arn: arn:aws:sqs:us-east-1:309597787617:candlestick_events
           batchSize: 1
-    onError: arn:aws:sns:us-east-1:309597787617:orderbook_pipeline_notifications
+    onError: arn:aws:sns:us-east-1:309597787617:candlestick_pipeline_notifications
     timeout: 60
 
 plugins:

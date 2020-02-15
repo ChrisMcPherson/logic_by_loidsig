@@ -23,7 +23,7 @@ from (
   select trade_minute, 
          lead(trade_minute) over (order by trade_minute) as next_nr
   from binance.orderbook
-  where coin_pair = 'btceth'
+  where coin_pair = 'btcusdt'
 ) nr
 where trade_minute + 1 <> next_nr
 )
