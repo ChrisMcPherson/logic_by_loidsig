@@ -41,7 +41,7 @@ def main(event, context):
         'TUSDETH'
     )
     for coin_pair in coins:
-        json_message, unix_timestamp = get_orderbook_message(coin_pair)
+        json_message, unix_timestamp = get_candlestick_message(coin_pair)
         message_to_s3(json_message, coin_pair, unix_timestamp)
         message_to_queue(json_message)
 
