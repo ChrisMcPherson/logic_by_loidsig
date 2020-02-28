@@ -3,7 +3,6 @@ service: candlestick-events-service
 provider:
   name: aws
   runtime: python3.7
-  profile: loidsig
   region: us-east-1
   stage: prod
   memorySize: 256
@@ -44,7 +43,6 @@ functions:
 
 plugins:
   - serverless-python-requirements
-
 custom:   
   pythonRequirements:
     dockerizePip: true

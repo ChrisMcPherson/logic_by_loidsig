@@ -1,228 +1,473 @@
-From data collection to prediction, 75 seconds have elapsed
-Last timestamp in scoring data: 1581610620 compared to current timestamp: 1581610698.8478334 with 78.84779381752014 diff
-From data collection to prediction, 72 seconds have elapsed
-Last timestamp in scoring data: 1581613680 compared to current timestamp: 1581613787.7313669 with 107.73132967948914 diff
-From data collection to prediction, 71 seconds have elapsed
-Last timestamp in scoring data: 1581616860 compared to current timestamp: 1581616936.1980593 with 76.19802403450012 diff
-From data collection to prediction, 183 seconds have elapsed
-Last timestamp in scoring data: 1581621960 compared to current timestamp: 1581622200.877402 with 240.87735676765442 diff
-From data collection to prediction, 179 seconds have elapsed
-Last timestamp in scoring data: 1581628440 compared to current timestamp: 1581628678.4602814 with 238.4602439403534 diff
-From data collection to prediction, 33 seconds have elapsed
-Last timestamp in scoring data: 1581634200 compared to current timestamp: 1581634273.93861 with 73.93857336044312 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581635940 compared to current timestamp: 1581635993.726173 with 53.72613596916199 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581637620 compared to current timestamp: 1581637677.972153 with 57.97211766242981 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581639300 compared to current timestamp: 1581639351.0475488 with 51.0475127696991 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581640980 compared to current timestamp: 1581641025.4728587 with 45.472824811935425 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581642660 compared to current timestamp: 1581642705.2325513 with 45.23251271247864 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581644340 compared to current timestamp: 1581644379.886017 with 39.88597011566162 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581646020 compared to current timestamp: 1581646052.6867304 with 32.68669390678406 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581647640 compared to current timestamp: 1581647719.773569 with 79.77353405952454 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581649320 compared to current timestamp: 1581649386.3795333 with 66.37949514389038 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581651000 compared to current timestamp: 1581651052.2600052 with 52.259968757629395 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581652680 compared to current timestamp: 1581652714.9524472 with 34.9524130821228 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581654300 compared to current timestamp: 1581654378.6613343 with 78.66129851341248 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581655980 compared to current timestamp: 1581656041.4337258 with 61.433690309524536 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581657660 compared to current timestamp: 1581657704.2061207 with 44.20608377456665 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581659340 compared to current timestamp: 1581659364.8934724 with 24.893437385559082 diff
-From data collection to prediction, 23 seconds have elapsed
-Last timestamp in scoring data: 1581660960 compared to current timestamp: 1581661027.1527832 with 67.1527488231659 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581662640 compared to current timestamp: 1581662689.6143122 with 49.614277839660645 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581664320 compared to current timestamp: 1581664352.2833016 with 32.28326487541199 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581665940 compared to current timestamp: 1581666013.3455951 with 73.3455605506897 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581667620 compared to current timestamp: 1581667675.446473 with 55.446439266204834 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581669300 compared to current timestamp: 1581669337.4197755 with 37.419742822647095 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581670920 compared to current timestamp: 1581670998.3038259 with 78.30379295349121 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581672600 compared to current timestamp: 1581672659.8961554 with 59.89612174034119 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581674280 compared to current timestamp: 1581674323.4186406 with 43.41860747337341 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581675960 compared to current timestamp: 1581675990.2786636 with 30.278628826141357 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581677580 compared to current timestamp: 1581677657.2453785 with 77.2453465461731 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581679260 compared to current timestamp: 1581679320.7397647 with 60.73971891403198 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581680940 compared to current timestamp: 1581680987.6266143 with 47.626580238342285 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581682620 compared to current timestamp: 1581682652.4188142 with 32.4187798500061 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581684240 compared to current timestamp: 1581684320.3327324 with 80.3327009677887 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581685920 compared to current timestamp: 1581685991.6190035 with 71.61897134780884 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581687600 compared to current timestamp: 1581687660.8175287 with 60.8174946308136 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581689280 compared to current timestamp: 1581689333.86062 with 53.860570192337036 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581690960 compared to current timestamp: 1581691018.0503714 with 58.05033755302429 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581692640 compared to current timestamp: 1581692702.8730884 with 62.87305450439453 diff
-From data collection to prediction, 23 seconds have elapsed
-Last timestamp in scoring data: 1581694320 compared to current timestamp: 1581694393.4862099 with 73.48617506027222 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581696000 compared to current timestamp: 1581696074.5954082 with 74.59537434577942 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581697680 compared to current timestamp: 1581697750.4572158 with 70.45718145370483 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581699360 compared to current timestamp: 1581699424.2285788 with 64.22854399681091 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581701040 compared to current timestamp: 1581701092.7353165 with 52.73528242111206 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581702720 compared to current timestamp: 1581702759.9171615 with 39.91712808609009 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581704400 compared to current timestamp: 1581704431.1422052 with 31.142168045043945 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581706020 compared to current timestamp: 1581706101.5134459 with 81.51341152191162 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581707700 compared to current timestamp: 1581707780.6959486 with 80.69591307640076 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581709380 compared to current timestamp: 1581709458.5053554 with 78.50532150268555 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581711060 compared to current timestamp: 1581711125.5137541 with 65.51371884346008 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581712740 compared to current timestamp: 1581712793.7992423 with 53.799206495285034 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581714420 compared to current timestamp: 1581714457.2608566 with 37.260823011398315 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581716040 compared to current timestamp: 1581716119.2900114 with 79.28997468948364 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581717720 compared to current timestamp: 1581717780.6819706 with 60.68193793296814 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581719400 compared to current timestamp: 1581719433.5407214 with 33.5406858921051 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581721020 compared to current timestamp: 1581721085.84983 with 65.84979391098022 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581722700 compared to current timestamp: 1581722739.0420802 with 39.042043685913086 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581724320 compared to current timestamp: 1581724390.7859914 with 70.78595519065857 diff
-From data collection to prediction, 23 seconds have elapsed
-Last timestamp in scoring data: 1581726000 compared to current timestamp: 1581726044.4525204 with 44.45248460769653 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581727620 compared to current timestamp: 1581727697.8993993 with 77.89936327934265 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581729300 compared to current timestamp: 1581729348.946632 with 48.9465970993042 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581730920 compared to current timestamp: 1581730998.8471758 with 78.84714031219482 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581732600 compared to current timestamp: 1581732652.3765836 with 52.37654709815979 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581734280 compared to current timestamp: 1581734302.4652095 with 22.46517539024353 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581735900 compared to current timestamp: 1581735954.773355 with 54.773319721221924 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581737580 compared to current timestamp: 1581737602.183367 with 22.18333077430725 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581739200 compared to current timestamp: 1581739251.7555673 with 51.755531311035156 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581740880 compared to current timestamp: 1581740902.8507445 with 22.850708723068237 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581742500 compared to current timestamp: 1581742552.6725473 with 52.6725115776062 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581744180 compared to current timestamp: 1581744204.5112476 with 24.51121234893799 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581745800 compared to current timestamp: 1581745855.9716437 with 55.97160840034485 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581747480 compared to current timestamp: 1581747507.420539 with 27.420504570007324 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581749100 compared to current timestamp: 1581749162.6567442 with 62.65670990943909 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581750780 compared to current timestamp: 1581750812.3933034 with 32.39326739311218 diff
-From data collection to prediction, 23 seconds have elapsed
-Last timestamp in scoring data: 1581752400 compared to current timestamp: 1581752461.1212015 with 61.12116456031799 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581754080 compared to current timestamp: 1581754107.5310738 with 27.531038999557495 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581755700 compared to current timestamp: 1581755756.5482957 with 56.548261404037476 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581757380 compared to current timestamp: 1581757402.5583334 with 22.55829906463623 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581759000 compared to current timestamp: 1581759052.3355198 with 52.33548545837402 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581760680 compared to current timestamp: 1581760702.1773124 with 22.177279710769653 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581762300 compared to current timestamp: 1581762349.5380194 with 49.53798723220825 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581763920 compared to current timestamp: 1581763997.2620559 with 77.26202273368835 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581765600 compared to current timestamp: 1581765644.687977 with 44.68794250488281 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581767220 compared to current timestamp: 1581767292.2021122 with 72.20208048820496 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581768900 compared to current timestamp: 1581768944.3198369 with 44.31980276107788 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581770520 compared to current timestamp: 1581770592.5997927 with 72.59975838661194 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581772200 compared to current timestamp: 1581772242.6655529 with 42.6655216217041 diff
-From data collection to prediction, 22 seconds have elapsed
-Last timestamp in scoring data: 1581773820 compared to current timestamp: 1581773894.1771784 with 74.17714548110962 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581775500 compared to current timestamp: 1581775543.7220578 with 43.72202444076538 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581777120 compared to current timestamp: 1581777194.4053638 with 74.40532922744751 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581778800 compared to current timestamp: 1581778844.2290819 with 44.229048013687134 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581780420 compared to current timestamp: 1581780497.2337017 with 77.23365902900696 diff
-From data collection to prediction, 21 seconds have elapsed
-Last timestamp in scoring data: 1581782100 compared to current timestamp: 1581782152.0382469 with 52.038212060928345 diff
-/mnt/src/lib/market_maker_scoring.py:412: FutureWarning: `item` has been deprecated and will be removed in a future version
-  target_price = float(all_tickers_df.loc[all_tickers_df['symbol'] == target_coin, 'price'].item())
-2020-02-15 15:57:41
-Buying 0.17223 btcusdt with predicted 6 min return of: 0.21642045002800805
-Buy info: {'symbol': 'BTCUSDT', 'orderId': 1189532172, 'orderListId': -1, 'clientOrderId': 's9CH1eth4vI5FPdmbE0REk', 'transactTime': 1581782262275, 'price': '0.00000000', 'origQty': '0.17223000', 'executedQty': '0.17223000', 'cummulativeQuoteQty': '1717.45284874', 'status': 'FILLED', 'timeInForce': 'GTC', 'type': 'MARKET', 'side': 'BUY', 'fills': [{'price': '9970.91000000', 'qty': '0.08973900', 'commission': '0.02650011', 'commissionAsset': 'BNB', 'tradeId': 246372681}, {'price': '9972.88000000', 'qty': '0.03127400', 'commission': '0.00923399', 'commissionAsset': 'BNB', 'tradeId': 246372682}, {'price': '9972.89000000', 'qty': '0.05121700', 'commission': '0.01512520', 'commissionAsset': 'BNB', 'tradeId': 246372683}]}
-Sell info: {'symbol': 'BTCUSDT', 'orderId': 1189578044, 'orderListId': -1, 'clientOrderId': 'JwnIryZJhZJ24TXfiLOhwX', 'transactTime': 1581782580641, 'price': '0.00000000', 'origQty': '0.17223000', 'executedQty': '0.17223000', 'cummulativeQuoteQty': '1723.58828040', 'status': 'FILLED', 'timeInForce': 'GTC', 'type': 'MARKET', 'side': 'SELL', 'fills': [{'price': '10007.48000000', 'qty': '0.17223000', 'commission': '0.05092837', 'commissionAsset': 'BNB', 'tradeId': 246383414}]}
-Traceback (most recent call last):
-  File "src/the_logic/market_maker_trader.py", line 106, in <module>
-    main()
-  File "src/the_logic/market_maker_trader.py", line 31, in main
-    logic(iter_)
-  File "src/the_logic/market_maker_trader.py", line 38, in logic
-    mm_scoring = market_maker_scoring.BinanceScoring()
-  File "/mnt/src/lib/market_maker_scoring.py", line 218, in __init__
-    self.bnb_client = BinanceScoring.binance_client()
-  File "/mnt/src/lib/market_maker_scoring.py", line 544, in binance_client
-    return Client(key, value)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 97, in __init__
-    self.ping()
-  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 378, in ping
-    return self._get('ping')
-  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 222, in _get
-    return self._request_api('get', path, signed, version, **kwargs)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 191, in _request_api
-    return self._request(method, uri, signed, **kwargs)
-  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 186, in _request
-    return self._handle_response()
-  File "/usr/local/anaconda/lib/python3.6/site-packages/binance/client.py", line 215, in _handle_response
-    raise BinanceAPIException(self.response)
-binance.exceptions.BinanceAPIException: APIError(code=0): Invalid JSON error message from Binance: <html>
-<head><title>502 Bad Gateway</title></head>
-<body>
-<center><h1>502 Bad Gateway</h1></center>
-<hr><center>nginx</center>
-</body>
-</html>
-
-Failed with exit code: 1
+4710 keys to replay
+Files processed: 10 in 16.654810309410095 Minutes
+Files processed: 20 in 16.506907884279887 Minutes
+Files processed: 30 in 16.482860362529756 Minutes
+Files processed: 40 in 16.468733008702596 Minutes
+Files processed: 50 in 16.423553927739462 Minutes
+Files processed: 60 in 16.445922231674196 Minutes
+Files processed: 70 in 16.474395755926768 Minutes
+Files processed: 80 in 17.923900552590688 Minutes
+Files processed: 90 in 16.424798516432443 Minutes
+Files processed: 100 in 16.571868360042572 Minutes
+Files processed: 110 in 16.448107647895814 Minutes
+Files processed: 120 in 16.419565510749816 Minutes
+Files processed: 130 in 17.670734167099 Minutes
+Files processed: 140 in 16.442848789691926 Minutes
+Files processed: 150 in 15.946334838867188 Minutes
+Files processed: 160 in 16.436163838704427 Minutes
+Files processed: 170 in 16.428089980284373 Minutes
+Files processed: 180 in 16.440316637357075 Minutes
+Files processed: 190 in 16.432491898536682 Minutes
+Files processed: 200 in 15.949654730161031 Minutes
+Files processed: 210 in 16.327059213320414 Minutes
+Files processed: 220 in 16.915713290373485 Minutes
+Files processed: 230 in 16.439872229099272 Minutes
+Files processed: 240 in 16.418272542953492 Minutes
+Files processed: 250 in 16.46519898970922 Minutes
+Files processed: 260 in 16.441401394208274 Minutes
+Files processed: 270 in 16.444720963637035 Minutes
+Files processed: 280 in 16.433004367351533 Minutes
+Files processed: 290 in 16.666295099258424 Minutes
+Files processed: 300 in 16.21115167538325 Minutes
+Files processed: 310 in 16.41306068897247 Minutes
+Files processed: 320 in 16.42138121922811 Minutes
+Files processed: 330 in 16.28999069929123 Minutes
+Files processed: 340 in 16.430638635158537 Minutes
+Files processed: 350 in 17.7705353697141 Minutes
+Files processed: 360 in 16.424874675273895 Minutes
+Files processed: 370 in 16.42863014539083 Minutes
+Files processed: 380 in 16.291294074058534 Minutes
+Files processed: 390 in 16.448140744368235 Minutes
+Files processed: 400 in 16.427494899431863 Minutes
+Files processed: 410 in 15.765591808160146 Minutes
+Files processed: 420 in 15.758889738718668 Minutes
+Files processed: 430 in 16.44339847167333 Minutes
+Files processed: 440 in 16.433319147427877 Minutes
+Files processed: 450 in 16.402993647257485 Minutes
+Files processed: 460 in 16.409834905465445 Minutes
+Files processed: 470 in 16.438942190011343 Minutes
+Files processed: 480 in 16.41002060174942 Minutes
+Files processed: 490 in 16.432506998380024 Minutes
+Files processed: 500 in 16.422028334935508 Minutes
+Files processed: 510 in 16.328533001740773 Minutes
+Files processed: 520 in 16.42459685007731 Minutes
+Files processed: 530 in 16.40688875516256 Minutes
+Files processed: 540 in 16.432745218276978 Minutes
+Files processed: 550 in 16.427571841080983 Minutes
+Files processed: 560 in 16.43948768377304 Minutes
+Files processed: 570 in 16.26958805322647 Minutes
+Files processed: 580 in 16.428559398651124 Minutes
+Files processed: 590 in 16.441844769318898 Minutes
+Files processed: 600 in 16.41860801378886 Minutes
+Files processed: 610 in 16.434007982412975 Minutes
+Files processed: 620 in 16.44426925977071 Minutes
+Files processed: 630 in 16.417136800289153 Minutes
+Files processed: 640 in 16.40122480392456 Minutes
+Files processed: 650 in 16.63263008594513 Minutes
+Files processed: 660 in 16.887521425882976 Minutes
+Files processed: 670 in 16.428154122829437 Minutes
+Files processed: 680 in 16.417736291885376 Minutes
+Files processed: 690 in 15.90123340288798 Minutes
+Files processed: 700 in 16.44383359750112 Minutes
+Files processed: 710 in 16.430178141593935 Minutes
+Files processed: 720 in 16.441883397102355 Minutes
+Files processed: 730 in 17.47116700410843 Minutes
+Files processed: 740 in 16.43620670636495 Minutes
+Files processed: 750 in 16.31224652926127 Minutes
+Files processed: 760 in 16.634234841664632 Minutes
+Files processed: 770 in 16.41929035584132 Minutes
+Files processed: 780 in 16.46970196564992 Minutes
+Files processed: 790 in 16.444399535655975 Minutes
+Files processed: 800 in 16.435569552580514 Minutes
+Files processed: 810 in 15.836606482664743 Minutes
+Files processed: 820 in 16.42771042982737 Minutes
+Files processed: 830 in 16.433430624008178 Minutes
+Files processed: 840 in 16.428827663262684 Minutes
+Files processed: 850 in 16.429864545663197 Minutes
+Files processed: 860 in 16.433295285701753 Minutes
+Files processed: 870 in 16.428323721885683 Minutes
+Files processed: 880 in 16.433965718746187 Minutes
+Files processed: 890 in 16.034227867921192 Minutes
+Files processed: 900 in 16.437028213342032 Minutes
+Files processed: 910 in 16.448067490259806 Minutes
+Files processed: 920 in 16.45867004394531 Minutes
+Files processed: 930 in 16.475104574362437 Minutes
+Files processed: 940 in 16.457053506374358 Minutes
+Files processed: 950 in 16.470768797397614 Minutes
+Files processed: 960 in 16.446765971183776 Minutes
+Files processed: 970 in 16.440350560347238 Minutes
+Files processed: 980 in 16.434020495414735 Minutes
+Files processed: 990 in 16.452265850702922 Minutes
+Files processed: 1000 in 16.371538523832957 Minutes
+Files processed: 1010 in 16.417379426956177 Minutes
+Files processed: 1020 in 16.42846231063207 Minutes
+Files processed: 1030 in 16.424091692765554 Minutes
+Files processed: 1040 in 16.424712022145588 Minutes
+Files processed: 1050 in 16.43826162815094 Minutes
+Files processed: 1060 in 16.442171025276185 Minutes
+Files processed: 1070 in 16.466388463974 Minutes
+Files processed: 1080 in 16.42577029466629 Minutes
+Files processed: 1090 in 16.44200008312861 Minutes
+Files processed: 1100 in 16.4386443456014 Minutes
+Files processed: 1110 in 16.422085285186768 Minutes
+Files processed: 1120 in 16.422226655483247 Minutes
+Files processed: 1130 in 16.44955563545227 Minutes
+Files processed: 1140 in 16.424550743897758 Minutes
+Files processed: 1150 in 16.432539141178133 Minutes
+Files processed: 1160 in 17.814056809743246 Minutes
+Files processed: 1170 in 16.430687125523885 Minutes
+Files processed: 1180 in 16.420989302794137 Minutes
+Files processed: 1190 in 16.429011897246042 Minutes
+Files processed: 1200 in 16.453771817684174 Minutes
+Files processed: 1210 in 16.45708058277766 Minutes
+Files processed: 1220 in 16.45081491867701 Minutes
+Files processed: 1230 in 16.30784475406011 Minutes
+Files processed: 1240 in 16.440885694821677 Minutes
+Files processed: 1250 in 16.43342469930649 Minutes
+Files processed: 1260 in 16.460473310947418 Minutes
+Files processed: 1270 in 16.443609058856964 Minutes
+Files processed: 1280 in 16.44901116291682 Minutes
+Files processed: 1290 in 17.63571849266688 Minutes
+Files processed: 1300 in 16.42505573431651 Minutes
+Files processed: 1310 in 16.446812331676483 Minutes
+Files processed: 1320 in 16.426184066136678 Minutes
+Files processed: 1330 in 17.4992236495018 Minutes
+Files processed: 1340 in 16.42789640824 Minutes
+Files processed: 1350 in 15.892243568102518 Minutes
+Files processed: 1360 in 16.406933681170145 Minutes
+Files processed: 1370 in 15.907225414117176 Minutes
+Files processed: 1380 in 16.415012590090434 Minutes
+Files processed: 1390 in 16.99797908862432 Minutes
+Files processed: 1400 in 16.405647162596384 Minutes
+Files processed: 1410 in 16.416848222414654 Minutes
+Files processed: 1420 in 16.400210507710774 Minutes
+Files processed: 1430 in 16.885586059093477 Minutes
+Files processed: 1440 in 16.41880850394567 Minutes
+Files processed: 1450 in 16.441047954559327 Minutes
+Files processed: 1460 in 16.427774266401926 Minutes
+Files processed: 1470 in 16.433916890621184 Minutes
+Files processed: 1480 in 16.743711042404176 Minutes
+Files processed: 1490 in 16.445423817634584 Minutes
+Files processed: 1500 in 16.428397460778555 Minutes
+Files processed: 1510 in 17.72253932158152 Minutes
+Files processed: 1520 in 16.426374093691507 Minutes
+Files processed: 1530 in 17.715527121225993 Minutes
+Files processed: 1540 in 16.41433530251185 Minutes
+Files processed: 1550 in 16.42153149843216 Minutes
+Files processed: 1560 in 16.417977019151053 Minutes
+Files processed: 1570 in 16.430838763713837 Minutes
+Files processed: 1580 in 16.42677776416143 Minutes
+Files processed: 1590 in 16.432761462529502 Minutes
+Files processed: 1600 in 17.68656982978185 Minutes
+Files processed: 1610 in 16.435411922136943 Minutes
+Files processed: 1620 in 16.323053685824075 Minutes
+Files processed: 1630 in 16.456369960308074 Minutes
+Files processed: 1640 in 16.450676278273264 Minutes
+Files processed: 1650 in 16.457075782616933 Minutes
+Files processed: 1660 in 16.472734328111013 Minutes
+Files processed: 1670 in 16.239539607365927 Minutes
+Files processed: 1680 in 14.870898600419363 Minutes
+Files processed: 1690 in 16.456001134713492 Minutes
+Files processed: 1700 in 16.463090483347575 Minutes
+Files processed: 1710 in 16.42468655904134 Minutes
+Files processed: 1720 in 16.289264742533366 Minutes
+Files processed: 1730 in 16.44235009352366 Minutes
+Files processed: 1740 in 16.456912477811176 Minutes
+Files processed: 1750 in 16.45791867574056 Minutes
+Files processed: 1760 in 16.92698251803716 Minutes
+Files processed: 1770 in 16.458395799001057 Minutes
+Files processed: 1780 in 16.449775564670563 Minutes
+Files processed: 1790 in 16.466339429219563 Minutes
+Files processed: 1800 in 16.4698255777359 Minutes
+Files processed: 1810 in 16.453648881117502 Minutes
+Files processed: 1820 in 16.48155435323715 Minutes
+Files processed: 1830 in 16.448544164498646 Minutes
+Files processed: 1840 in 16.46518018245697 Minutes
+Files processed: 1850 in 16.863397212823234 Minutes
+Files processed: 1860 in 16.177119266986846 Minutes
+Files processed: 1870 in 16.132013992468515 Minutes
+Files processed: 1880 in 16.1057728211085 Minutes
+Files processed: 1890 in 16.1253675142924 Minutes
+Files processed: 1900 in 16.080394776662192 Minutes
+Files processed: 1910 in 16.060895800590515 Minutes
+Files processed: 1920 in 16.098074642817178 Minutes
+Files processed: 1930 in 16.107960629463197 Minutes
+Files processed: 1940 in 15.543028426170348 Minutes
+Files processed: 1950 in 16.019754127661386 Minutes
+Files processed: 1960 in 15.950494062900543 Minutes
+Files processed: 1970 in 16.090737529595692 Minutes
+Files processed: 1980 in 16.10358456373215 Minutes
+Files processed: 1990 in 15.957407073179882 Minutes
+Files processed: 2000 in 16.11679021517436 Minutes
+Files processed: 2010 in 16.14081441561381 Minutes
+Files processed: 2020 in 16.10096450249354 Minutes
+Files processed: 2030 in 16.093365705013277 Minutes
+Files processed: 2040 in 16.118173269430795 Minutes
+Files processed: 2050 in 14.533162152767181 Minutes
+Files processed: 2060 in 16.08199344476064 Minutes
+Files processed: 2070 in 16.10530165831248 Minutes
+Files processed: 2080 in 16.12794749736786 Minutes
+Files processed: 2090 in 16.12503121693929 Minutes
+Files processed: 2100 in 15.642228623231253 Minutes
+Files processed: 2110 in 15.581427439053853 Minutes
+Files processed: 2120 in 16.094673105080922 Minutes
+Files processed: 2130 in 16.08121456305186 Minutes
+Files processed: 2140 in 16.08527806599935 Minutes
+Files processed: 2150 in 16.035934193929037 Minutes
+Files processed: 2160 in 16.071469565232594 Minutes
+Files processed: 2170 in 16.069152371088663 Minutes
+Files processed: 2180 in 17.43207392692566 Minutes
+Files processed: 2190 in 16.09988703727722 Minutes
+Files processed: 2200 in 16.105424074331918 Minutes
+Files processed: 2210 in 16.15140155553818 Minutes
+Files processed: 2220 in 16.36959513425827 Minutes
+Files processed: 2230 in 15.922599017620087 Minutes
+Files processed: 2240 in 16.408630172411602 Minutes
+Files processed: 2250 in 14.821547023455302 Minutes
+Files processed: 2260 in 15.716627625624339 Minutes
+Files processed: 2270 in 16.410830183823904 Minutes
+Files processed: 2280 in 16.37947449286779 Minutes
+Files processed: 2290 in 16.56876356601715 Minutes
+Files processed: 2300 in 17.083759156862893 Minutes
+Files processed: 2310 in 16.419807835419974 Minutes
+Files processed: 2320 in 16.384614976247153 Minutes
+Files processed: 2330 in 16.23038604656855 Minutes
+Files processed: 2340 in 16.3761114358902 Minutes
+Files processed: 2350 in 16.4097976009051 Minutes
+Files processed: 2360 in 16.385906744003297 Minutes
+Files processed: 2370 in 17.776494363943737 Minutes
+Files processed: 2380 in 16.386048007011414 Minutes
+Files processed: 2390 in 16.380840269724526 Minutes
+Files processed: 2400 in 16.371984724203745 Minutes
+Files processed: 2410 in 16.384510640303294 Minutes
+Files processed: 2420 in 16.165253162384033 Minutes
+Files processed: 2430 in 16.364556300640107 Minutes
+Files processed: 2440 in 16.381033543745676 Minutes
+Files processed: 2450 in 15.904038461049398 Minutes
+Files processed: 2460 in 16.25668451388677 Minutes
+Files processed: 2470 in 16.275866695245107 Minutes
+Files processed: 2480 in 16.38840831120809 Minutes
+Files processed: 2490 in 16.4250861008962 Minutes
+Files processed: 2500 in 16.48403244415919 Minutes
+Files processed: 2510 in 16.985018440087636 Minutes
+Files processed: 2520 in 16.3348521788915 Minutes
+Files processed: 2530 in 16.40447795788447 Minutes
+Files processed: 2540 in 16.40588479836782 Minutes
+Files processed: 2550 in 16.417330940564472 Minutes
+Files processed: 2560 in 15.888257443904877 Minutes
+Files processed: 2570 in 17.630977634588877 Minutes
+Files processed: 2580 in 16.435376715660095 Minutes
+Files processed: 2590 in 16.46043445666631 Minutes
+Files processed: 2600 in 16.443179134527842 Minutes
+Files processed: 2610 in 17.925062028566995 Minutes
+Files processed: 2620 in 16.98311296304067 Minutes
+Files processed: 2630 in 16.46573068300883 Minutes
+Files processed: 2640 in 16.43938519557317 Minutes
+Files processed: 2650 in 16.4514217376709 Minutes
+Files processed: 2660 in 16.460702280203503 Minutes
+Files processed: 2670 in 16.493329588572184 Minutes
+Files processed: 2680 in 16.509896302223204 Minutes
+Files processed: 2690 in 16.495508658885957 Minutes
+Files processed: 2700 in 16.485746117432914 Minutes
+Files processed: 2710 in 14.884466250737509 Minutes
+Files processed: 2720 in 16.59714683294296 Minutes
+Files processed: 2730 in 15.661214752991993 Minutes
+Files processed: 2740 in 16.364615257581075 Minutes
+Files processed: 2750 in 16.46514267126719 Minutes
+Files processed: 2760 in 16.477056479454042 Minutes
+Files processed: 2770 in 16.470004387696584 Minutes
+Files processed: 2780 in 16.266507669289908 Minutes
+Files processed: 2790 in 16.486243617534637 Minutes
+Files processed: 2800 in 15.117383249600728 Minutes
+Files processed: 2810 in 16.474711167812348 Minutes
+Files processed: 2820 in 16.461339163780213 Minutes
+Files processed: 2830 in 16.455480897426604 Minutes
+Files processed: 2840 in 16.45461791753769 Minutes
+Files processed: 2850 in 16.421290338039398 Minutes
+Files processed: 2860 in 16.680160665512084 Minutes
+Files processed: 2870 in 16.44971585671107 Minutes
+Files processed: 2880 in 15.893116243680318 Minutes
+Files processed: 2890 in 16.494300631682076 Minutes
+Files processed: 2900 in 16.487036009629566 Minutes
+Files processed: 2910 in 16.459632404645284 Minutes
+Files processed: 2920 in 16.480625009536745 Minutes
+Files processed: 2930 in 16.47111664613088 Minutes
+Files processed: 2940 in 16.44356602827708 Minutes
+Files processed: 2950 in 16.46328163544337 Minutes
+Files processed: 2960 in 16.492143392562866 Minutes
+Files processed: 2970 in 16.470314912001292 Minutes
+Files processed: 2980 in 14.885392530759175 Minutes
+Files processed: 2990 in 16.469493774573007 Minutes
+Files processed: 3000 in 16.46506699323654 Minutes
+Files processed: 3010 in 16.449728484948476 Minutes
+Files processed: 3020 in 16.443843801816303 Minutes
+Files processed: 3030 in 16.43000086545944 Minutes
+Files processed: 3040 in 16.45997697909673 Minutes
+Files processed: 3050 in 16.434722995758058 Minutes
+Files processed: 3060 in 15.629048852125804 Minutes
+Files processed: 3070 in 16.01590052843094 Minutes
+Files processed: 3080 in 17.678422033786774 Minutes
+Files processed: 3090 in 16.427681263287862 Minutes
+Files processed: 3100 in 16.27778117656708 Minutes
+Files processed: 3110 in 16.471191136042275 Minutes
+Files processed: 3120 in 17.863160773118338 Minutes
+Files processed: 3130 in 16.440378415584565 Minutes
+Files processed: 3140 in 16.42570953766505 Minutes
+Files processed: 3150 in 16.4179869055748 Minutes
+Files processed: 3160 in 16.419285790125528 Minutes
+Files processed: 3170 in 16.410054592291512 Minutes
+Files processed: 3180 in 16.46143132050832 Minutes
+Files processed: 3190 in 16.670018223921456 Minutes
+Files processed: 3200 in 16.443543513615925 Minutes
+Files processed: 3210 in 16.430139982700346 Minutes
+Files processed: 3220 in 16.657562371095022 Minutes
+Files processed: 3230 in 14.868331042925517 Minutes
+Files processed: 3240 in 16.449568084875743 Minutes
+Files processed: 3250 in 15.699059577782949 Minutes
+Files processed: 3260 in 16.46471871137619 Minutes
+Files processed: 3270 in 16.428048038482665 Minutes
+Files processed: 3280 in 16.34907213052114 Minutes
+Files processed: 3290 in 16.377998960018157 Minutes
+Files processed: 3300 in 16.44921544790268 Minutes
+Files processed: 3310 in 16.47542463541031 Minutes
+Files processed: 3320 in 16.46990075906118 Minutes
+Files processed: 3330 in 16.486709328492484 Minutes
+Files processed: 3340 in 16.492835851510367 Minutes
+Files processed: 3350 in 16.475574254989624 Minutes
+Files processed: 3360 in 16.508158338069915 Minutes
+Files processed: 3370 in 17.69502583742142 Minutes
+Files processed: 3380 in 16.479442457358044 Minutes
+Files processed: 3390 in 16.739110211531322 Minutes
+Files processed: 3400 in 16.023536543051403 Minutes
+Files processed: 3410 in 16.507600835959117 Minutes
+Files processed: 3420 in 16.487882308165233 Minutes
+Files processed: 3430 in 16.723681549231213 Minutes
+Files processed: 3440 in 16.58202573855718 Minutes
+Files processed: 3450 in 15.81944497426351 Minutes
+Files processed: 3460 in 16.510880398750306 Minutes
+Files processed: 3470 in 16.505971614519755 Minutes
+Files processed: 3480 in 16.492252719402313 Minutes
+Files processed: 3490 in 16.48027539253235 Minutes
+Files processed: 3500 in 16.481123654047646 Minutes
+Files processed: 3510 in 16.514112762610118 Minutes
+Files processed: 3520 in 14.397579010327657 Minutes
+Files processed: 3530 in 16.474782049655914 Minutes
+Files processed: 3540 in 16.496584951877594 Minutes
+Files processed: 3550 in 16.533903523286185 Minutes
+Files processed: 3560 in 16.36318099896113 Minutes
+Files processed: 3570 in 16.502205367883047 Minutes
+Files processed: 3580 in 16.679117059707643 Minutes
+Files processed: 3590 in 16.525987394650777 Minutes
+Files processed: 3600 in 14.905664535363515 Minutes
+Files processed: 3610 in 15.80417405764262 Minutes
+Files processed: 3620 in 16.51592957576116 Minutes
+Files processed: 3630 in 18.03711353937785 Minutes
+Files processed: 3640 in 16.477778176466625 Minutes
+Files processed: 3650 in 16.474570739269257 Minutes
+Files processed: 3660 in 15.813368968168895 Minutes
+Files processed: 3670 in 16.476462161540987 Minutes
+Files processed: 3680 in 15.755701009432475 Minutes
+Files processed: 3690 in 16.47585512002309 Minutes
+Files processed: 3700 in 16.447048290570578 Minutes
+Files processed: 3710 in 16.64650468826294 Minutes
+Files processed: 3720 in 16.465179121494295 Minutes
+Files processed: 3730 in 16.474168495337167 Minutes
+Files processed: 3740 in 16.455026177565255 Minutes
+Files processed: 3750 in 16.450329383214314 Minutes
+Files processed: 3760 in 16.450951941808064 Minutes
+Files processed: 3770 in 16.438818951447804 Minutes
+Files processed: 3780 in 16.486720673243205 Minutes
+Files processed: 3790 in 16.442420315742492 Minutes
+Files processed: 3800 in 16.461189687252045 Minutes
+Files processed: 3810 in 17.199389406045277 Minutes
+Files processed: 3820 in 16.429849592844644 Minutes
+Files processed: 3830 in 16.469656074047087 Minutes
+Files processed: 3840 in 16.532515505949657 Minutes
+Files processed: 3850 in 16.434935557842255 Minutes
+Files processed: 3860 in 17.682625198364256 Minutes
+Files processed: 3870 in 16.570024951299033 Minutes
+Files processed: 3880 in 16.442318117618562 Minutes
+Files processed: 3890 in 16.435159965356192 Minutes
+Files processed: 3900 in 16.444470330079398 Minutes
+Files processed: 3910 in 16.434549935658772 Minutes
+Files processed: 3920 in 16.410596402486167 Minutes
+Files processed: 3930 in 16.415514171123505 Minutes
+Files processed: 3940 in 16.416952391465504 Minutes
+Files processed: 3950 in 16.426383519172667 Minutes
+Files processed: 3960 in 15.45782796939214 Minutes
+Files processed: 3970 in 16.418660748004914 Minutes
+Files processed: 3980 in 17.145019737879434 Minutes
+Files processed: 3990 in 16.427155844370525 Minutes
+Files processed: 4000 in 16.40947007338206 Minutes
+Files processed: 4010 in 15.731785039107004 Minutes
+Files processed: 4020 in 16.4330152630806 Minutes
+Files processed: 4030 in 16.012772333621978 Minutes
+Files processed: 4040 in 16.41498545408249 Minutes
+Files processed: 4050 in 16.37143898010254 Minutes
+Files processed: 4060 in 16.426812728246052 Minutes
+Files processed: 4070 in 16.410738050937653 Minutes
+Files processed: 4080 in 16.3947492202123 Minutes
+Files processed: 4090 in 16.413725503285725 Minutes
+Files processed: 4100 in 16.41974525054296 Minutes
+Files processed: 4110 in 16.40495902299881 Minutes
+Files processed: 4120 in 16.371107562383017 Minutes
+Files processed: 4130 in 16.412560987472535 Minutes
+Files processed: 4140 in 16.402681704362234 Minutes
+Files processed: 4150 in 16.461009057362876 Minutes
+Files processed: 4160 in 16.420447357495625 Minutes
+Files processed: 4170 in 16.02548611164093 Minutes
+Files processed: 4180 in 16.375564320882162 Minutes
+Files processed: 4190 in 16.42725735505422 Minutes
+Files processed: 4200 in 16.45324378013611 Minutes
+Files processed: 4210 in 16.450316794713338 Minutes
+Files processed: 4220 in 17.702010508378347 Minutes
+Files processed: 4230 in 16.44193302790324 Minutes
+Files processed: 4240 in 16.465026851495107 Minutes
+Files processed: 4250 in 16.456232118606568 Minutes
+Files processed: 4260 in 16.41768725713094 Minutes
+Files processed: 4270 in 16.446820827325187 Minutes
+Files processed: 4280 in 15.999020195007324 Minutes
+Files processed: 4290 in 16.497524865468343 Minutes
+Files processed: 4300 in 17.723622298240663 Minutes
+Files processed: 4310 in 16.481274608771006 Minutes
+Files processed: 4320 in 16.464192656675973 Minutes
+Files processed: 4330 in 16.213876175880433 Minutes
+Files processed: 4340 in 16.468127512931822 Minutes
+Files processed: 4350 in 16.488100771109263 Minutes
+Files processed: 4360 in 17.68919312953949 Minutes
+Files processed: 4370 in 16.48801035483678 Minutes
+Files processed: 4380 in 16.506607806682588 Minutes
+Files processed: 4390 in 16.51473995844523 Minutes
+Files processed: 4400 in 16.4869463801384 Minutes
+Files processed: 4410 in 16.49739590485891 Minutes
+Files processed: 4420 in 16.475038945674896 Minutes
+Files processed: 4430 in 16.48732165892919 Minutes
+Files processed: 4440 in 16.339373087882997 Minutes
+Files processed: 4450 in 16.505611336231233 Minutes
+Files processed: 4460 in 16.44068407615026 Minutes
+Files processed: 4470 in 16.48424611091614 Minutes
+Files processed: 4480 in 15.085186489423116 Minutes
+Files processed: 4490 in 16.486382246017456 Minutes
+Files processed: 4500 in 17.54543141523997 Minutes
+Files processed: 4510 in 16.464365804195403 Minutes
+Files processed: 4520 in 16.439065980911256 Minutes
+Files processed: 4530 in 16.49763220945994 Minutes
+Files processed: 4540 in 16.32927062511444 Minutes
+Files processed: 4550 in 17.88858212629954 Minutes
+Files processed: 4560 in 16.459643777211507 Minutes
+Files processed: 4570 in 16.454063630104066 Minutes
+Files processed: 4580 in 16.454054288069408 Minutes
+Files processed: 4590 in 16.451831539471943 Minutes
+Files processed: 4600 in 16.45503351291021 Minutes
+Files processed: 4610 in 16.370703466733296 Minutes
+Files processed: 4620 in 16.431755455334983 Minutes
+Files processed: 4630 in 16.4358944217364 Minutes
+Files processed: 4640 in 16.46738707224528 Minutes
+Files processed: 4650 in 16.45916744073232 Minutes
+Files processed: 4660 in 16.44215732018153 Minutes
+Files processed: 4670 in 16.27226254542669 Minutes
+Files processed: 4680 in 16.451645354429882 Minutes
+Files processed: 4690 in 16.30354848305384 Minutes
+Files processed: 4700 in 16.414216748873393 Minutes
+Files processed: 4710 in 16.445645129680635 Minutes
+Processed 4710 messages.

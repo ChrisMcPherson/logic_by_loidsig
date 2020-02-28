@@ -22,81 +22,39 @@ def main(event, context):
     exchange = candlestick_json['exchange']
     coin_pair = candlestick_json['coin_pair']
     data_call_unix_timestamp = candlestick_json['data_call_unix_timestamp']
+    file_name = f"binance/candlesticks/{coin_pair}/{data_call_unix_timestamp}.json"
     print(f"File (data call) timestamp: {data_call_unix_timestamp}")
     print(f"File coin pair: {coin_pair}")
 
-    df = pd.DataFrame(candlestick_list, columns=['open_timestamp','open','high','low','close','volume','close_timestamp',
+    df = pd.DataFrame(candlestick_json['candlesticks'], columns=['open_timestamp','open','high','low','close','volume','close_timestamp',
                                         'quote_asset_volume', 'trade_count', 'taker_buy_base_asset_volume',
                                         'taker_buy_quote_asset_volume','ignore'])
-    # Timestamp cleaning
-    df['open_timestamp_trim'] = df['open_timestamp']/1000
-    df['close_timestamp_trim'] = df['close_timestamp']/1000
-    df['open_datetime'] = pd.to_datetime(df['open_timestamp_trim'], unit='s')
-    df['close_datetime'] = pd.to_datetime(df['close_timestamp_trim'], unit='s')
-    df['coin'] = coin
-    df.drop(['close_timestamp_trim','close_timestamp_trim'], axis=1, inplace=True)
+    # df cleaning
+    df['open_timestamp'] = df['open_timestamp']/1000
+    df['close_timestamp'] = df['close_timestamp']/1000
+    df['open_datetime'] = pd.to_datetime(df['open_timestamp'], unit='s')
+    df['close_datetime'] = pd.to_datetime(df['close_timestamp'], unit='s')
+    df['coin_pair'] = coin_pair
+    df['file_name'] = file_name
+    df['trade_minute'] = df['open_timestamp'] / 60
+    df['open_timestamp'] = df['open_timestamp'].astype(int)
+    df['close_timestamp'] = df['close_timestamp'].astype(int)
+    df['trade_minute'] = df['trade_minute'].astype(int)
+    df['open'] = df['open'].astype(float)
+    df['high'] = df['high'].astype(float)
+    df['low'] = df['low'].astype(float)
+    df['close'] = df['close'].astype(float)
+    df['volume'] = df['volume'].astype(float)
+    df['quote_asset_volume'] = df['quote_asset_volume'].astype(float)
+    df['taker_buy_base_asset_volume'] = df['taker_buy_base_asset_volume'].astype(float)
+    df['taker_buy_quote_asset_volume'] = df['taker_buy_quote_asset_volume'].astype(float)
+    df['taker_sell_base_asset_volume'] = df['volume'] - df['taker_buy_base_asset_volume']
+    df['taker_sell_quote_asset_volume'] = df['quote_asset_volume'] - df['taker_buy_quote_asset_volume']
+    df['taker_sell_volume_percentage'] = df['taker_sell_base_asset_volume'] / df['volume']
+    df['taker_buy_volume_percentage'] = df['taker_buy_base_asset_volume'] / df['volume']
     
-    
-    s3_key = s3_key_list[0]
-    # get from s3 into df
-    #s3://loidsig-crypto/binance/historic_candledicks/bnbusdt/2018-01-01.csv
-    f = loidsig_fs.open(f's3://{s3_bucket}/{s3_key}', "r")
-    candledick_df = pd.read_csv(f)
-    # transforms
-    candledick_df['coin_pair'] = candledick_df['coin'].str.lower()
-    candledick_df['open_timestamp'] = candledick_df['open_timestamp'] / 1000
-    candledick_df['close_timestamp'] = candledick_df['close_timestamp'] / 1000
-    candledick_df['trade_minute'] = candledick_df['open_timestamp'] / 60
-    candledick_df['open_timestamp'] = candledick_df['open_timestamp'].astype(int)
-    candledick_df['close_timestamp'] = candledick_df['close_timestamp'].astype(int)
-    candledick_df['trade_minute'] = candledick_df['trade_minute'].astype(int)
-    candledick_df['taker_sell_base_asset_volume'] = candledick_df['volume'] - candledick_df['taker_buy_base_asset_volume']
-    candledick_df['taker_sell_quote_asset_volume'] = candledick_df['quote_asset_volume'] - candledick_df['taker_buy_quote_asset_volume']
-    candledick_df['taker_sell_volume_percentage'] = candledick_df['taker_sell_base_asset_volume'] / candledick_df['volume']
-    candledick_df['taker_buy_volume_percentage'] = candledick_df['taker_buy_base_asset_volume'] / candledick_df['volume']
     # insert into db
-    Parallel(n_jobs=multiprocessing.cpu_count())(delayed(row_to_rds)(candledick_df, i, 'binance') for i in range(len(candledick_df)))
-
-
-
-    
-    # # Build dataframes
-    # bids_df = build_orderbook_df(orderbook_json, 'bids', coin_pair, unix_timestamp)
-    # asks_df = build_orderbook_df(orderbook_json, 'asks', coin_pair, unix_timestamp)
-    # # Engineer features
-    # try:
-    #     asks_fea_df = engineer_features(asks_df, 'asks')
-    #     bids_fea_df = engineer_features(bids_df, 'bids')
-    # except Exception as e:
-    #     print(f"Not able to find price data! Error: {e}")
-    #     return
-    # # Combine asks and bids
-    # orderbook_df = pd.merge(bids_fea_df, asks_fea_df, on=['unix_timestamp','coin_pair'], how='inner')
-    # orderbook_df['trade_minute'] = int(orderbook_df['unix_timestamp'] / 60)
-    # orderbook_df.drop('unix_timestamp', axis=1, inplace=True)
-    # # Write to RDS
-    # orderbook_df_to_rds(orderbook_df, exchange)
-
-# def build_orderbook_df(orderbook_json, order_type, coin_pair, unix_timestamp):
-#     if order_type == 'bids':
-#         order_asc = False
-#     else:
-#         order_asc = True
-#     try:
-#         orderbook_df = pd.DataFrame(orderbook_json[order_type], columns=['price','volume'])
-#     except Exception:
-#         orderbook_df = pd.DataFrame(orderbook_json[order_type], columns=['price','volume','empty'])
-#         orderbook_df.drop(['empty'], inplace=True, axis=1)
-#     orderbook_df['price'] = pd.to_numeric(orderbook_df['price'])
-#     orderbook_df['volume'] = pd.to_numeric(orderbook_df['volume'])
-#     orderbook_df['order_type'] = order_type
-#     orderbook_df['coin_pair'] = coin_pair
-#     orderbook_df.sort_values('price', ascending=order_asc, inplace=True)
-#     orderbook_df.insert(0, 'order_position', range(1, 1 + len(orderbook_df.index)))
-#     orderbook_df['unix_timestamp'] = unix_timestamp
-#     return orderbook_df
-
-
+    row_to_rds(df, -2, 'binance') 
 
 def row_to_rds(df, i, exchange):
     pk_column = ['trade_minute','coin_pair']
@@ -168,7 +126,6 @@ def row_to_rds(df, i, exchange):
         #print(f"PK already exists. Updating {where_clause}")
         update_postgres(exchange, 'candledicks', column_value_list_string, where_clause)
     
-
 def insert_into_postgres(schema, table, column_list_string, values):
         """Inserts scoring results into Postgres db table
 
@@ -255,5 +212,5 @@ def logic_db_connection():
 
 
 if __name__ == '__main__':
-    message = {"exchange": "binance", "coin_pair": "ethusdt", "data_call_unix_timestamp": 1582493913, "candlesticks": [[1581575400000, "272.92000000", "273.73000000", "271.35000000", "272.49000000", "15438.77061000", 1581577199999, "4205656.18441520", 7162, "9313.19716000", "2536938.24397030", "0"], [1581577200000, "272.48000000", "272.59000000", "268.86000000", "269.70000000", "24189.36763000", 1581578999999, "6546619.98249080", 9426, "12204.49698000", "3303664.25850650", "0"]]}
+    message = {"Records":[{"body":'{"exchange": "binance", "coin_pair": "ethusdt", "data_call_unix_timestamp": 1582493913, "candlesticks": [[1581575400000, "272.92000000", "273.73000000", "271.35000000", "272.49000000", "15438.77061000", 1581577199999, "4205656.18441520", 7162, "9313.19716000", "2536938.24397030", "0"], [1581577200000, "272.48000000", "272.59000000", "268.86000000", "269.70000000", "24189.36763000", 1581578999999, "6546619.98249080", 9426, "12204.49698000", "3303664.25850650", "0"]]}'}]}
     main(message, None)
