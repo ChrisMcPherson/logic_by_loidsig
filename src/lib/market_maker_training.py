@@ -150,9 +150,9 @@ class BinanceTraining(MarketMakerTraining):
         target_col_list = []
         base_ctes_list = []
         feature_cte_list = []
+        final_col_list = []
         interaction_features_list = []
         join_conditions_list = []
-        target_variables_list = []
 
         # Limit rows returned when pulling scoring features
         limit_where_clause = ''
@@ -202,15 +202,22 @@ class BinanceTraining(MarketMakerTraining):
             # Base target variable features
             if pair_type == 'target':
                 base_features_list.append(f"""
-                    {coin_pair}_trade_datetime, {coin_pair}_trade_date, {coin_pair}_trade_minute
-                    , extract(isodow from {coin_pair}_trade_datetime) as trade_day_of_week
-                    , date_part('hour', {coin_pair}_trade_datetime) as trade_hour
-                    , {coin_pair}_trade_date - current_date as days_old
+                    c.close_datetime AS {coin_pair}_trade_close_datetime
+                    , extract(isodow from c.close_datetime) as trade_day_of_week
+                    , date_part('hour', c.close_datetime) as trade_hour
+                    , c.close_datetime::date - current_date as days_old
+                """)
+                final_col_list.append(f"""
+                    {coin_pair}_trade_close_datetime
+                    , trade_day_of_week
+                    , trade_hour
+                    , days_old
                 """)
                 feature_col_list.extend(['trade_day_of_week', 'trade_hour', 'days_old'])
             # Base features
             base_features_list.append(f"""
-                quote_asset_volume as {coin_pair}_quote_asset_volume
+                c.trade_minute AS {coin_pair}_trade_minute
+                , quote_asset_volume as {coin_pair}_quote_asset_volume
                 , taker_sell_volume_percentage * 100 AS {coin_pair}_taker_sell_volume_perc_of_total
                 , trade_count as {coin_pair}_trade_count
                 , o_end.bids_cum_50000_weighted_avg - o_beg.bids_cum_50000_weighted_avg AS {coin_pair}_crnt_interval_bids_50000_price_diff
@@ -225,6 +232,19 @@ class BinanceTraining(MarketMakerTraining):
                     + LEAD(o_end.bids_cum_200000_weighted_std, 3) OVER (ORDER BY c.trade_minute DESC) / (LEAD(o_end.bids_cum_200000_weighted_std, 3) OVER (ORDER BY c.trade_minute DESC) + LEAD(o_end.asks_cum_200000_weighted_std, 3) OVER (ORDER BY c.trade_minute DESC))
                     + LEAD(o_end.bids_cum_200000_weighted_std, 4) OVER (ORDER BY c.trade_minute DESC) / (LEAD(o_end.bids_cum_200000_weighted_std, 4) OVER (ORDER BY c.trade_minute DESC) + LEAD(o_end.asks_cum_200000_weighted_std, 4) OVER (ORDER BY c.trade_minute DESC))
                     ) / 5 AS {coin_pair}_bids_200000_std_perc_of_total_avg
+            """)
+            final_col_list.append(f"""
+                {coin_pair}_trade_minute
+                , {coin_pair}_quote_asset_volume
+                , {coin_pair}_taker_sell_volume_perc_of_total
+                , {coin_pair}_trade_count
+                , {coin_pair}_crnt_interval_bids_50000_price_diff
+                , {coin_pair}_crnt_interval_bids_v_asks_50000_price_diff
+                , {coin_pair}_crnt_interval_bids_50000_std_diff
+                , {coin_pair}_crnt_interval_bids_v_asks_50000_std_diff
+                , {coin_pair}_crnt_bids_50000_std_perc_of_total
+                , {coin_pair}_crnt_bids_200000_std_perc_of_total
+                , {coin_pair}_bids_200000_std_perc_of_total_avg
             """)
             feature_col_list.extend([
                 f'{coin_pair}_quote_asset_volume'
@@ -242,7 +262,7 @@ class BinanceTraining(MarketMakerTraining):
             # Lag features for every interval configured at runtime
             for interval in self.feature_minutes_list:
                 interval_list = []
-                interval_list.append(f"""
+                base_features_list.append(f"""
                     ((quote_asset_volume - LEAD(quote_asset_volume, {interval}) OVER (ORDER BY c.trade_minute DESC)) 
                         / LEAD(quote_asset_volume, {interval}) OVER (ORDER BY c.trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_quote_asset_volume_perc_chg
                     , ((taker_sell_volume_percentage - LEAD(taker_sell_volume_percentage, {interval}) OVER (ORDER BY c.trade_minute DESC)) 
@@ -254,20 +274,28 @@ class BinanceTraining(MarketMakerTraining):
                     , ((o_end.bids_cum_50000_weighted_std - LEAD(o_end.bids_cum_50000_weighted_std, {interval}) OVER (ORDER BY c.trade_minute DESC)) 
                         / LEAD(o_end.bids_cum_50000_weighted_std, {interval}) OVER (ORDER BY c.trade_minute DESC)) * 100 AS prev_{interval}_{coin_pair}_bids_50000_std_chg
                 """)
-                 
-                base_features_list.append(','.join(interval_list))  
+                final_col_list.append(f"""
+                    prev_{interval}_{coin_pair}_quote_asset_volume_perc_chg
+                    , prev_{interval}_{coin_pair}_taker_sell_volume_perc_of_total_chg
+                    , prev_{interval}_{coin_pair}_trade_count_perc_chg
+                    , prev_{interval}_{coin_pair}_bids_50000_perc_chg
+                    , prev_{interval}_{coin_pair}_bids_50000_std_chg
+                """)  
                 feature_col_list.extend([
-                    f'prev_{interval}_{coin_pair}_bid_ask_average_price_perc_chg'
-                    ,f'prev_{interval}_{coin_pair}_bid_ask_average_price_rate_chg'
-                    ,f'prev_{interval}_{coin_pair}_bids_cum_5000_weighted_avg_perc_chg'
-                    ,f'prev_{interval}_{coin_pair}_bids_cum_50000_weighted_avg_perc_chg'
-                    ,f'prev_{interval}_{coin_pair}_bids_cum_100000_weighted_avg_perc_chg'
-                    ,f'prev_{interval}_{coin_pair}_bids_cum_200000_weighted_avg_perc_chg'
-                    ,f'prev_{interval}_{coin_pair}_asks_cum_5000_weighted_avg_perc_chg'
-                    ,f'prev_{interval}_{coin_pair}_asks_cum_50000_weighted_avg_perc_chg'
-                    ,f'prev_{interval}_{coin_pair}_asks_cum_100000_weighted_avg_perc_chg'
-                    ,f'prev_{interval}_{coin_pair}_asks_cum_200000_weighted_avg_perc_chg'
+                    f'prev_{interval}_{coin_pair}_quote_asset_volume_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_taker_sell_volume_perc_of_total_chg'
+                    ,f'prev_{interval}_{coin_pair}_trade_count_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_bids_50000_perc_chg'
+                    ,f'prev_{interval}_{coin_pair}_bids_50000_std_chg'
                 ])
+            
+            if pair_type == 'target':
+                for target in self.trade_window_list:
+                    base_features_list.append(f"""((LAG({self.target_coin}_bids_cum_5000_weighted_avg, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {self.target_coin}_asks_cum_5000_weighted_avg) / {self.target_coin}_asks_cum_5000_weighted_avg * 100) AS futr_{target}_askbid_cum_5000_weighted_avg_perc_chg""")
+                    # experiment with predicting return starting at minute 1 instead of minute 0 to account for our scoring->trade delay.
+                    #base_features_list.append(f"""((LAG({self.target_coin}_bids_cum_5000_weighted_avg, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - LAG({self.target_coin}_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) / LAG({self.target_coin}_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC) * 100) AS futr_{target}_askbid_cum_5000_weighted_avg_perc_chg""")
+                    final_col_list.append(f'futr_{target}_askbid_cum_5000_weighted_avg_perc_chg')  
+                    target_col_list.append(f'futr_{target}_askbid_cum_5000_weighted_avg_perc_chg')
 
             # Coin level CTE 
             feature_cte_list.append(f"""
@@ -291,34 +319,22 @@ class BinanceTraining(MarketMakerTraining):
                 interaction_features = ','.join(interaction_features_list)
                 interaction_features = ',' + interaction_features
 
-            # Target variables for every interval configured at runtime
+            # Join conditions
             if pair_type == 'target':
-                for target in self.trade_window_list:
-                    target_variables_list.append(f"""((LAG({self.target_coin}_bids_cum_5000_weighted_avg, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - {self.target_coin}_asks_cum_5000_weighted_avg) / {self.target_coin}_asks_cum_5000_weighted_avg * 100) AS futr_{target}_askbid_cum_5000_weighted_avg_perc_chg""")
-                    # experiment with predicting return starting at minute 1 instead of minute 0 to account for our scoring->trade delay.
-                    #target_variables_list.append(f"""((LAG({self.target_coin}_bids_cum_5000_weighted_avg, {target}) OVER (ORDER BY {self.target_coin}_trade_minute DESC) - LAG({self.target_coin}_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC)) / LAG({self.target_coin}_asks_cum_5000_weighted_avg, 1) OVER (ORDER BY {self.target_coin}_trade_minute DESC) * 100) AS futr_{target}_askbid_cum_5000_weighted_avg_perc_chg""")
-                    target_col_list.append(f'futr_{target}_askbid_cum_5000_weighted_avg_perc_chg')
-                # Join conditions
-                join_conditions_list.append(f"""{pair_type}_{coin_pair}""")    
+                join_conditions_list.append(f"""{pair_type}_{coin_pair}_features""")    
             else:
-                # Join base features
-                join_conditions_list.append(f"""{pair_type}_{coin_pair} ON target_{self.target_coin}.{self.target_coin}_trade_minute = {pair_type}_{coin_pair}.{coin_pair}_trade_minute""")
+                join_conditions_list.append(f"""{pair_type}_{coin_pair}_features ON target_{self.target_coin}_features.{self.target_coin}_trade_minute = {pair_type}_{coin_pair}_features.{coin_pair}_trade_minute""")
 
         base_ctes = ','.join(base_ctes_list)
         feature_ctes = ','.join(feature_cte_list)
         feature_ctes = ',' + feature_ctes
-        base_features = ','.join(base_features_list)
-        lag_features = ','.join(lag_features_list)
-        lag_features = ',' + lag_features
-        target_variables = ','.join(target_variables_list)
-        target_variables = ',' + target_variables
+        final_cols = ','.join(final_col_list)
         join_conditions = ' LEFT JOIN '.join(join_conditions_list)
 
         query_template = f"""WITH {base_ctes}
                                   {feature_ctes}
-                            SELECT {base_feature_cols}
+                            SELECT {final_cols}
                                 {interaction_features}
-                                {target_variables}
                             FROM {join_conditions}
                             ORDER BY {self.target_coin}_trade_minute {'DESC' if operation == 'scoring' else 'ASC'}
                             {'LIMIT 1' if operation == 'scoring' else ''}""" # LIMIT SCORING DATA - NOT ALL DATA IS RELEVANT TO CURRENT
