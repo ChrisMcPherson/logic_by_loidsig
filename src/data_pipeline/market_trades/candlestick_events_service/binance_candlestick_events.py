@@ -50,7 +50,7 @@ def get_candlestick_message(coin_pair):
     api_tries = 0
     while api_tries < 2:
         try:
-            candles = bnb.get_klines(symbol=coin_pair, interval=Client.KLINE_INTERVAL_30MINUTE)
+            candles = bnb.get_klines(symbol=coin_pair, interval=Client.KLINE_INTERVAL_1MINUTE)
             break
         except Exception as e:
             print(f"Error! {e}")
